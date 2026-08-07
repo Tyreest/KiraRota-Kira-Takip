@@ -34,7 +34,7 @@ Uygulama 13 yaş altı çocuklara yönelik değildir.
 Cihaz verilerini uygulama verilerini silerek temizleyebilirsiniz. Play üzerinden satın alma iade talepleri Google politikalarına tabidir.
 
 ## 6. İletişim
-Tyreest Studio — Play Console geliştirici iletişim adresi üzerinden.
+Tyreest Studio — tyreest.studio@gmail.com
 
 ## 7. Değişiklikler
 Politika güncellendiğinde “Son güncelleme” tarihi değişir.
