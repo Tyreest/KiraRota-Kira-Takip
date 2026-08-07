@@ -85,192 +85,122 @@
   <h1>Gizlilik Politikası</h1>
   <div class="meta">
     <strong>Son güncelleme:</strong> 7 Ağustos 2026<br/>
-    <strong>Uygulama:</strong> Kira Artışı Hesapla (uygulama içi marka: Kira Asistanı)<br/>
+    <strong>Uygulama:</strong> Kira Artışı Hesapla (Kira Asistanı)<br/>
     <strong>Geliştirici:</strong> Tyreest Studio<br/>
-    <strong>Android paket adı:</strong> com.tyreest.kiraartisi<br/>
     <strong>Platform:</strong> Google Play (Android)
   </div>
 
   <p>
     Bu gizlilik politikası, Tyreest Studio tarafından sunulan
-    <strong>Kira Artışı Hesapla</strong> uygulamasının hangi verileri nasıl işlediğini
-    açıklar. Metin, uygulamanın mevcut teknik davranışına göre hazırlanmıştır.
+    <strong>Kira Artışı Hesapla</strong> (Kira Asistanı) uygulamasının
+    kişisel ve uygulama verilerinizi nasıl işlediğini açıklar.
   </p>
 
-  <h2>1. Hesap ve kimlik</h2>
+  <h2>1. Hesap ve giriş</h2>
   <p>
-    Uygulamada <strong>kullanıcı hesabı, kayıt, giriş (login) veya profil oluşturma yoktur</strong>.
-    Tyreest Studio’ya ait bir hesap silme süreci de yoktur; çünkü silinecek bir hesap sistemi bulunmamaktadır.
+    Uygulamada kullanıcı hesabı, kayıt veya giriş yoktur.
+    Bu nedenle hesap silme işlemi de bulunmaz.
   </p>
 
-  <h2>2. Özet: Veri nerede tutulur?</h2>
+  <h2>2. Özet</h2>
   <ul>
+    <li>Geçmişiniz, tercihleriniz ve yenileme bilgileriniz cihazınızda saklanır.</li>
     <li>
-      Girdiğiniz kira tutarları, tarihler, hesaplama geçmişi ve hatırlatma tercihleri
-      <strong>esas olarak cihazınızda</strong> (Android SharedPreferences) saklanır.
+      Kira tutarlarınız ve hesaplama geçmişiniz Tyreest Studio’nun kendi sunucusuna
+      gönderilmez.
     </li>
     <li>
-      Tyreest Studio’nun kendi sunucusuna kira tutarı, sözleşme tarihi veya hesaplama
-      geçmişi gönderilmez.
+      Pro satın alma işlemleri Google Play tarafından gerçekleştirilir;
+      Pro hakkınız Google Play üzerinden doğrulanır.
     </li>
     <li>
-      Pro (ömür boyu) hakkı <strong>Google Play Billing</strong> üzerinden doğrulanır;
-      cihazda tutulan Pro bayrağı yalnızca yerel önbellektir.
-    </li>
-    <li>
-      Ücretsiz sürümde reklamlar için <strong>Google AdMob</strong> kullanılır.
-      Pro aktifken reklamlar kapatılır.
+      Ücretsiz sürümde reklam sunmak için Google AdMob kullanılır.
+      Pro aktifken reklamlar gösterilmez.
     </li>
   </ul>
 
-  <h2>3. Cihazda saklanan veriler</h2>
-  <p>Aşağıdaki veriler uygulama işlevi için cihazda tutulur:</p>
-  <table>
-    <thead>
-      <tr>
-        <th>Veri</th>
-        <th>Örnek / kapsam</th>
-        <th>Amaç</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Hesaplama girdileri ve geçmiş</td>
-        <td>Mevcut kira, yenileme ayı, uygulanan oran, hesaplanan kira, 5+ yıl notu, zaman damgası</td>
-        <td>Hesaplama, geçmiş listesi</td>
-      </tr>
-      <tr>
-        <td>Onboarding durumu</td>
-        <td>İlk açılış bilgilendirmesinin tamamlanıp tamamlanmadığı</td>
-        <td>Uygulama akışı</td>
-      </tr>
-      <tr>
-        <td>Pro yerel önbellek</td>
-        <td><code>is_pro_lifetime</code>, isteğe bağlı satın alma kimliği önbelleği</td>
-        <td>Pro özelliklerin cihazdaki durumu (kanıt değil)</td>
-      </tr>
-      <tr>
-        <td>Hatırlatma tercihleri</td>
-        <td>Yenileme tarihi; 30 / 7 / 0 gün bildirim seçimleri</td>
-        <td>Yerel yenileme hatırlatmaları (Pro)</td>
-      </tr>
-      <tr>
-        <td>Reklam sayaçları</td>
-        <td>Başarılı hesaplama sayısı, son interstitial zamanı</td>
-        <td>Interstitial sıklık / bekleme süresi kontrolü</td>
-      </tr>
-    </tbody>
-  </table>
-  <p class="note">
-    Ücretsiz sürümde geçmiş en fazla son 5 kayıtla sınırlıdır; Pro’da sınır kaldırılır.
-    Bu sınırlama yalnızca cihazda uygulanır.
-  </p>
-
-  <h2>4. Android yedekleme ve cihaz transferi</h2>
-  <p>
-    Uygulama <strong>Android Auto Backup</strong> ve cihaz transferi kurallarını kullanır
-    (<code>allowBackup</code>, <code>fullBackupContent</code>, <code>dataExtractionRules</code>).
-    SharedPreferences ve uygulama dosya alanları yedeklenebilir / yeni cihaza aktarılabilir.
-  </p>
+  <h2>3. Cihazınızda saklanan veriler</h2>
+  <p>Uygulama işlevi için cihazınızda şunlar tutulabilir:</p>
   <ul>
-    <li>
-      Yedekten dönen Pro bayrağı <strong>satın alma kanıtı sayılmaz</strong>.
-      Asıl yetki, Google Play’deki sahiplik (ownership) sorgusu ile doğrulanır.
-    </li>
-    <li>
-      Planlanmış bildirim alarmları sistem yedeğiyle gelmeyebilir; uygulama açılışında
-      kayıtlı tercihlere göre yeniden zamanlamayı dener.
-    </li>
-  </ul>
-
-  <h2>5. İnternet üzerinden yapılan istekler</h2>
-
-  <h3>5.1 TÜFE oran güncellemesi</h3>
-  <p>
-    Uygulama, oranları güncellemek için herkese açık bir JSON dosyasını indirir:
-  </p>
-  <p>
-    <a href="https://raw.githubusercontent.com/Tyreest/kira-artisi-hesapla/main/hosted/tufe_rates.json">
-      GitHub raw — hosted/tufe_rates.json
-    </a>
-  </p>
-  <ul>
-    <li>Bu istekte kira tutarınız veya hesaplama geçmişiniz gönderilmez.</li>
-    <li>İstek başarısız olursa veya uzak veri daha eskiyse uygulama içi (asset) oran dosyasına düşülür.</li>
-  </ul>
-
-  <h3>5.2 Yazı tipleri (Google Fonts)</h3>
-  <p>
-    Arayüz yazı tipleri için <strong>google_fonts</strong> paketi kullanılabilir.
-    Bu durumda cihaz, yazı tipi dosyalarını Google Fonts altyapısından indirebilir.
-    Bu işlem kira verilerinizi Tyreest’e iletmez.
-  </p>
-
-  <h2>6. Üçüncü taraf hizmetler ve SDK’lar</h2>
-  <p>
-    Aşağıdaki bileşenler uygulama bağımlılıklarında yer alır ve ilgili sağlayıcının
-    gizlilik politikasına tabidir:
-  </p>
-
-  <h3>6.1 Google AdMob (google_mobile_ads)</h3>
-  <ul>
-    <li>Ücretsiz sürümde adaptive banner (Hesapla / Oranlar / Geçmiş) ve koşullu interstitial gösterilir.</li>
-    <li>Pro aktifken reklamlar kapatılır; önceden yüklenmiş interstitial dahil gösterilmez.</li>
-    <li>
-      AdMob; reklam sunmak, ölçmek ve dolandırıcılığı önlemek amacıyla cihaz ve reklam
-      kimliği, uygulama etkileşimi ve benzeri teknik verileri işleyebilir.
-    </li>
-    <li>
-      Onboarding, Ayarlar, hatırlatma ve paywall ekranlarında banner gösterilmez.
-    </li>
+    <li>Girdiğiniz kira tutarı, yenileme ve sözleşme tarihleri, isteğe bağlı sözleşme artış oranı</li>
+    <li>Hesaplama geçmişi (hesaplanan kira, uygulanan oran ve ilgili notlar)</li>
+    <li>İlk bilgilendirme ekranının tamamlanıp tamamlanmadığı</li>
+    <li>Pro durumuna ilişkin yerel bilgi (asıl yetki Google Play’dedir)</li>
+    <li>Yenileme hatırlatması tercihleriniz</li>
+    <li>Reklam gösterim sıklığını düzenlemek için kullanılan basit sayaçlar</li>
   </ul>
   <p class="note">
-    Google’ın reklam gizlilik bilgileri:
-    <a href="https://policies.google.com/privacy">policies.google.com/privacy</a>
-    ve AdMob / reklam kişiselleştirme ayarları.
+    Ücretsiz sürümde geçmiş sınırlı sayıda kayıt tutar; Pro’da bu sınır kalkar.
   </p>
 
-  <h3>6.2 Google Play Billing (in_app_purchase)</h3>
-  <ul>
-    <li>Ürün: tek seferlik / ömür boyu Pro (<code>kira_pro_lifetime</code>); abonelik değildir.</li>
-    <li>Ödeme ve faturalandırma Google Play tarafından yönetilir.</li>
-    <li>
-      Uygulama, sahipliği Play Billing üzerinden senkronize eder; yerel Pro bayrağı
-      bunun önbelleğidir. Mağaza sorgusu “sahip değil” dönerse yerel Pro kapatılabilir.
-    </li>
-    <li>Satın alımları geri yükleme, Google hesabınızdaki Play sahipliğine dayanır.</li>
-  </ul>
-
-  <h3>6.3 Yerel bildirimler (flutter_local_notifications)</h3>
-  <ul>
-    <li>Pro yenileme hatırlatmaları cihazda planlanır (ör. 30 gün önce, 7 gün önce, yenileme günü).</li>
-    <li>Bildirim izni, hatırlatmayı kaydetme sırasında istenir; uygulama açılışında otomatik istenmez.</li>
-    <li>Bildirim içeriği cihazınızda üretilir; Tyreest sunucusuna push gönderilmez.</li>
-  </ul>
-
-  <h3>6.4 Paylaşım ve PDF (share_plus, printing, pdf, path_provider)</h3>
-  <ul>
-    <li>Sonuç metnini kopyalama / paylaşma ve PDF özet (Pro) kullanıcı başlatmalı işlemlerdir.</li>
-    <li>PDF cihazda oluşturulur; paylaşım Android sistem paylaşım sayfası üzerinden sizin seçtiğiniz uygulamaya gider.</li>
-  </ul>
-
-  <h3>6.5 Diğer yerel yardımcılar</h3>
-  <ul>
-    <li><strong>shared_preferences:</strong> yerel anahtar-değer depolama.</li>
-    <li><strong>permission_handler:</strong> bildirim izni durumu.</li>
-    <li><strong>package_info_plus:</strong> uygulama sürüm bilgisini cihazda okur.</li>
-    <li><strong>http:</strong> yalnızca oran JSON’u gibi belirtilen uzak istekler için.</li>
-  </ul>
+  <h2>4. Yedekleme ve cihaz aktarımı</h2>
   <p>
-    Uygulamada <strong>Firebase Authentication, Firebase Analytics, Crashlytics veya
-    benzeri bir analitik / hesap SDK’sı yoktur</strong>. İleride eklenirse bu politika güncellenir.
+    Android’in yedekleme ve cihaz aktarımı özellikleri etkin olduğunda bazı uygulama
+    verileri Google/Android altyapısı üzerinden yeni cihazınıza aktarılabilir.
+  </p>
+  <p>
+    Yedekten gelen Pro bilgisi tek başına satın alma kanıtı değildir.
+    Pro hakkınız Google Play hesabınızdaki satın alma durumu ile doğrulanır.
   </p>
 
-  <h2>7. Google Play Data Safety ile uyum (beyan özeti)</h2>
+  <h2>5. İnternet bağlantısı</h2>
   <p>
-    Play Console Data Safety formunu doldururken aşağıdaki ayrım esas alınmalıdır
-    (güncel uygulama davranışına göre):
+    Uygulama, TÜFE oranlarını güncellemek için internet üzerinden herkese açık bir
+    veri kaynağına bağlanabilir. Bu bağlantıda kira tutarınız veya hesaplama
+    geçmişiniz gönderilmez. Bağlantı başarısız olursa uygulama, cihazda bulunan
+    oran verilerini kullanır.
   </p>
+  <p>
+    Arayüz yazı tipleri için Google Fonts gibi bir hizmetten yazı tipi dosyası
+    indirilebilir. Bu işlem kira verilerinizi Tyreest Studio’ya iletmez.
+  </p>
+
+  <h2>6. Üçüncü taraf hizmetler</h2>
+
+  <h3>6.1 Google AdMob</h3>
+  <p>
+    Ücretsiz sürümde reklam sunmak için Google AdMob kullanılır
+    (örneğin hesaplama, oranlar ve geçmiş ekranlarında banner; koşullu tam ekran reklam).
+    Pro aktifken reklamlar kapatılır.
+  </p>
+  <p>
+    AdMob; reklam göstermek, ölçmek ve kötüye kullanımı önlemek amacıyla cihaz ve
+    reklam kimliği ile uygulama kullanımına ilişkin teknik verileri işleyebilir.
+    Bu işlemler Google’ın gizlilik politikasına tabidir:
+    <a href="https://policies.google.com/privacy">policies.google.com/privacy</a>.
+  </p>
+
+  <h3>6.2 Google Play Billing</h3>
+  <p>
+    Pro satın alma işlemleri Google Play tarafından gerçekleştirilir.
+    Ürün tek seferlik / ömür boyu Pro’dur; abonelik değildir.
+    Ödeme ve faturalandırma Google Play kurallarına göre yürütülür.
+    Satın alımları geri yükleme, Google hesabınızdaki Play satın alma durumuna dayanır.
+  </p>
+
+  <h3>6.3 Bildirimler</h3>
+  <p>
+    Hatırlatmalar cihazınızda yerel olarak planlanır
+    (örneğin yenilemeden 30 gün önce, 7 gün önce ve yenileme günü).
+    Bildirim izni, hatırlatmayı kaydettiğinizde istenir; uygulama açılışında otomatik
+    istenmez. İzni sistem ayarlarından kapatabilirsiniz.
+  </p>
+
+  <h3>6.4 Paylaşım ve PDF</h3>
+  <p>
+    Sonucu kopyalama, paylaşma veya PDF özet oluşturma sizin başlattığınız işlemlerdir.
+    PDF cihazınızda oluşturulur; paylaşım, Android’in paylaşım ekranı üzerinden
+    seçtiğiniz uygulamaya gider.
+  </p>
+
+  <h3>6.5 Olmayan hizmetler</h3>
+  <p>
+    Uygulamada Firebase Analytics, Crashlytics veya benzeri bir analitik / hesap
+    hizmeti kullanılmamaktadır. İleride eklenirse bu politika güncellenir.
+  </p>
+
+  <h2>7. Google Play Data Safety ile uyum</h2>
+  <p>Play Console Data Safety beyanı için özet:</p>
   <table>
     <thead>
       <tr>
@@ -284,20 +214,20 @@
         <td>Yok</td>
       </tr>
       <tr>
-        <td>Kira / geçmiş verisinin geliştirici sunucusuna iletilmesi</td>
+        <td>Kira ve geçmiş verisinin Tyreest sunucusuna iletilmesi</td>
         <td>Yok (cihazda kalır)</td>
       </tr>
       <tr>
-        <td>Reklam (AdMob) — cihaz / reklam kimliği, uygulama etkinliği</td>
-        <td>Ücretsiz sürümde toplanabilir / üçüncü tarafla paylaşılabilir (Google)</td>
+        <td>Reklam (AdMob)</td>
+        <td>Ücretsiz sürümde Google tarafından işlenebilir</td>
       </tr>
       <tr>
-        <td>Satın alma geçmişi / faturalandırma</td>
-        <td>Google Play Billing tarafından işlenir</td>
+        <td>Satın alma / faturalandırma</td>
+        <td>Google Play tarafından yönetilir</td>
       </tr>
       <tr>
-        <td>Android yedekleme / cihaz transferi</td>
-        <td>Cihaz verileri kullanıcının Google / cihaz yedekleme tercihleriyle aktarılabilir</td>
+        <td>Yedekleme / cihaz aktarımı</td>
+        <td>Android / Google yedekleme tercihlerinize bağlı olabilir</td>
       </tr>
       <tr>
         <td>Verinin satışı</td>
@@ -305,55 +235,42 @@
       </tr>
     </tbody>
   </table>
-  <p class="note">
-    Data Safety kutucukları Google’ın güncel tanımına göre seçilmelidir; bu sayfa beyanı
-    destekler, Console formunun yerine geçmez.
-  </p>
 
   <h2>8. Çocuklar</h2>
   <p>
-    Uygulama 13 yaş altı çocuklara yönelik değildir ve bilerek çocuklardan kişisel veri
-    toplamayı amaçlamaz.
+    Uygulama 13 yaş altı çocuklara yönelik değildir ve bilerek çocuklardan kişisel
+    veri toplamayı amaçlamaz.
   </p>
 
   <h2>9. Haklarınız ve kontrolleriniz</h2>
   <ul>
     <li>
-      Cihazdaki uygulama verilerini Android ayarlarından
-      <strong>Uygulama bilgisi → Depolama → Verileri temizle</strong>
-      ile silebilirsiniz.
+      Cihazınızdaki uygulama verilerini Android ayarlarından
+      uygulama bilgisi / depolama bölümündeki verileri temizleme seçeneğiyle silebilirsiniz.
     </li>
-    <li>Reklam kişiselleştirme tercihlerini cihaz / Google reklam ayarlarından yönetebilirsiniz.</li>
+    <li>Reklam kişiselleştirme tercihlerini cihazınızın veya Google’ın reklam ayarlarından yönetebilirsiniz.</li>
     <li>Bildirim iznini sistem ayarlarından kapatabilirsiniz.</li>
     <li>Play satın alma iadeleri Google Play iade politikalarına tabidir.</li>
-    <li>Pro’yu yeniden etkinleştirmek için uygulamadaki “Satın alımları geri yükle” / Play sahipliği kullanılır.</li>
+    <li>Pro’yu yeniden etkinleştirmek için uygulamadaki satın almaları geri yükleme seçeneğini kullanabilirsiniz.</li>
   </ul>
 
-  <h2>10. Geliştirici / gizlilik iletişim</h2>
+  <h2>10. Gizlilik iletişimi</h2>
   <p>
     <strong>Geliştirici:</strong> Tyreest Studio<br/>
-    <strong>Uygulama:</strong> Kira Artışı Hesapla (Kira Asistanı) — <code>com.tyreest.kiraartisi</code><br/>
-    <strong>Gizlilik talepleri:</strong> Google Play Console’da bu uygulama için listelenen
-    <strong>geliştirici iletişim e-posta adresi</strong> üzerinden.<br/>
-    <strong>Kaynak / proje:</strong>
-    <a href="https://github.com/Tyreest/kira-artisi-hesapla">github.com/Tyreest/kira-artisi-hesapla</a>
-  </p>
-  <p class="note">
-    Play’deki “Privacy policy” URL’si olarak bu sayfanın HTTPS adresini kullanın
-    (yayınlama: <code>store/PRIVACY_POLICY_SETUP.md</code>).
+    <strong>Uygulama:</strong> Kira Artışı Hesapla (Kira Asistanı)<br/>
+    Gizlilik ile ilgili talepleriniz için Google Play’de bu uygulama için listelenen
+    geliştirici iletişim e-posta adresini kullanabilirsiniz.
   </p>
 
-  <h2>11. Politika değişiklikleri</h2>
+  <h2>11. Değişiklikler</h2>
   <p>
-    Bu metin güncellendiğinde “Son güncelleme” tarihi değiştirilir. Önemli değişikliklerde
-    makul ölçüde bilgilendirme hedeflenir (ör. uygulama sürümü veya bu sayfa).
+    Bu politika güncellendiğinde “Son güncelleme” tarihi değiştirilir.
   </p>
 
   <nav>
     <a href="privacy-policy.html">Gizlilik Politikası</a> ·
     <a href="terms.html">Kullanım Şartları</a> ·
-    <a href="yasal.html">Yasal Uyarı</a> ·
-    <a href="index.html">Ana sayfa</a>
+    <a href="yasal.html">Yasal Uyarı</a>
   </nav>
 </body>
 </html>
