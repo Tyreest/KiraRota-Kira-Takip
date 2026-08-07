@@ -39,7 +39,7 @@ Uygulamayı tam restart ile aç: `flutter run`
 - [x] Gizlilik / Kullanım / Yasal metinleri açılır *(widget: Gizlilik)*
 
 ## 7. Mağaza (sıradaki)
-- [ ] Gizlilik HTTPS URL — rehber: `store/HOSTING.md` (`docs/` hazır)
+- [x] Gizlilik HTTPS URL — https://tyreest.github.io/kira-artisi-hesapla/
 - [ ] IAP lisans testi — rehber: `store/iap_setup.md`
 - [ ] AAB closed track — rehber: `store/signing.md` + `tool/create_upload_keystore.ps1`
 

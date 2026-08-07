@@ -23,7 +23,7 @@ Beyan:
 - [ ] Çocuklara yönelik değil
 
 ## C) Mağaza varlığı
-- [ ] Gizlilik politikası **HTTPS URL** (zorunlu) — `docs/` + `store/HOSTING.md`
+- [x] Gizlilik politikası **HTTPS URL** (zorunlu) — https://tyreest.github.io/kira-artisi-hesapla/
 - [ ] listing_tr.md metinleri yapıştırıldı
 - [ ] İkon 512 + feature graphic 1024x500
 - [ ] En az 2–4 telefon ekran görüntüsü
