@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -25,6 +24,8 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isPro = ref.watch(isProProvider);
+    final catalog = ref.watch(iapServiceProvider).state;
+    final price = catalog.priceForUi;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
@@ -56,9 +57,9 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  '${AppConstants.proPriceLabel} / Tek seferlik',
+                  catalog.hasStorePrice ? '$price / Tek seferlik' : price,
                   style: GoogleFonts.montserrat(
-                    fontSize: 28,
+                    fontSize: catalog.hasStorePrice ? 28 : 20,
                     fontWeight: FontWeight.w700,
                     color: AppColors.primaryDeep,
                   ),
@@ -76,7 +77,11 @@ class SettingsScreen extends ConsumerWidget {
                 const SizedBox(height: 12),
                 FilledButton(
                   onPressed: () => showProPaywall(context, ref),
-                  child: Text('Pro’ya Geç — ${AppConstants.proPriceLabel}'),
+                  child: Text(
+                    catalog.hasStorePrice
+                        ? 'Pro’ya Geç — $price'
+                        : 'Pro’ya Geç',
+                  ),
                 ),
               ],
             ),
@@ -173,16 +178,6 @@ class SettingsScreen extends ConsumerWidget {
             );
           },
         ),
-        if (kDebugMode && !isPro)
-          TextButton(
-            onPressed: () => ref.read(isProProvider.notifier).unlockDebugOnly(),
-            child: const Text('Geliştirme: Pro’yu aç'),
-          ),
-        if (kDebugMode && isPro)
-          TextButton(
-            onPressed: () => ref.read(isProProvider.notifier).lockDevOnly(),
-            child: const Text('Geliştirme: Pro’yu kapat'),
-          ),
       ],
     );
   }

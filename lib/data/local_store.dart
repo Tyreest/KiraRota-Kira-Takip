@@ -97,11 +97,24 @@ class ProRepository {
 
   final SharedPreferences _prefs;
   static const _key = 'is_pro_lifetime';
+  static const _purchaseIdKey = 'pro_purchase_id';
   static const _onboardingKey = 'onboarding_done';
 
   bool get isPro => _prefs.getBool(_key) ?? false;
 
-  Future<void> setPro(bool value) => _prefs.setBool(_key, value);
+  String? get purchaseId => _prefs.getString(_purchaseIdKey);
+
+  /// Lifetime entitlement — yerel kalıcı. Mağaza offline olsa bile silinmez.
+  Future<void> setPro(bool value, {String? purchaseId}) async {
+    await _prefs.setBool(_key, value);
+    if (value) {
+      if (purchaseId != null && purchaseId.isNotEmpty) {
+        await _prefs.setString(_purchaseIdKey, purchaseId);
+      }
+    } else {
+      await _prefs.remove(_purchaseIdKey);
+    }
+  }
 
   bool get onboardingDone => _prefs.getBool(_onboardingKey) ?? false;
 

@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:kira_artisi_hesapla/core/constants.dart';
 import 'package:kira_artisi_hesapla/core/theme.dart';
 import 'package:kira_artisi_hesapla/data/local_store.dart';
 import 'package:kira_artisi_hesapla/domain/models/tufe_rate.dart';
@@ -217,8 +216,14 @@ void main() {
     await tester.tap(find.text('PDF Raporu Al'));
     await tester.pumpAndSettle();
 
-    expect(find.text(AppConstants.proPriceLabel), findsWidgets);
     expect(find.text('Şimdi Al'), findsOneWidget);
+    // Fiyat Play’den gelir; test ortamında katalog yok → fallback
+    expect(
+      find.textContaining('Mağazadan alın').evaluate().isNotEmpty ||
+          find.textContaining('Fiyat yükleniyor').evaluate().isNotEmpty ||
+          find.textContaining('₺').evaluate().isNotEmpty,
+      isTrue,
+    );
   });
 
   testWidgets('4. Free hatırlatma → paywall (Ayarlar)', (tester) async {
@@ -233,7 +238,6 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Şimdi Al'), findsOneWidget);
-    expect(find.text(AppConstants.proPriceLabel), findsWidgets);
   });
 
   testWidgets('5. Geçmiş boş + 6 hesapta free limit 5', (tester) async {

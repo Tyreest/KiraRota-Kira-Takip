@@ -46,12 +46,20 @@ android {
 
     buildTypes {
         release {
-            signingConfig = if (hasReleaseKeystore) {
-                signingConfigs.getByName("release")
-            } else {
-                // Closed test öncesi: key.properties yoksa debug imza (yalnızca yerel).
-                signingConfigs.getByName("debug")
+            if (!hasReleaseKeystore) {
+                throw GradleException(
+                    "Release imza için android/key.properties gerekli. " +
+                        "Debug imza ile release AAB üretilmez. " +
+                        "Adımlar: store/signing.md — tool/create_upload_keystore.ps1",
+                )
             }
+            signingConfig = signingConfigs.getByName("release")
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro",
+            )
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿import 'package:flutter/foundation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+﻿import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../data/local_store.dart';
@@ -38,10 +37,8 @@ final pdfReportServiceProvider = Provider<PdfReportService>((ref) {
   return PdfReportService();
 });
 
-final iapServiceProvider = Provider<IapService>((ref) {
-  final service = IapService(ref.watch(proRepositoryProvider));
-  ref.onDispose(service.dispose);
-  return service;
+final iapServiceProvider = ChangeNotifierProvider<IapService>((ref) {
+  return IapService(ref.watch(proRepositoryProvider));
 });
 
 final isProProvider = StateNotifierProvider<ProNotifier, bool>((ref) {
@@ -55,16 +52,6 @@ class ProNotifier extends StateNotifier<bool> {
   Future<void> setPro(bool value) async {
     await _repo.setPro(value);
     state = value;
-  }
-
-  Future<void> unlockDebugOnly() {
-    assert(kDebugMode, 'unlockDebugOnly yalnızca debug için');
-    return setPro(true);
-  }
-
-  Future<void> lockDevOnly() {
-    assert(kDebugMode, 'lockDevOnly yalnızca debug için');
-    return setPro(false);
   }
 
   void syncFromRepo() {

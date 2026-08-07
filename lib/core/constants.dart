@@ -7,10 +7,8 @@ class AppConstants {
   /// Ücretsiz geçmiş kayıt limiti.
   static const int freeHistoryLimit = 5;
 
-  /// Lifetime Pro fiyatı (görüntüleme; gerçek fiyat Play Console'da).
-  static const String proPriceLabel = '₺199';
-
-  /// Play Console managed product ID (tek seferlik).
+  /// Play Console managed product ID (non-consumable / one-time lifetime).
+  /// Fiyat Play Billing `ProductDetails.price` ile gelir; UI’da hardcode yok.
   static const String iapProductId = 'kira_pro_lifetime';
 
   /// Google test AdMob App ID (yayında kendi ID’nizle değiştirin).

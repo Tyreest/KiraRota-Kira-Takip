@@ -82,6 +82,7 @@ class ReminderService {
   Future<void> schedule(ReminderConfig config) async {
     await init();
     await cancelAll();
+    // İzin reddedilse bile tercihler cihazda saklanır.
     await config.save(_prefs);
 
     if (!enableNotifications) return;
@@ -93,29 +94,36 @@ class ReminderService {
       9,
     );
 
-    if (config.notify30) {
-      await _scheduleOne(
-        id: 301,
-        when: renewal.subtract(const Duration(days: 30)),
-        title: 'Kira yenilemesine 30 gün',
-        body: 'Yenileme tarihi yaklaşıyor. TÜFE esaslı azami oranı kontrol edin.',
-      );
-    }
-    if (config.notify7) {
-      await _scheduleOne(
-        id: 307,
-        when: renewal.subtract(const Duration(days: 7)),
-        title: 'Kira yenilemesine 7 gün',
-        body: 'Bir hafta kaldı. Kira Artışı Hesapla ile oranınızı gözden geçirin.',
-      );
-    }
-    if (config.notify0) {
-      await _scheduleOne(
-        id: 300,
-        when: renewal,
-        title: 'Kira yenileme günü',
-        body: 'Bugün yenileme döneminiz. Azami artış oranını hesaplayabilirsiniz.',
-      );
+    try {
+      if (config.notify30) {
+        await _scheduleOne(
+          id: 301,
+          when: renewal.subtract(const Duration(days: 30)),
+          title: 'Kira yenilemesine 30 gün',
+          body:
+              'Yenileme tarihi yaklaşıyor. TÜFE esaslı azami oranı kontrol edin.',
+        );
+      }
+      if (config.notify7) {
+        await _scheduleOne(
+          id: 307,
+          when: renewal.subtract(const Duration(days: 7)),
+          title: 'Kira yenilemesine 7 gün',
+          body:
+              'Bir hafta kaldı. Kira Artışı Hesapla ile oranınızı gözden geçirin.',
+        );
+      }
+      if (config.notify0) {
+        await _scheduleOne(
+          id: 300,
+          when: renewal,
+          title: 'Kira yenileme günü',
+          body:
+              'Bugün yenileme döneminiz. Azami artış oranını hesaplayabilirsiniz.',
+        );
+      }
+    } catch (_) {
+      // Bildirim izni yok / alarm kısıtı: kayıt kalır, schedule atlanır.
     }
   }
 

@@ -38,6 +38,9 @@ flutter:
     - assets/legal/gizlilik.md
     - assets/legal/kullanim_sartlari.md
     - assets/legal/yasal_uyari.md
+    - assets/fonts/NotoSans-Regular.ttf
+    - assets/fonts/NotoSans-Bold.ttf
+    - assets/fonts/NotoSans-Italic.ttf
 
 flutter_launcher_icons:
   android: true

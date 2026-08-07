@@ -18,161 +18,200 @@ Future<void> showProPaywall(BuildContext context, WidgetRef ref) {
     ),
     builder: (ctx) {
       final maxH = MediaQuery.sizeOf(ctx).height * 0.92;
-      return ConstrainedBox(
-        constraints: BoxConstraints(maxHeight: maxH),
-        child: SingleChildScrollView(
-          padding: EdgeInsets.only(
-            left: 24,
-            right: 24,
-            top: 20,
-            bottom: MediaQuery.paddingOf(ctx).bottom + 20,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: AppColors.outlineVariant,
-                  borderRadius: BorderRadius.circular(99),
-                ),
+      return Consumer(
+        builder: (ctx, ref, _) {
+          final catalog = ref.watch(iapServiceProvider).state;
+          return ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: maxH),
+            child: SingleChildScrollView(
+              padding: EdgeInsets.only(
+                left: 24,
+                right: 24,
+                top: 20,
+                bottom: MediaQuery.paddingOf(ctx).bottom + 20,
               ),
-              const SizedBox(height: 20),
-              Container(
-                width: 64,
-                height: 64,
-                decoration: const BoxDecoration(
-                  color: AppColors.primary,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.star_rounded, color: Colors.white, size: 32),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    AppConstants.brandName,
-                    style: GoogleFonts.montserrat(
-                      fontSize: 22,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.onSurface,
+                  Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: AppColors.outlineVariant,
+                      borderRadius: BorderRadius.circular(99),
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  const ProBadge(),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Yenileme tarihini unutma, kira artış dönemini zamanında takip et. '
-                'Tüm özelliklere sınırsız erişim sağla.',
-                textAlign: TextAlign.center,
-                style: Theme.of(ctx).textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 16),
-              const _PayFeature(
-                icon: Icons.notifications_active_outlined,
-                title: 'Yenileme Hatırlatması',
-                body: '30 gün önce, 7 gün önce ve yenileme günü bildirim al.',
-              ),
-              const _PayFeature(
-                icon: Icons.block,
-                title: 'Reklamsız Deneyim',
-                body: 'Uygulamayı dikkatiniz dağılmadan, temiz bir arayüzle kullanın.',
-              ),
-              const _PayFeature(
-                icon: Icons.picture_as_pdf_outlined,
-                title: 'PDF Özet Raporu',
-                body: 'Hesaplamalarınızı ve TÜFE oranlarını PDF olarak kaydedip paylaşın.',
-              ),
-              const _PayFeature(
-                icon: Icons.history,
-                title: 'Sınırsız Geçmiş',
-                body: 'Tüm önceki hesaplamalarınızı arşivleyin.',
-              ),
-              const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    AppConstants.proPriceLabel,
-                    style: GoogleFonts.montserrat(
-                      fontSize: 36,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.primaryDeep,
+                  const SizedBox(height: 20),
+                  Container(
+                    width: 64,
+                    height: 64,
+                    decoration: const BoxDecoration(
+                      color: AppColors.primary,
+                      shape: BoxShape.circle,
                     ),
+                    child: const Icon(Icons.star_rounded, color: Colors.white, size: 32),
                   ),
-                  const SizedBox(width: 6),
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Text(
-                      '/ tek seferlik',
-                      style: Theme.of(ctx).textTheme.bodyMedium,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              FilledButton(
-                onPressed: () async {
-                  final iap = ref.read(iapServiceProvider);
-                  final ok = await iap.buy();
-                  // Debug unlock veya purchase stream sonrası Pro bayrağını oku.
-                  ref.read(isProProvider.notifier).syncFromRepo();
-                  if (!ref.read(isProProvider) && ok) {
-                    for (var i = 0; i < 8; i++) {
-                      await Future<void>.delayed(
-                        const Duration(milliseconds: 250),
-                      );
-                      ref.read(isProProvider.notifier).syncFromRepo();
-                      if (ref.read(isProProvider)) break;
-                    }
-                  }
-                  if (ctx.mounted) Navigator.pop(ctx);
-                  if (context.mounted) {
-                    final isPro = ref.read(isProProvider);
-                    final msg = !ok
-                        ? (iap.lastError ?? 'Satın alma tamamlanamadı')
-                        : (isPro
-                            ? 'Pro aktif.'
-                            : 'Satın alma başlatıldı…');
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(msg)),
-                    );
-                  }
-                },
-                child: const Text('Şimdi Al'),
-              ),
-              TextButton(
-                onPressed: () async {
-                  await ref.read(iapServiceProvider).restore(
-                        (_) => ref.read(isProProvider.notifier).syncFromRepo(),
-                      );
-                  ref.read(isProProvider.notifier).syncFromRepo();
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(
-                          ref.read(isProProvider)
-                              ? 'Satın alımlar geri yüklendi.'
-                              : 'Geri yüklenecek satın alma bulunamadı.',
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        AppConstants.brandName,
+                        style: GoogleFonts.montserrat(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.onSurface,
                         ),
                       ),
-                    );
-                  }
-                },
-                child: const Text('Satın alımları geri yükle'),
+                      const SizedBox(width: 8),
+                      const ProBadge(),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Yenileme tarihini unutma, kira artış dönemini zamanında takip et. '
+                    'Tüm özelliklere sınırsız erişim sağla.',
+                    textAlign: TextAlign.center,
+                    style: Theme.of(ctx).textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 16),
+                  const _PayFeature(
+                    icon: Icons.notifications_active_outlined,
+                    title: 'Yenileme Hatırlatması',
+                    body: '30 gün önce, 7 gün önce ve yenileme günü bildirim al.',
+                  ),
+                  const _PayFeature(
+                    icon: Icons.block,
+                    title: 'Reklamsız Deneyim',
+                    body: 'Uygulamayı dikkatiniz dağılmadan, temiz bir arayüzle kullanın.',
+                  ),
+                  const _PayFeature(
+                    icon: Icons.picture_as_pdf_outlined,
+                    title: 'PDF Özet Raporu',
+                    body: 'Hesaplamalarınızı ve TÜFE oranlarını PDF olarak kaydedip paylaşın.',
+                  ),
+                  const _PayFeature(
+                    icon: Icons.history,
+                    title: 'Sınırsız Geçmiş',
+                    body: 'Tüm önceki hesaplamalarınızı arşivleyin.',
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        catalog.priceForUi,
+                        style: GoogleFonts.montserrat(
+                          fontSize: catalog.hasStorePrice ? 36 : 22,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.primaryDeep,
+                        ),
+                      ),
+                      if (catalog.hasStorePrice) ...[
+                        const SizedBox(width: 6),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Text(
+                            '/ tek seferlik',
+                            style: Theme.of(ctx).textTheme.bodyMedium,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                  if (catalog.purchasePending) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      'Ödeme onay bekliyor…',
+                      style: Theme.of(ctx).textTheme.bodySmall,
+                    ),
+                  ],
+                  const SizedBox(height: 12),
+                  FilledButton(
+                    onPressed: catalog.busy
+                        ? null
+                        : () async {
+                            final iap = ref.read(iapServiceProvider);
+                            final outcome = await iap.buy();
+                            ref.read(isProProvider.notifier).syncFromRepo();
+                            if (!ref.read(isProProvider) && outcome.ok) {
+                              for (var i = 0; i < 12; i++) {
+                                await Future<void>.delayed(
+                                  const Duration(milliseconds: 250),
+                                );
+                                ref.read(isProProvider.notifier).syncFromRepo();
+                                if (ref.read(isProProvider)) break;
+                                if (iap.state.purchasePending) break;
+                                final msg = iap.state.lastMessage ?? '';
+                                if (msg.contains('iptal')) break;
+                              }
+                            }
+                            final isPro = ref.read(isProProvider);
+                            final msg = iap.state.lastMessage ??
+                                outcome.message ??
+                                (isPro
+                                    ? 'Pro aktif.'
+                                    : outcome.ok
+                                        ? 'Satın alma başlatıldı…'
+                                        : 'Satın alma tamamlanamadı');
+                            if (isPro && ctx.mounted) {
+                              Navigator.pop(ctx);
+                            }
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(msg)),
+                              );
+                            }
+                          },
+                    child: Text(
+                      catalog.busy ? 'Bekleyin…' : 'Şimdi Al',
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: catalog.busy
+                        ? null
+                        : () async {
+                            final iap = ref.read(iapServiceProvider);
+                            await iap.restore(
+                              onProChanged: (_) =>
+                                  ref.read(isProProvider.notifier).syncFromRepo(),
+                            );
+                            // Stream gecikmesi
+                            for (var i = 0; i < 8; i++) {
+                              await Future<void>.delayed(
+                                const Duration(milliseconds: 200),
+                              );
+                              ref.read(isProProvider.notifier).syncFromRepo();
+                              if (ref.read(isProProvider)) break;
+                            }
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    iap.state.lastMessage ??
+                                        (ref.read(isProProvider)
+                                            ? 'Satın alımlar geri yüklendi.'
+                                            : 'Geri yüklenecek satın alma bulunamadı.'),
+                                  ),
+                                ),
+                              );
+                            }
+                            if (ref.read(isProProvider) && ctx.mounted) {
+                              Navigator.pop(ctx);
+                            }
+                          },
+                    child: const Text('Satın alımları geri yükle'),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.pop(ctx),
+                    child: const Text('Sonra'),
+                  ),
+                ],
               ),
-              TextButton(
-                onPressed: () => Navigator.pop(ctx),
-                child: const Text('Sonra'),
-              ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       );
     },
   );

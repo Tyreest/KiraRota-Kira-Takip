@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:flutter/services.dart';
 import 'package:kira_artisi_hesapla/core/constants.dart';
 import 'package:kira_artisi_hesapla/core/format.dart';
 import 'package:kira_artisi_hesapla/domain/models/calculation.dart';
@@ -7,9 +10,23 @@ import 'package:printing/printing.dart';
 
 class PdfReportService {
   Future<void> shareCalculation(CalculationResult result) async {
-    final base = await PdfGoogleFonts.robotoRegular();
-    final bold = await PdfGoogleFonts.robotoBold();
-    final italic = await PdfGoogleFonts.robotoItalic();
+    final bytes = await buildPdfBytes(result);
+    await Printing.sharePdf(
+      bytes: bytes,
+      filename: 'kira-artisi-${result.input.renewalMonthKey}.pdf',
+    );
+  }
+
+  /// Bundled Noto Sans — offline Türkçe / ₺ desteği (Google Fonts indirmeye bağımlı değil).
+  Future<Uint8List> buildPdfBytes(CalculationResult result) async {
+    final baseData =
+        await rootBundle.load('assets/fonts/NotoSans-Regular.ttf');
+    final boldData = await rootBundle.load('assets/fonts/NotoSans-Bold.ttf');
+    final italicData =
+        await rootBundle.load('assets/fonts/NotoSans-Italic.ttf');
+    final base = pw.Font.ttf(baseData);
+    final bold = pw.Font.ttf(boldData);
+    final italic = pw.Font.ttf(italicData);
 
     final doc = pw.Document();
     doc.addPage(
@@ -95,10 +112,7 @@ class PdfReportService {
       ),
     );
 
-    await Printing.sharePdf(
-      bytes: await doc.save(),
-      filename: 'kira-artisi-${result.input.renewalMonthKey}.pdf',
-    );
+    return doc.save();
   }
 
   pw.Widget _row(String label, String value) {
