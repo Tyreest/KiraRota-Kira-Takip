@@ -11,20 +11,35 @@ class AppConstants {
   /// Fiyat Play Billing `ProductDetails.price` ile gelir; UI’da hardcode yok.
   static const String iapProductId = 'kira_pro_lifetime';
 
-  /// Google test AdMob App ID (yayında kendi ID’nizle değiştirin).
-  static const String admobAppId =
+  // --- AdMob: Google resmi test ID'leri (yalnızca debug) ---
+  static const String admobTestAppId =
       'ca-app-pub-3940256099942544~3347511713';
-
-  /// Google test banner (yayında kendi unit ID).
-  static const String admobBannerUnitId =
+  static const String admobTestBannerUnitId =
       'ca-app-pub-3940256099942544/6300978111';
+  static const String admobTestInterstitialUnitId =
+      'ca-app-pub-3940256099942544/1033173712';
+
+  /// Production AdMob — dart-define veya boş (sahte ID uydurulmaz).
+  /// Örnek: --dart-define=ADMOB_BANNER_ID=ca-app-pub-xxx/yyy
+  static const String admobProductionAppId =
+      String.fromEnvironment('ADMOB_APP_ID', defaultValue: '');
+  static const String admobProductionBannerUnitId =
+      String.fromEnvironment('ADMOB_BANNER_ID', defaultValue: '');
+  static const String admobProductionInterstitialUnitId =
+      String.fromEnvironment('ADMOB_INTERSTITIAL_ID', defaultValue: '');
+
+  /// Interstitial: her N. başarılı hesaplama.
+  static const int interstitialEveryNSuccess = 3;
+
+  /// Interstitial global cooldown.
+  static const Duration interstitialCooldown = Duration(minutes: 10);
 
   /// Uzaktan oran JSON (GitHub raw). Başarısızsa asset fallback.
   static const String remoteRatesUrl =
       'https://raw.githubusercontent.com/Tyreest/kira-artisi-hesapla/main/hosted/tufe_rates.json';
 
   static const String privacyUrl =
-      'https://tyreest.github.io/kira-artisi-hesapla/';
+      'https://tyreest.github.io/kira-artisi-hesapla/privacy-policy.html';
   static const String termsUrl =
       'https://tyreest.github.io/kira-artisi-hesapla/terms.html';
 
