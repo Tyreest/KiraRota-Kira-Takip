@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+
+<html class="light" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Kira Artışı Hesapla - Oran Eksik</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&amp;family=Hanken+Grotesk:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "primary": "#023727",
+                      "surface-tint": "#396755",
+                      "tertiary-container": "#5c4100",
+                      "on-surface-variant": "#414944",
+                      "outline-variant": "#c0c8c3",
+                      "on-error-container": "#93000a",
+                      "primary-fixed": "#bbedd6",
+                      "surface-container": "#f0eded",
+                      "on-primary-fixed": "#002116",
+                      "inverse-on-surface": "#f3f0f0",
+                      "on-tertiary": "#ffffff",
+                      "on-secondary-fixed": "#082014",
+                      "secondary-fixed-dim": "#b2cdbb",
+                      "surface-bright": "#fcf9f8",
+                      "surface-variant": "#e4e2e1",
+                      "on-secondary": "#ffffff",
+                      "on-tertiary-container": "#e4aa1d",
+                      "inverse-surface": "#303030",
+                      "surface-dim": "#dcd9d9",
+                      "tertiary": "#3f2c00",
+                      "secondary": "#4c6455",
+                      "on-background": "#1b1c1c",
+                      "primary-fixed-dim": "#a0d1bb",
+                      "on-primary-fixed-variant": "#204f3e",
+                      "tertiary-fixed-dim": "#fabd32",
+                      "error-container": "#ffdad6",
+                      "surface-container-lowest": "#ffffff",
+                      "on-error": "#ffffff",
+                      "outline": "#717974",
+                      "on-secondary-container": "#506859",
+                      "primary-container": "#1f4e3d",
+                      "on-tertiary-fixed-variant": "#5d4200",
+                      "surface-container-high": "#eae7e7",
+                      "secondary-fixed": "#cee9d6",
+                      "surface-container-low": "#f6f3f2",
+                      "inverse-primary": "#a0d1bb",
+                      "on-surface": "#1b1c1c",
+                      "surface-container-highest": "#e4e2e1",
+                      "on-tertiary-fixed": "#261900",
+                      "on-primary": "#ffffff",
+                      "surface": "#fcf9f8",
+                      "error": "#ba1a1a",
+                      "on-secondary-fixed-variant": "#344c3e",
+                      "tertiary-fixed": "#ffdea4",
+                      "secondary-container": "#cbe6d4",
+                      "background": "#fcf9f8",
+                      "on-primary-container": "#8ebea8",
+                      
+                      // Semantic custom colors matching the prompt style
+                      "warm-cream": "#F7F4EF",
+                      "soft-sage": "#E8EDE8",
+                      "forest-green": "#1F4E3D",
+                      "soft-amber": "#F0B429",
+                      "dark-charcoal": "#1C1C1C"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "md": "16px",
+                      "sm": "8px",
+                      "xl": "32px",
+                      "margin-desktop": "40px",
+                      "base": "8px",
+                      "xs": "4px",
+                      "lg": "24px",
+                      "margin-mobile": "16px",
+                      "gutter": "16px"
+              },
+              "fontFamily": {
+                      "label-md": ["Hanken Grotesk"],
+                      "headline-md": ["Montserrat"],
+                      "display-lg": ["Montserrat"],
+                      "result-value": ["Montserrat"],
+                      "headline-sm": ["Montserrat"],
+                      "label-lg": ["Hanken Grotesk"],
+                      "body-md": ["Hanken Grotesk"],
+                      "body-lg": ["Hanken Grotesk"],
+                      "headline-lg": ["Montserrat"]
+              },
+              "fontSize": {
+                      "label-md": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "result-value": ["40px", {"lineHeight": "48px", "fontWeight": "700"}],
+                      "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.1px", "fontWeight": "600"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "700"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        body { background-color: #F7F4EF; /* Warm Cream */ }
+        .border-sage-thin { border: 1px solid #E8EDE8; }
+        .border-primary-thin { border: 1px solid rgba(2, 55, 39, 0.1); }
+        .btn-bottom-heavy { border-bottom: 1.5px solid rgba(0,0,0,0.2); }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="font-body-md text-on-surface antialiased min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-surface border-b border-soft-sage docked full-width top-0 z-50">
+<div class="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop h-16 max-w-[1200px] mx-auto">
+<h1 class="font-headline-sm text-headline-sm font-bold text-primary dark:text-on-primary-container tracking-tight">Kira Artışı Hesapla</h1>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow w-full max-w-[1200px] mx-auto px-margin-mobile md:px-margin-desktop py-lg pb-[100px] md:pb-lg flex justify-center items-start">
+<div class="w-full max-w-md bg-surface-lowest border-primary-thin rounded-[16px] p-lg md:p-xl mt-md">
+<!-- Input Form Section -->
+<form class="flex flex-col gap-lg">
+<!-- Current Rent Input -->
+<div class="flex flex-col gap-sm">
+<label class="font-label-lg text-label-lg text-on-surface-variant">Mevcut Kira Bedeli</label>
+<div class="relative flex items-center">
+<span class="absolute left-md font-body-md text-body-md text-on-surface-variant">₺</span>
+<input class="w-full h-12 pl-10 pr-4 bg-surface-container-low border border-outline-variant/30 rounded-xl font-body-md text-body-md text-on-surface focus:outline-none opacity-70 cursor-not-allowed" disabled="" type="text" value="15.000"/>
+</div>
+</div>
+<!-- Renewal Month Input -->
+<div class="flex flex-col gap-sm">
+<label class="font-label-lg text-label-lg text-on-surface-variant">Yenileme tarihi</label>
+<div class="relative flex items-center">
+<span class="absolute left-md material-symbols-outlined text-primary" data-icon="calendar_month">calendar_month</span>
+<input class="w-full h-12 pl-12 pr-4 bg-surface border border-primary rounded-xl font-body-md text-body-md text-primary font-medium focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary cursor-pointer" readonly="" type="text" value="15 Ağustos 2026"/>
+</div>
+</div>
+<!-- Rate Warning Banner -->
+<div class="bg-soft-amber/20 border border-soft-amber/50 rounded-xl p-md flex flex-col gap-sm mt-sm">
+<div class="flex items-start gap-sm">
+<span class="material-symbols-outlined text-dark-charcoal mt-1 text-[20px]" data-icon="info">info</span>
+<div class="flex flex-col gap-xs">
+<p class="font-label-lg text-label-lg text-dark-charcoal">Ağustos 2026 için oran henüz yok</p>
+<p class="font-body-md text-body-md text-dark-charcoal/80 text-sm">Eski oran bu aya uygulanamaz. Son açıklanan oran: <strong>Temmuz 2026</strong>.</p>
+</div>
+</div>
+<div class="bg-surface-lowest/50 rounded-lg p-sm mt-xs border border-dark-charcoal/10">
+<p class="font-label-md text-label-md text-dark-charcoal/70 flex items-center gap-xs">
+<span class="material-symbols-outlined text-[14px]" data-icon="schedule">schedule</span>
+                            Not: TÜİK verileri genellikle her ayın ilk günlerinde güncellenir.
+                        </p>
+</div>
+</div>
+<!-- Action Button -->
+<button class="mt-md w-full h-12 bg-surface-container text-on-surface-variant/50 font-label-lg text-label-lg rounded-xl flex justify-center items-center gap-sm cursor-not-allowed border border-outline-variant/20 transition-all" disabled="" type="button">
+<span class="material-symbols-outlined text-[20px]" data-icon="calculate">calculate</span>
+                    Hesapla
+                </button>
+</form>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 py-3 bg-surface dark:bg-surface border-t border-outline-variant/10 md:hidden">
+<a class="flex flex-col items-center justify-center bg-secondary-container dark:bg-primary-container text-primary dark:text-on-primary-container rounded-xl px-5 py-1 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="calculate" data-weight="fill" style="font-variation-settings: 'FILL' 1;">calculate</span>
+<span class="font-label-md text-label-md mt-1">Hesapla</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-5 py-1 hover:bg-surface-container-high transition-all rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="trending_up">trending_up</span>
+<span class="font-label-md text-label-md mt-1">Oranlar</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-5 py-1 hover:bg-surface-container-high transition-all rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="font-label-md text-label-md mt-1">Geçmiş</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-5 py-1 hover:bg-surface-container-high transition-all rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md mt-1">Ayarlar</span>
+</a>
+</nav>
+</body></html>
