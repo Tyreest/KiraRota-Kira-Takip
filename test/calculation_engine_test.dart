@@ -127,4 +127,36 @@ void main() {
       isFalse,
     );
   });
+
+  test('yenileme günü 5+ yıl eşiğinde kullanılır (ayın 1’i değil)', () {
+    final outcome = engine.calculate(
+      input: CalculationInput(
+        currentRent: 10000,
+        renewalYear: 2025,
+        renewalMonth: 7,
+        renewalDay: 20,
+        contractStart: DateTime(2020, 7, 15),
+      ),
+      bundle: _fixtureBundle(),
+      rateSourceLabel: 'test',
+    );
+    final r = (outcome as CalculationSuccess).result;
+    expect(r.isFiveYearsOrMore, isTrue);
+
+    final before = engine.calculate(
+      input: CalculationInput(
+        currentRent: 10000,
+        renewalYear: 2025,
+        renewalMonth: 7,
+        renewalDay: 10,
+        contractStart: DateTime(2020, 7, 15),
+      ),
+      bundle: _fixtureBundle(),
+      rateSourceLabel: 'test',
+    );
+    expect(
+      (before as CalculationSuccess).result.isFiveYearsOrMore,
+      isFalse,
+    );
+  });
 }

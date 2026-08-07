@@ -21,10 +21,14 @@ class AppConstants {
   static const String admobBannerUnitId =
       'ca-app-pub-3940256099942544/6300978111';
 
-  /// Uzaktan oran JSON. null → yalnızca asset.
-  /// Örnek: GitHub raw / Firebase Hosting URL.
-  /// Dosya şablonu: `hosted/tufe_rates.json`
-  static const String? remoteRatesUrl = null;
+  /// Uzaktan oran JSON (GitHub raw). Başarısızsa asset fallback.
+  static const String remoteRatesUrl =
+      'https://raw.githubusercontent.com/Tyreest/kira-artisi-hesapla/main/hosted/tufe_rates.json';
+
+  static const String privacyUrl =
+      'https://tyreest.github.io/kira-artisi-hesapla/';
+  static const String termsUrl =
+      'https://tyreest.github.io/kira-artisi-hesapla/terms.html';
 
   static const String disclaimerShort =
       'Hesaplamalar tahmindir; hukuki tavsiye değildir. Resmi TÜİK uygulaması değildir.';

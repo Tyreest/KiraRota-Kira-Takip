@@ -19,6 +19,7 @@ class CalculateScreen extends ConsumerStatefulWidget {
     super.key,
     this.initialRenewal,
     this.initialContractStart,
+    this.initialRentText,
   });
 
   /// Test / önizleme için başlangıç yenileme tarihi.
@@ -27,12 +28,15 @@ class CalculateScreen extends ConsumerStatefulWidget {
   /// Test / önizleme için sözleşme başlangıcı.
   final DateTime? initialContractStart;
 
+  /// Test için önceden doldurulmuş kira metni.
+  final String? initialRentText;
+
   @override
   ConsumerState<CalculateScreen> createState() => _CalculateScreenState();
 }
 
 class _CalculateScreenState extends ConsumerState<CalculateScreen> {
-  final _rentCtrl = TextEditingController(text: '25000');
+  late final TextEditingController _rentCtrl;
   final _contractRateCtrl = TextEditingController();
   PropertyType _propertyType = PropertyType.residential;
   late DateTime _renewal;
@@ -43,9 +47,11 @@ class _CalculateScreenState extends ConsumerState<CalculateScreen> {
   @override
   void initState() {
     super.initState();
-    // Tasarım örneği: Temmuz 2026 yenileme (oran mevcut)
-    _renewal = widget.initialRenewal ?? DateTime(2026, 7, 15);
-    _contractStart = widget.initialContractStart ?? DateTime(2023, 7, 15);
+    _rentCtrl = TextEditingController(text: widget.initialRentText ?? '');
+    final now = DateTime.now();
+    _renewal = widget.initialRenewal ?? DateTime(now.year, now.month, now.day);
+    _contractStart = widget.initialContractStart ??
+        DateTime(now.year - 2, now.month, now.day);
   }
 
   @override
@@ -62,7 +68,7 @@ class _CalculateScreenState extends ConsumerState<CalculateScreen> {
     final picked = await showDatePicker(
       context: context,
       initialDate: _renewal,
-      firstDate: DateTime(2024, 7),
+      firstDate: DateTime(2020, 1, 1),
       lastDate: DateTime(DateTime.now().year + 2, 12, 31),
       helpText: 'Yenileme tarihi',
     );
@@ -107,6 +113,7 @@ class _CalculateScreenState extends ConsumerState<CalculateScreen> {
       currentRent: rent ?? -1,
       renewalYear: _renewal.year,
       renewalMonth: _renewal.month,
+      renewalDay: _renewal.day,
       contractStart: _contractStart,
       contractIncreasePercent: contractRate,
       propertyType: _propertyType,
@@ -205,7 +212,7 @@ class _CalculateScreenState extends ConsumerState<CalculateScreen> {
                     ],
                     decoration: const InputDecoration(
                       prefixText: '₺ ',
-                      hintText: '25.000',
+                      hintText: 'Örn: 25000',
                     ),
                   ),
                   const SizedBox(height: 14),
@@ -432,6 +439,7 @@ class _ResultView extends ConsumerWidget {
         Text(
           'TÜİK açıklama tarihi: ${formatDateTr(result.tuikReleaseDate)}\n'
           'Son güncelleme: ${formatDateTr(result.datasetUpdatedAt)}\n'
+          'Oran kaynağı: ${result.rateSourceLabel}\n'
           'Yıllık TÜFE ile 12 aylık ortalama değişim oranı aynı değildir.',
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 fontStyle: FontStyle.italic,

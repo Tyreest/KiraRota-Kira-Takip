@@ -5,14 +5,30 @@ import '../../core/constants.dart';
 import '../../core/theme.dart';
 import '../../data/local_store.dart';
 import '../widgets/design_system.dart';
+import 'legal_document_screen.dart';
 
 class OnboardingScreen extends StatelessWidget {
   const OnboardingScreen({super.key, required this.onDone});
 
   final VoidCallback onDone;
 
+  void _openLegal(BuildContext context, String title, String asset) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => LegalDocumentScreen(title: title, assetPath: asset),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final bodyStyle = Theme.of(context).textTheme.bodySmall;
+    final linkStyle = bodyStyle?.copyWith(
+      color: AppColors.primaryDeep,
+      decoration: TextDecoration.underline,
+      fontWeight: FontWeight.w600,
+    );
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -96,10 +112,30 @@ class OnboardingScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 10),
-              Text(
-                'Devam ederek, Kullanım Şartları ve ilgili politikaları kabul etmiş olursunuz.',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodySmall,
+              Wrap(
+                alignment: WrapAlignment.center,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  Text('Devam ederek ', style: bodyStyle),
+                  GestureDetector(
+                    onTap: () => _openLegal(
+                      context,
+                      'Kullanım Şartları',
+                      'assets/legal/kullanim_sartlari.md',
+                    ),
+                    child: Text('Kullanım Şartları', style: linkStyle),
+                  ),
+                  Text(' ve ', style: bodyStyle),
+                  GestureDetector(
+                    onTap: () => _openLegal(
+                      context,
+                      'Gizlilik Politikası',
+                      'assets/legal/gizlilik.md',
+                    ),
+                    child: Text('Gizlilik Politikası', style: linkStyle),
+                  ),
+                  Text('nı kabul etmiş olursunuz.', style: bodyStyle),
+                ],
               ),
             ],
           ),

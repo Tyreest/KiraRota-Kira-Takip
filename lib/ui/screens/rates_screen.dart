@@ -19,6 +19,16 @@ class RatesScreen extends ConsumerStatefulWidget {
 class _RatesScreenState extends ConsumerState<RatesScreen> {
   bool _showAll = false;
 
+  String _statusLabel(LoadedRates loaded) {
+    final age = DateTime.now().difference(loaded.bundle.updatedAt).inDays;
+    if (loaded.source == RateSource.asset &&
+        AppConstants.remoteRatesUrl.trim().isNotEmpty) {
+      return age > 45 ? 'Offline yedek (uzaktan güncellenemedi olabilir)' : 'Offline paket';
+    }
+    if (age > 45) return 'Eski olabilir — güncelleme bekleniyor';
+    return loaded.source == RateSource.remote ? 'Uzaktan güncel' : 'Güncel paket';
+  }
+
   @override
   Widget build(BuildContext context) {
     final ratesAsync = ref.watch(ratesProvider);
@@ -48,7 +58,7 @@ class _RatesScreenState extends ConsumerState<RatesScreen> {
               message:
                   'Son güncelleme: ${formatDateTr(loaded.bundle.updatedAt)}\n'
                   'Kaynak: TÜİK verileri · ${loaded.source == RateSource.remote ? 'Uzaktan' : 'Offline'}\n'
-                  'Veri durumu: Güncel',
+                  'Veri durumu: ${_statusLabel(loaded)}',
             ),
             const SizedBox(height: 16),
             SoftCard(

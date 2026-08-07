@@ -1,3 +1,4 @@
+﻿import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -56,9 +57,15 @@ class ProNotifier extends StateNotifier<bool> {
     state = value;
   }
 
-  Future<void> unlockDebugOnly() => setPro(true);
+  Future<void> unlockDebugOnly() {
+    assert(kDebugMode, 'unlockDebugOnly yalnızca debug için');
+    return setPro(true);
+  }
 
-  Future<void> lockDevOnly() => setPro(false);
+  Future<void> lockDevOnly() {
+    assert(kDebugMode, 'lockDevOnly yalnızca debug için');
+    return setPro(false);
+  }
 
   void syncFromRepo() {
     state = _repo.isPro;

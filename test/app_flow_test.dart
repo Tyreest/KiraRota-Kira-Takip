@@ -33,6 +33,11 @@ LoadedRates _fixtureRates() {
           ratePercent: 32.03,
           tuikReleaseDate: DateTime(2026, 7, 3),
         ),
+        TufeRate(
+          renewalMonth: '2026-08',
+          ratePercent: 31.90,
+          tuikReleaseDate: DateTime(2026, 8, 3),
+        ),
       ],
     ),
     source: RateSource.asset,
@@ -128,11 +133,22 @@ void main() {
     expect(find.text('Konut'), findsOneWidget);
   });
 
-  testWidgets('2. Temmuz 2026 + 25000 sonuç ve soft etiketler', (tester) async {
-    await _pumpApp(
-      tester,
-      home: const Scaffold(body: CalculateScreen()),
+  Widget calculateHome({
+    DateTime? renewal,
+    DateTime? contractStart,
+    String rent = '25000',
+  }) {
+    return Scaffold(
+      body: CalculateScreen(
+        initialRenewal: renewal ?? DateTime(2026, 7, 15),
+        initialContractStart: contractStart ?? DateTime(2023, 7, 15),
+        initialRentText: rent,
+      ),
     );
+  }
+
+  testWidgets('2. Temmuz 2026 + 25000 sonuç ve soft etiketler', (tester) async {
+    await _pumpApp(tester, home: calculateHome());
     await _waitFor(tester, find.text('Konut'));
     expect(find.text('Çatılı işyeri'), findsOneWidget);
 
@@ -147,10 +163,7 @@ void main() {
   });
 
   testWidgets('2b. sözleşme %40 → bilgilendirme uyarısı', (tester) async {
-    await _pumpApp(
-      tester,
-      home: const Scaffold(body: CalculateScreen()),
-    );
+    await _pumpApp(tester, home: calculateHome());
     await _waitFor(tester, find.text('Konut'));
 
     await tester.enterText(find.byType(TextField).at(1), '40');
@@ -164,11 +177,7 @@ void main() {
   testWidgets('2c. 5+ yıl → 5 Yıl Notu', (tester) async {
     await _pumpApp(
       tester,
-      home: Scaffold(
-        body: CalculateScreen(
-          initialContractStart: DateTime(2019, 7, 15),
-        ),
-      ),
+      home: calculateHome(contractStart: DateTime(2019, 7, 15)),
     );
     await _waitFor(tester, find.text('Konut'));
     await tester.tap(_hesaplaButton());
@@ -177,14 +186,10 @@ void main() {
     expect(find.text('5 Yıl Notu'), findsOneWidget);
   });
 
-  testWidgets('2d. Ağustos 2026 oran yok → Hesapla disabled', (tester) async {
+  testWidgets('2d. Eylül 2026 oran yok → Hesapla disabled', (tester) async {
     await _pumpApp(
       tester,
-      home: Scaffold(
-        body: CalculateScreen(
-          initialRenewal: DateTime(2026, 8, 15),
-        ),
-      ),
+      home: calculateHome(renewal: DateTime(2026, 9, 15)),
     );
     await _waitFor(tester, find.textContaining('için oran henüz yok'));
 
@@ -193,10 +198,7 @@ void main() {
   });
 
   testWidgets('2e. Kopyala / Paylaş butonları sonuçta görünür', (tester) async {
-    await _pumpApp(
-      tester,
-      home: const Scaffold(body: CalculateScreen()),
-    );
+    await _pumpApp(tester, home: calculateHome());
     await _waitFor(tester, find.text('Konut'));
     await tester.tap(_hesaplaButton());
     await tester.pumpAndSettle();
@@ -206,10 +208,7 @@ void main() {
   });
 
   testWidgets('3. Free PDF → paywall', (tester) async {
-    await _pumpApp(
-      tester,
-      home: const Scaffold(body: CalculateScreen()),
-    );
+    await _pumpApp(tester, home: calculateHome());
     await _waitFor(tester, find.text('Konut'));
     await tester.tap(_hesaplaButton());
     await tester.pumpAndSettle();

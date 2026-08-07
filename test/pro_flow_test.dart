@@ -114,7 +114,38 @@ void main() {
 
   testWidgets('3c. Pro PDF → shareCalculation çağrılır', (tester) async {
     final pdf = _FakePdf();
-    await pumpHome(tester, isPro: true, pdf: pdf);
+    SharedPreferences.setMockInitialValues({
+      'onboarding_done': true,
+      'is_pro_lifetime': true,
+    });
+    final prefs = await SharedPreferences.getInstance();
+
+    tester.view.physicalSize = const Size(1080, 2400);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          ratesProvider.overrideWith((ref) async => _fixtureRates()),
+          pdfReportServiceProvider.overrideWithValue(pdf),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light(),
+          home: Scaffold(
+            body: CalculateScreen(
+              initialRenewal: DateTime(2026, 7, 15),
+              initialContractStart: DateTime(2023, 7, 15),
+              initialRentText: '25000',
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    await _waitFor(tester, find.text('Konut'));
 
     await tester.tap(_hesaplaButton());
     await tester.pumpAndSettle();

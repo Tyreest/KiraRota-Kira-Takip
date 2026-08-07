@@ -120,14 +120,25 @@ Future<void> showProPaywall(BuildContext context, WidgetRef ref) {
                 onPressed: () async {
                   final iap = ref.read(iapServiceProvider);
                   final ok = await iap.buy();
+                  // Debug unlock veya purchase stream sonrası Pro bayrağını oku.
                   ref.read(isProProvider.notifier).syncFromRepo();
+                  if (!ref.read(isProProvider) && ok) {
+                    for (var i = 0; i < 8; i++) {
+                      await Future<void>.delayed(
+                        const Duration(milliseconds: 250),
+                      );
+                      ref.read(isProProvider.notifier).syncFromRepo();
+                      if (ref.read(isProProvider)) break;
+                    }
+                  }
                   if (ctx.mounted) Navigator.pop(ctx);
                   if (context.mounted) {
-                    final msg = ok
-                        ? (ref.read(isProProvider)
+                    final isPro = ref.read(isProProvider);
+                    final msg = !ok
+                        ? (iap.lastError ?? 'Satın alma tamamlanamadı')
+                        : (isPro
                             ? 'Pro aktif.'
-                            : 'Satın alma başlatıldı…')
-                        : (iap.lastError ?? 'Satın alma tamamlanamadı');
+                            : 'Satın alma başlatıldı…');
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text(msg)),
                     );

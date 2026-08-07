@@ -6,6 +6,7 @@ class CalculationInput {
     required this.renewalYear,
     required this.renewalMonth,
     required this.contractStart,
+    this.renewalDay = 1,
     this.contractIncreasePercent,
     this.propertyType = PropertyType.residential,
   });
@@ -13,6 +14,8 @@ class CalculationInput {
   final double currentRent;
   final int renewalYear;
   final int renewalMonth; // 1-12
+  /// Yenileme günü (5+ yıl eşiği için; oran eşlemesi aya göredir).
+  final int renewalDay;
   final DateTime contractStart;
   final double? contractIncreasePercent;
   final PropertyType propertyType;
@@ -22,7 +25,8 @@ class CalculationInput {
     return '$renewalYear-$m';
   }
 
-  DateTime get renewalDate => DateTime(renewalYear, renewalMonth, 1);
+  DateTime get renewalDate =>
+      DateTime(renewalYear, renewalMonth, renewalDay.clamp(1, 31));
 }
 
 enum ContractCompareKind {
