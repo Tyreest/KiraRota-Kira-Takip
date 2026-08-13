@@ -11,6 +11,19 @@ AVD: **Kira_Test_Pixel8** · Android 16 / API 36
 
 KiraRota görünür marka olarak uygulandı (Android label, UI, paywall, PDF/share metinleri, legal asset’ler, reminder PRO rozeti). Eski “Kira Asistanı” marka kullanımı temizlendi. `applicationId` değişmedi.
 
+## Final Branding
+
+Canonical: `docs/branding/KIRAROTA_BRAND_ASSETS.md` · regenerate: `python tool/finalize_kirarota_branding.py`
+
+- **Source masters:** `assets/branding/kirarota/` (`app_icon_master`, green/cream/monochrome symbols, splash_symbol). Temporary `Logo/` imported then removed.
+- **Launcher / Play:** dark green plate + cream KR master (`#182E1D` / `#F4E5BC`)
+- **Adaptive:** solid BG `#182E1D` + transparent cream KR foreground (no plate → no double-frame) + monochrome white KR
+- **Splash:** cream `#FCF9F8` + centered green KR (`@drawable/splash_logo`)
+- **Runtime:** Flutter bundle does not ship Android-only masters; header remains text **KiraRota**
+- **Emulator QA (`Kira_Test_Pixel8`):** launcher PASS · splash PASS · header PASS — `docs/qa/branding/`
+- **Themed icon:** monochrome resource wired in adaptive XML; device Material You themed-icons toggle not exercised on emulator (resource-level PASS)
+- **Release rebuild:** same `1.1.0+10` APK/AAB regenerated after branding (hashes below)
+
 ## Stitch Integration
 
 `tasarim/` + `tasarim/kirarota_design_system/DESIGN.md` kaynağıyla krem + koyu orman yeşili design system (`lib/core/theme.dart`, reusable widgets) production Flutter mimarisine bağlandı.
@@ -128,17 +141,17 @@ Kritik crash/overflow yok (smoke penceresi).
 ## APK
 
 `build/app/outputs/flutter-apk/app-release.apk` (64.2 MB)  
-SHA-256: `21E5182A4C074AB754C00E7DBC9BC4FE45135648D3F795840EBE4E4F4C25E6F0`
+SHA-256: `0C3C609F9DAAC7F71AD0EBA282605E021417341BCF984360A3AC9442ACC5B6AD`
 
 ## AAB
 
 `build/app/outputs/bundle/release/app-release.aab` (64.1 MB)  
-SHA-256: `7BD06DB318C3D17849A59B67AB842333623642C0BA0C51062DFA841B75F3CBB0`  
+SHA-256: `5EFE4284DEC05B3275379947CF6414D72D390D8CFC80C8162A5ABC9E14934A88`  
 AdMob production IDs present · Google test publisher absent · review plaintext absent · minify/shrink enabled · mapping present
 
-## Final Dashboard rebuild (v1.1.0+10)
+## Final Branding rebuild (v1.1.0+10)
 
-`tasarimozet` Özet entegrasyonu + nav **Özet**; `01_home.png` + `02_home_empty.png` yenilendi; aynı versionCode **10** ile APK/AAB yeniden üretildi. Play’e yüklemeye hazır: **YES** (upload bu görevde yapılmadı).
+Final KR launcher/adaptive/splash entegrasyonu sonrası aynı versionCode **10** ile APK/AAB yeniden üretildi. Play upload bu görevde yapılmadı.
 
 ## Remaining Notes
 
