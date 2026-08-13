@@ -1,0 +1,35 @@
+---
+description: Varsayılan Android test AVD — yalnızca Kira_Test_Pixel8
+alwaysApply: true
+---
+
+# Kira Artışı Hesaplama test cihazı
+
+Bu proje için varsayılan Android test AVD'si:
+
+- **AVD name:** `Kira_Test_Pixel8`
+- **Expected device:** Android 16 / API 36
+
+Her canlı/emülatör testinde önce:
+
+1. `flutter devices`
+2. `adb devices`
+3. `adb -s <device_id> emu avd name`
+
+ile doğru AVD'yi doğrula.
+
+`Kira_Test_Pixel8` olmayan emulator veya fiziksel cihaza:
+
+- uygulama kurma
+- package silme
+- app data temizleme
+- adb komutu gönderme
+
+Mevcut device ID kalıcı kabul edilmemeli. Örneğin `emulator-5556` bugün doğru olabilir fakat sonraki boot'ta değişebilir.
+
+Her zaman AVD adından doğru device ID'yi doğrula ve sonra bütün komutlarda explicit device kullan:
+
+```bash
+flutter run -d <device_id>
+adb -s <device_id> ...
+```

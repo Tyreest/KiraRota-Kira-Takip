@@ -56,9 +56,7 @@ void main() {
   });
 
   test('katalog: mağazadan localized fiyat (hardcode yok)', () async {
-    await setup(
-      product: FakeBillingGateway.sampleProduct(price: '₺212,99'),
-    );
+    await setup(product: FakeBillingGateway.sampleProduct(price: '₺212,99'));
     expect(AppConstants.iapProductId, 'kira_pro_lifetime');
     expect(iap.state.hasStorePrice, isTrue);
     expect(iap.priceForUi, '₺212,99');
@@ -80,11 +78,63 @@ void main() {
     expect(gateway.restoreCalls, 0);
   });
 
-  test('ürün yok → productMissing, sessiz Pro unlock yok', () async {
-    await setup(catalogHasProduct: false);
-    final outcome = await iap.buy();
-    expect(outcome.result, BuyLaunchResult.productMissing);
-    expect(proRepo.isPro, isFalse);
+  test(
+    'ürün yok → Fiyat alınamadı, productMissing, sessiz Pro unlock yok',
+    () async {
+      await setup(catalogHasProduct: false);
+      expect(iap.state.loading, isFalse);
+      expect(iap.state.priceUnavailable, isTrue);
+      expect(iap.priceForUi, 'Fiyat şu anda alınamadı');
+      final outcome = await iap.buy();
+      expect(outcome.result, BuyLaunchResult.productMissing);
+      expect(proRepo.isPro, isFalse);
+    },
+  );
+
+  test(
+    'Android GooglePlayProductDetails benzeri liste → fiyat yüklenir, tip exception yok',
+    () async {
+      SharedPreferences.setMockInitialValues({});
+      final sp = await SharedPreferences.getInstance();
+      proRepo = ProRepository(sp);
+      gateway = FakeBillingGateway(
+        product: FakeBillingGateway.sampleAndroidProduct(price: '₺249,99'),
+        useAndroidSubtypeList: true,
+      );
+      iap = IapService(proRepo, gateway: gateway);
+      proCallbacks = [];
+      await iap.init(onProChanged: proCallbacks.add);
+      ready = true;
+
+      expect(iap.state.loading, isFalse);
+      expect(iap.state.hasStorePrice, isTrue);
+      expect(iap.priceForUi, '₺249,99');
+      expect(iap.product, isA<FakeAndroidProductDetails>());
+      expect(iap.state.lastMessage, isNull);
+    },
+  );
+
+  test('query exception → loading false, Fiyat alınamadı, crash yok', () async {
+    SharedPreferences.setMockInitialValues({});
+    final sp = await SharedPreferences.getInstance();
+    proRepo = ProRepository(sp);
+    gateway = FakeBillingGateway(
+      product: FakeBillingGateway.sampleProduct(),
+      queryThrows: StateError(
+        "type '() => ProductDetails' is not a subtype of type "
+        "'(() => GooglePlayProductDetails)?' of 'orElse'",
+      ),
+    );
+    iap = IapService(proRepo, gateway: gateway);
+    await iap.init(onProChanged: (_) {});
+    ready = true;
+
+    expect(iap.state.loading, isFalse);
+    expect(iap.priceForUi, 'Fiyat şu anda alınamadı');
+    expect(iap.state.priceUnavailable, isTrue);
+
+    await iap.refreshCatalog();
+    expect(iap.state.loading, isFalse);
   });
 
   test('purchased → Pro kalıcı + completePurchase', () async {
@@ -109,9 +159,7 @@ void main() {
 
   test('pending → Pro unlock yok, mesaj bekliyor', () async {
     await setup();
-    gateway.emit([
-      FakeBillingGateway.purchase(status: PurchaseStatus.pending),
-    ]);
+    gateway.emit([FakeBillingGateway.purchase(status: PurchaseStatus.pending)]);
     await Future<void>.delayed(const Duration(milliseconds: 20));
 
     expect(proRepo.isPro, isFalse);
@@ -194,10 +242,14 @@ void main() {
   test('priceForUi loading / fallback metinleri hardcode ₺199 değil', () {
     const loading = IapCatalogState();
     expect(loading.priceForUi, 'Fiyat yükleniyor…');
-    const empty = IapCatalogState(loading: false);
-    expect(empty.priceForUi, 'Mağazadan alın');
+    const noStore = IapCatalogState(loading: false, storeAvailable: false);
+    expect(noStore.priceForUi, 'Mağazadan alın');
+    const storeNoPrice = IapCatalogState(loading: false, storeAvailable: true);
+    expect(storeNoPrice.priceForUi, 'Fiyat şu anda alınamadı');
+    expect(storeNoPrice.priceUnavailable, isTrue);
     const priced = IapCatalogState(
       loading: false,
+      storeAvailable: true,
       localizedPrice: 'R\$ 29,90',
       currencyCode: 'BRL',
     );

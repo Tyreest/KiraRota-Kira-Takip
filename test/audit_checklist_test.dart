@@ -6,11 +6,13 @@ import 'package:http/testing.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:kira_artisi_hesapla/core/constants.dart';
 import 'package:kira_artisi_hesapla/core/format.dart';
-import 'package:kira_artisi_hesapla/data/local_store.dart';
 import 'package:kira_artisi_hesapla/data/rate_repository.dart';
+import 'package:kira_artisi_hesapla/data/rental_repository.dart';
 import 'package:kira_artisi_hesapla/domain/calculation_engine.dart';
 import 'package:kira_artisi_hesapla/domain/models/calculation.dart';
+import 'package:kira_artisi_hesapla/domain/models/rental.dart';
 import 'package:kira_artisi_hesapla/domain/models/tufe_rate.dart';
+import 'package:kira_artisi_hesapla/services/ads_service.dart';
 import 'package:kira_artisi_hesapla/services/pdf_report_service.dart';
 import 'package:kira_artisi_hesapla/services/reminder_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -71,35 +73,39 @@ void main() {
     });
 
     test('sözleşme düşük → sözleşme oranı', () {
-      final r = (engine.calculate(
-        input: CalculationInput(
-          currentRent: 10000,
-          renewalYear: 2026,
-          renewalMonth: 7,
-          contractStart: DateTime(2024, 7, 1),
-          contractIncreasePercent: 20,
-        ),
-        bundle: assetBundle,
-        rateSourceLabel: 't',
-      ) as CalculationSuccess)
-          .result;
+      final r =
+          (engine.calculate(
+                    input: CalculationInput(
+                      currentRent: 10000,
+                      renewalYear: 2026,
+                      renewalMonth: 7,
+                      contractStart: DateTime(2024, 7, 1),
+                      contractIncreasePercent: 20,
+                    ),
+                    bundle: assetBundle,
+                    rateSourceLabel: 't',
+                  )
+                  as CalculationSuccess)
+              .result;
       expect(r.applicableRatePercent, 20);
       expect(r.contractCompare, ContractCompareKind.contractLower);
     });
 
     test('sözleşme yüksek → TÜFE azami + higher', () {
-      final r = (engine.calculate(
-        input: CalculationInput(
-          currentRent: 10000,
-          renewalYear: 2026,
-          renewalMonth: 7,
-          contractStart: DateTime(2024, 7, 1),
-          contractIncreasePercent: 40,
-        ),
-        bundle: assetBundle,
-        rateSourceLabel: 't',
-      ) as CalculationSuccess)
-          .result;
+      final r =
+          (engine.calculate(
+                    input: CalculationInput(
+                      currentRent: 10000,
+                      renewalYear: 2026,
+                      renewalMonth: 7,
+                      contractStart: DateTime(2024, 7, 1),
+                      contractIncreasePercent: 40,
+                    ),
+                    bundle: assetBundle,
+                    rateSourceLabel: 't',
+                  )
+                  as CalculationSuccess)
+              .result;
       expect(r.applicableRatePercent, 32.03);
       expect(r.contractCompare, ContractCompareKind.contractHigher);
     });
@@ -120,18 +126,20 @@ void main() {
         isFalse,
       );
 
-      final withDay = (engine.calculate(
-        input: CalculationInput(
-          currentRent: 10000,
-          renewalYear: 2025,
-          renewalMonth: 7,
-          renewalDay: 20,
-          contractStart: DateTime(2020, 7, 15),
-        ),
-        bundle: assetBundle,
-        rateSourceLabel: 't',
-      ) as CalculationSuccess)
-          .result;
+      final withDay =
+          (engine.calculate(
+                    input: CalculationInput(
+                      currentRent: 10000,
+                      renewalYear: 2025,
+                      renewalMonth: 7,
+                      renewalDay: 20,
+                      contractStart: DateTime(2020, 7, 15),
+                    ),
+                    bundle: assetBundle,
+                    rateSourceLabel: 't',
+                  )
+                  as CalculationSuccess)
+              .result;
       expect(withDay.isFiveYearsOrMore, isTrue);
     });
 
@@ -212,69 +220,93 @@ void main() {
     });
   });
 
-  group('Geçmiş kalıcılık', () {
+  group('Kiralarım kalıcılık', () {
     test('kapat-aç simülasyonu: prefs’ten geri yüklenir', () async {
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
-      final repo = HistoryRepository(prefs);
+      final repo = RentalRepository(prefs);
+      final now = DateTime(2026, 8, 1);
       await repo.add(
-        HistoryEntry(
+        Rental(
           id: 'a',
-          createdAt: DateTime(2026, 8, 1),
+          role: RentalRole.tenant,
+          displayName: 'Evim',
           currentRent: 25000,
-          renewalMonthKey: '2026-07',
-          applicableRatePercent: 32.03,
-          calculatedRent: 33007.5,
-          isFiveYearsOrMore: false,
+          contractStartDate: DateTime(2024, 1, 1),
+          increaseDate: DateTime(2026, 7, 1),
+          createdAt: now,
+          updatedAt: now,
         ),
         isPro: false,
       );
 
-      // Yeni repo örneği = uygulama yeniden açılışı
-      final again = HistoryRepository(prefs).loadAll();
+      final again = RentalRepository(prefs).loadAll();
       expect(again.length, 1);
       expect(again.first.currentRent, 25000);
-      expect(again.first.renewalMonthKey, '2026-07');
+      expect(again.first.displayName, 'Evim');
     });
 
-    test('free 5 / pro sınırsız', () async {
+    test('free 1 kira / pro sınırsız', () async {
       SharedPreferences.setMockInitialValues({});
       final prefs = await SharedPreferences.getInstance();
-      final free = HistoryRepository(prefs);
-      for (var i = 0; i < 7; i++) {
+      final free = RentalRepository(prefs);
+      final now = DateTime(2026, 1, 1);
+      expect(
         await free.add(
-          HistoryEntry(
-            id: '$i',
-            createdAt: DateTime(2026, 1, 1, i),
+          Rental(
+            id: '1',
+            role: RentalRole.tenant,
+            displayName: 'A',
             currentRent: 1,
-            renewalMonthKey: '2026-07',
-            applicableRatePercent: 1,
-            calculatedRent: 1,
-            isFiveYearsOrMore: false,
+            contractStartDate: now,
+            increaseDate: now,
+            createdAt: now,
+            updatedAt: now,
           ),
           isPro: false,
-        );
-      }
-      expect(free.loadAll().length, AppConstants.freeHistoryLimit);
+        ),
+        isTrue,
+      );
+      expect(
+        await free.add(
+          Rental(
+            id: '2',
+            role: RentalRole.landlord,
+            displayName: 'B',
+            currentRent: 1,
+            contractStartDate: now,
+            increaseDate: now,
+            createdAt: now,
+            updatedAt: now,
+          ),
+          isPro: false,
+        ),
+        isFalse,
+      );
+      expect(free.loadAll().length, AppConstants.freeRentalLimit);
 
       SharedPreferences.setMockInitialValues({});
       final prefs2 = await SharedPreferences.getInstance();
-      final pro = HistoryRepository(prefs2);
-      for (var i = 0; i < 12; i++) {
-        await pro.add(
-          HistoryEntry(
-            id: 'p$i',
-            createdAt: DateTime(2026, 1, 1, i),
-            currentRent: 1,
-            renewalMonthKey: '2026-07',
-            applicableRatePercent: 1,
-            calculatedRent: 1,
-            isFiveYearsOrMore: false,
+      final pro = RentalRepository(prefs2);
+      for (var i = 0; i < 5; i++) {
+        expect(
+          await pro.add(
+            Rental(
+              id: 'p$i',
+              role: RentalRole.tenant,
+              displayName: 'P$i',
+              currentRent: 1,
+              contractStartDate: now,
+              increaseDate: now,
+              createdAt: now,
+              updatedAt: now,
+            ),
+            isPro: true,
           ),
-          isPro: true,
+          isTrue,
         );
       }
-      expect(pro.loadAll().length, 12);
+      expect(pro.loadAll().length, 5);
     });
   });
 
@@ -303,9 +335,18 @@ void main() {
       expect(AppConstants.iapProductId, 'kira_pro_lifetime');
     });
 
-    test('AdMob şu an Google test ID (yayın öncesi değiştirilmeli)', () {
-      expect(AppConstants.admobAppId.contains('3940256099942544'), isTrue);
-      expect(AppConstants.admobBannerUnitId.contains('3940256099942544'), isTrue);
+    test('AdMob debug test ID sabitleri; production dart-define ayrı', () {
+      expect(AppConstants.admobTestAppId.contains('3940256099942544'), isTrue);
+      expect(
+        AppConstants.admobTestBannerUnitId.contains('3940256099942544'),
+        isTrue,
+      );
+      expect(
+        AppConstants.admobTestInterstitialUnitId.contains('3940256099942544'),
+        isTrue,
+      );
+      // Sahte production ID uydurulmamış
+      expect(AdMobIds.releaseUsesTestIdsLeak, isFalse);
     });
 
     test('formatMoney ₺ ve tr_TR', () {
@@ -316,6 +357,33 @@ void main() {
   });
 
   group('PDF Türkçe / ₺', () {
+    test('dosya adı mantığı korunur (kirarota-YYYY-MM.pdf)', () {
+      final result = CalculationResult(
+        input: CalculationInput(
+          currentRent: 25000,
+          renewalYear: 2026,
+          renewalMonth: 5,
+          renewalDay: 1,
+          contractStart: DateTime(2020, 5, 1),
+        ),
+        tufeMaxRatePercent: 30,
+        applicableRatePercent: 30,
+        calculatedRent: 32500,
+        increaseAmount: 7500,
+        contractCompare: ContractCompareKind.none,
+        isFiveYearsOrMore: false,
+        tuikReleaseDate: DateTime(2026, 5, 3),
+        datasetUpdatedAt: DateTime(2026, 5, 3),
+        rateSourceLabel: 'Offline',
+      );
+      final svc = PdfReportService();
+      expect(svc.reportFileName(result), 'kirarota-2026-05.pdf');
+      expect(
+        svc.reportFileName(result, rentalName: 'Evim'),
+        'kirarota-evim-2026-05.pdf',
+      );
+    });
+
     test('bundled Noto: PDF Unicode glyph hatası yok, ₺ ve ı içerir', () async {
       final result = CalculationResult(
         input: CalculationInput(

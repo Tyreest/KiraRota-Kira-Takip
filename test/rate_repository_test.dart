@@ -2,10 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kira_artisi_hesapla/data/rate_repository.dart';
 import 'package:kira_artisi_hesapla/domain/models/tufe_rate.dart';
 
-TufeRateBundle bundle({
-  required int version,
-  required DateTime updatedAt,
-}) {
+TufeRateBundle bundle({required int version, required DateTime updatedAt}) {
   return TufeRateBundle(
     version: version,
     updatedAt: updatedAt,

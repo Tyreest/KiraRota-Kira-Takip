@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:kira_artisi_hesapla/core/theme.dart';
-import 'package:kira_artisi_hesapla/data/local_store.dart';
 import 'package:kira_artisi_hesapla/domain/models/tufe_rate.dart';
 import 'package:kira_artisi_hesapla/providers/app_providers.dart';
 import 'package:kira_artisi_hesapla/ui/home_shell.dart';
 import 'package:kira_artisi_hesapla/ui/screens/calculate_screen.dart';
-import 'package:kira_artisi_hesapla/ui/screens/history_screen.dart';
 import 'package:kira_artisi_hesapla/ui/screens/legal_document_screen.dart';
 import 'package:kira_artisi_hesapla/ui/screens/rates_screen.dart';
+import 'package:kira_artisi_hesapla/ui/screens/rentals_screen.dart';
 import 'package:kira_artisi_hesapla/ui/screens/settings_screen.dart';
+import 'package:kira_artisi_hesapla/data/rental_repository.dart';
+import 'package:kira_artisi_hesapla/domain/models/rental.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 LoadedRates _fixtureRates() {
@@ -55,9 +57,9 @@ Future<SharedPreferences> _prefs({
 }
 
 List<Override> _overrides(SharedPreferences prefs) => [
-      sharedPreferencesProvider.overrideWithValue(prefs),
-      ratesProvider.overrideWith((ref) async => _fixtureRates()),
-    ];
+  sharedPreferencesProvider.overrideWithValue(prefs),
+  ratesProvider.overrideWith((ref) async => _fixtureRates()),
+];
 
 Widget _app(SharedPreferences prefs, {Widget? home}) {
   return ProviderScope(
@@ -65,15 +67,21 @@ Widget _app(SharedPreferences prefs, {Widget? home}) {
     child: MaterialApp(
       theme: AppTheme.light(),
       locale: const Locale('tr', 'TR'),
+      supportedLocales: const [Locale('tr', 'TR')],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       home: home ?? const HomeShell(),
     ),
   );
 }
 
 Finder _hesaplaButton() => find.ancestor(
-      of: find.text('Hesapla'),
-      matching: find.byType(FilledButton),
-    );
+  of: find.text('Hesapla'),
+  matching: find.byType(FilledButton),
+);
 
 Future<void> _waitFor(WidgetTester tester, Finder finder) async {
   for (var i = 0; i < 50; i++) {
@@ -116,20 +124,22 @@ void main() {
   testWidgets('1. onboarding Başla sonrası tekrar gelmez', (tester) async {
     await _pumpApp(tester, onboardingDone: false);
     await _waitFor(tester, find.text('Başla'));
-    expect(find.textContaining('Ne yapar?'), findsOneWidget);
+    expect(find.text('KiraRota'), findsOneWidget);
+    expect(find.textContaining('Kiralarını takip et'), findsOneWidget);
 
     await tester.ensureVisible(find.text('Başla'));
     await tester.tap(find.text('Başla'));
     await tester.pumpAndSettle();
 
     expect(find.text('Başla'), findsNothing);
-    expect(find.text('Konut'), findsOneWidget);
+    expect(find.text('Kiranı takip etmeye başla'), findsOneWidget);
+    expect(find.text('Ana'), findsOneWidget);
 
     final prefs = await SharedPreferences.getInstance();
     await tester.pumpWidget(_app(prefs));
     await tester.pumpAndSettle();
     expect(find.text('Başla'), findsNothing);
-    expect(find.text('Konut'), findsOneWidget);
+    expect(find.text('Kiranı takip etmeye başla'), findsOneWidget);
   });
 
   Widget calculateHome({
@@ -149,14 +159,14 @@ void main() {
   testWidgets('2. Temmuz 2026 + 25000 sonuç ve soft etiketler', (tester) async {
     await _pumpApp(tester, home: calculateHome());
     await _waitFor(tester, find.text('Konut'));
-    expect(find.text('Çatılı işyeri'), findsOneWidget);
+    expect(find.text('İşyeri'), findsOneWidget);
 
     await tester.ensureVisible(_hesaplaButton());
     await tester.tap(_hesaplaButton());
     await tester.pumpAndSettle();
 
-    expect(find.text('BU ORANA GÖRE HESAPLANAN KIRA'), findsOneWidget);
-    expect(find.text('TÜFE esaslı azami artış oranı'), findsOneWidget);
+    expect(find.text('Hesaplanan Yeni Kira'), findsOneWidget);
+    expect(find.text('TÜFE oranı'), findsOneWidget);
     expect(find.textContaining('%32,03'), findsWidgets);
     expect(find.textContaining('33.007,50'), findsOneWidget);
   });
@@ -186,10 +196,7 @@ void main() {
   });
 
   testWidgets('2d. Eylül 2026 oran yok → Hesapla disabled', (tester) async {
-    await _pumpApp(
-      tester,
-      home: calculateHome(renewal: DateTime(2026, 9, 15)),
-    );
+    await _pumpApp(tester, home: calculateHome(renewal: DateTime(2026, 9, 15)));
     await _waitFor(tester, find.textContaining('için oran henüz yok'));
 
     final btn = tester.widget<FilledButton>(_hesaplaButton());
@@ -221,6 +228,10 @@ void main() {
     expect(
       find.textContaining('Mağazadan alın').evaluate().isNotEmpty ||
           find.textContaining('Fiyat yükleniyor').evaluate().isNotEmpty ||
+          find
+              .textContaining('Fiyat şu anda alınamadı')
+              .evaluate()
+              .isNotEmpty ||
           find.textContaining('₺').evaluate().isNotEmpty,
       isTrue,
     );
@@ -228,7 +239,7 @@ void main() {
 
   testWidgets('4. Free hatırlatma → paywall (Ayarlar)', (tester) async {
     await _pumpApp(tester);
-    await _waitFor(tester, find.text('Konut'));
+    await _waitFor(tester, find.text('Kiranı takip etmeye başla'));
 
     await tester.tap(find.text('Ayarlar'));
     await tester.pumpAndSettle();
@@ -240,52 +251,113 @@ void main() {
     expect(find.text('Şimdi Al'), findsOneWidget);
   });
 
-  testWidgets('5. Geçmiş boş + 6 hesapta free limit 5', (tester) async {
+  testWidgets('sekme başlıkları: 5-tab + Ana dashboard', (tester) async {
+    await _pumpApp(tester);
+    await _waitFor(tester, find.text('Kiranı takip etmeye başla'));
+
+    expect(find.text('Ana'), findsOneWidget);
+    expect(find.text('Kiralarım'), findsOneWidget);
+    expect(find.text('Hesapla'), findsOneWidget);
+    expect(find.text('Oranlar'), findsOneWidget);
+    expect(find.text('Ayarlar'), findsOneWidget);
+    expect(find.text('Kira Ekle'), findsOneWidget);
+    expect(find.text('Manuel kira artışı hesapla'), findsOneWidget);
+    expect(find.text('Kira Artışı Hesapla'), findsNothing);
+    expect(find.text('Kira Asistanı'), findsNothing);
+
+    await tester.tap(find.text('Oranlar'));
+    await tester.pumpAndSettle();
+    expect(find.text('TÜFE Oranları'), findsOneWidget);
+
+    await tester.tap(find.text('Kiralarım'));
+    await tester.pumpAndSettle();
+    expect(find.text('Kiralarım'), findsWidgets);
+    expect(
+      find.textContaining('TÜFE hesaplamalarınızı tek yerden takip edin.'),
+      findsOneWidget,
+    );
+
+    await tester.tap(find.text('Ayarlar'));
+    await tester.pumpAndSettle();
+    expect(find.text('Ayarlar'), findsWidgets);
+
+    // Navigation regression: Hesapla (tab index 2)
+    await tester.tap(find.text('Hesapla'));
+    await tester.pumpAndSettle();
+    expect(find.text('Konut'), findsOneWidget);
+  });
+
+  testWidgets('5. Kiralarım boş + free 1 kira limiti', (tester) async {
     final prefs = await _prefs();
     await tester.pumpWidget(
       ProviderScope(
         overrides: _overrides(prefs),
         child: MaterialApp(
           theme: AppTheme.light(),
-          home: Scaffold(
-            body: HistoryScreen(onNewCalculation: () {}),
-          ),
+          home: const Scaffold(body: RentalsScreen()),
         ),
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.textContaining('Henüz hesaplama yok'), findsOneWidget);
+    expect(find.text('Kiralarım'), findsOneWidget);
+    expect(find.text('Kira Asistanı'), findsNothing);
+    expect(
+      find.textContaining('TÜFE hesaplamalarınızı tek yerden takip edin.'),
+      findsOneWidget,
+    );
+    expect(find.text('Henüz kayıtlı kiranız yok'), findsOneWidget);
 
-    final repo = HistoryRepository(prefs);
-    for (var i = 0; i < 6; i++) {
+    final repo = RentalRepository(prefs);
+    final now = DateTime(2026, 1, 1);
+    expect(
       await repo.add(
-        HistoryEntry(
-          id: '$i',
-          createdAt: DateTime(2026, 1, 1, i),
+        Rental(
+          id: '1',
+          role: RentalRole.tenant,
+          displayName: 'Evim',
           currentRent: 25000,
-          renewalMonthKey: '2026-07',
-          applicableRatePercent: 32.03,
-          calculatedRent: 33007.5,
-          isFiveYearsOrMore: false,
+          contractStartDate: DateTime(2024, 1, 1),
+          increaseDate: DateTime(2026, 8, 8),
+          createdAt: now,
+          updatedAt: now,
         ),
         isPro: false,
-      );
-    }
-    expect(repo.loadAll().length, 5);
+      ),
+      isTrue,
+    );
+    expect(
+      await repo.add(
+        Rental(
+          id: '2',
+          role: RentalRole.landlord,
+          displayName: 'Dükkan',
+          currentRent: 10000,
+          contractStartDate: DateTime(2024, 1, 1),
+          increaseDate: DateTime(2026, 8, 8),
+          createdAt: now,
+          updatedAt: now,
+        ),
+        isPro: false,
+      ),
+      isFalse,
+    );
+    expect(repo.loadAll().length, 1);
   });
 
-  testWidgets('5b. Geçmiş Pro yükselt kartı', (tester) async {
+  testWidgets('5b. Kiralarım Pro yükselt kartı', (tester) async {
     final prefs = await _prefs();
-    final repo = HistoryRepository(prefs);
+    final repo = RentalRepository(prefs);
+    final now = DateTime.now();
     await repo.add(
-      HistoryEntry(
+      Rental(
         id: '1',
-        createdAt: DateTime.now(),
+        role: RentalRole.tenant,
+        displayName: 'Evim',
         currentRent: 25000,
-        renewalMonthKey: '2026-07',
-        applicableRatePercent: 32.03,
-        calculatedRent: 33007.5,
-        isFiveYearsOrMore: false,
+        contractStartDate: DateTime(2024, 1, 1),
+        increaseDate: DateTime(2026, 8, 8),
+        createdAt: now,
+        updatedAt: now,
       ),
       isPro: false,
     );
@@ -295,36 +367,32 @@ void main() {
         overrides: _overrides(prefs),
         child: MaterialApp(
           theme: AppTheme.light(),
-          home: const Scaffold(body: HistoryScreen()),
+          home: const Scaffold(body: RentalsScreen()),
         ),
       ),
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Yükselt'), findsOneWidget);
-    expect(find.textContaining('Ücretsiz: son 5 kayıt'), findsOneWidget);
+    expect(find.textContaining('Sınırsız kira takibi'), findsOneWidget);
+    expect(find.textContaining('Ücretsiz: 1 kayıtlı kira'), findsOneWidget);
   });
 
   testWidgets('6. Oranlar listesi + YENİ', (tester) async {
-    await _pumpApp(
-      tester,
-      home: const Scaffold(body: RatesScreen()),
-    );
+    await _pumpApp(tester, home: const Scaffold(body: RatesScreen()));
     await _waitFor(tester, find.text('Temmuz 2026'));
     expect(find.text('YENİ'), findsOneWidget);
   });
 
   testWidgets('6b. Yasal metinler açılır', (tester) async {
-    await _pumpApp(
-      tester,
-      home: const Scaffold(body: SettingsScreen()),
-    );
+    await _pumpApp(tester, home: const Scaffold(body: SettingsScreen()));
     await _waitFor(tester, find.text('Gizlilik'));
 
     await tester.tap(find.text('Gizlilik'));
     await tester.pumpAndSettle();
     expect(find.byType(LegalDocumentScreen), findsOneWidget);
-    expect(find.text('Gizlilik Politikası'), findsOneWidget);
+    expect(find.text('Gizlilik Politikası'), findsWidgets);
+    expect(find.textContaining('#'), findsNothing);
+    expect(find.textContaining('**'), findsNothing);
   });
 
   testWidgets('Pro aktif görünümü Ayarlar', (tester) async {

@@ -3,6 +3,21 @@ import 'dart:async';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:kira_artisi_hesapla/services/billing_gateway.dart';
 
+/// Android'deki [GooglePlayProductDetails] gibi [ProductDetails] alt tipi.
+///
+/// Play, `productDetails` listesini runtime'da `List<AltTip>` olarak döndürebilir;
+/// `firstWhere(..., orElse: () => ProductDetails)` tip hatası üretir.
+class FakeAndroidProductDetails extends ProductDetails {
+  FakeAndroidProductDetails({
+    required super.id,
+    required super.title,
+    required super.description,
+    required super.price,
+    required super.rawPrice,
+    required super.currencyCode,
+  });
+}
+
 /// Test double for [BillingGateway].
 class FakeBillingGateway implements BillingGateway {
   FakeBillingGateway({
@@ -14,6 +29,8 @@ class FakeBillingGateway implements BillingGateway {
     this.restoreThrows,
     this.restoreEmits,
     this.autoEmitOnRestore = true,
+    this.useAndroidSubtypeList = false,
+    this.queryThrows,
   });
 
   bool available;
@@ -22,6 +39,10 @@ class FakeBillingGateway implements BillingGateway {
   Object? buyThrows;
   IAPError? queryError;
   Object? restoreThrows;
+  Object? queryThrows;
+
+  /// true → response.productDetails runtime tipi `List<FakeAndroidProductDetails>`.
+  bool useAndroidSubtypeList;
 
   /// `restorePurchases` sonrası yayınlanacak liste (`autoEmitOnRestore` true ise).
   /// null → boş liste (başarılı “owned değil”).
@@ -46,7 +67,23 @@ class FakeBillingGateway implements BillingGateway {
   }) {
     return ProductDetails(
       id: id,
-      title: 'Kira Asistanı Pro',
+      title: 'KiraRota Pro',
+      description: 'Lifetime',
+      price: price,
+      rawPrice: rawPrice,
+      currencyCode: currencyCode,
+    );
+  }
+
+  static FakeAndroidProductDetails sampleAndroidProduct({
+    String id = 'kira_pro_lifetime',
+    String price = '₺212,99',
+    String currencyCode = 'TRY',
+    double rawPrice = 212.99,
+  }) {
+    return FakeAndroidProductDetails(
+      id: id,
+      title: 'KiraRota Pro',
       description: 'Lifetime',
       price: price,
       rawPrice: rawPrice,
@@ -89,13 +126,37 @@ class FakeBillingGateway implements BillingGateway {
     Set<String> identifiers,
   ) async {
     queryCalls++;
+    if (queryThrows != null) throw queryThrows!;
+
+    final ProductDetails? match =
+        product != null && identifiers.contains(product!.id) ? product : null;
+
+    late final List<ProductDetails> details;
+    if (match == null) {
+      details = const <ProductDetails>[];
+    } else if (useAndroidSubtypeList) {
+      final android = match is FakeAndroidProductDetails
+          ? match
+          : FakeAndroidProductDetails(
+              id: match.id,
+              title: match.title,
+              description: match.description,
+              price: match.price,
+              rawPrice: match.rawPrice,
+              currencyCode: match.currencyCode,
+            );
+      // Cast: tip sistemine List<ProductDetails> de, runtime List<Subtype> kalsın
+      // (Play Android GooglePlayProductDetails listesi ile aynı senaryo).
+      details = <FakeAndroidProductDetails>[android] as List<ProductDetails>;
+    } else {
+      details = <ProductDetails>[match];
+    }
+
     return ProductDetailsResponse(
-      productDetails: [
-        if (product != null && identifiers.contains(product!.id)) product!,
-      ],
-      notFoundIDs: product == null
+      productDetails: details,
+      notFoundIDs: match == null
           ? identifiers.toList()
-          : identifiers.where((id) => id != product!.id).toList(),
+          : identifiers.where((id) => id != match.id).toList(),
       error: queryError,
     );
   }
