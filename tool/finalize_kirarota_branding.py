@@ -169,24 +169,32 @@ def main() -> None:
     print(f"wrote {mono_path.relative_to(ROOT)}")
 
     # Splash: green KR, medium size, transparent canvas (no plate)
+    # NOTE: splash files are written only when regenerating branding pack;
+    # launcher-scale fixes must not change splash appearance unintentionally.
     splash = place_in_canvas(green, 1024, 0.42)
     splash_path = BRAND / "splash_symbol.png"
-    splash.save(splash_path, "PNG")
-    print(f"wrote {splash_path.relative_to(ROOT)}")
+    if not splash_path.is_file():
+        splash.save(splash_path, "PNG")
+        print(f"wrote {splash_path.relative_to(ROOT)}")
+    else:
+        print(f"kept existing {splash_path.relative_to(ROOT)}")
 
-    # Adaptive FG: cream KR in ~66% safe zone (no rounded plate)
-    fg1024 = place_in_canvas(cream, 1024, 0.62)
+    # Adaptive FG: cream KR with strong optical margin vs Pixel circle peers.
+    # Baseline before fix was 0.62 (safe-zone edge). 0.32 ≈ ~48% smaller footprint
+    # while remaining readable; radius stays well under 0.61 safe-zone.
+    fg1024 = place_in_canvas(cream, 1024, 0.32)
     assert_transparent_corners(fg1024, "adaptive_fg")
-    mono1024 = place_in_canvas(mono, 1024, 0.62)
+    mono1024 = place_in_canvas(mono, 1024, 0.32)
 
     # Compat paths for flutter_launcher_icons / older refs
     COMPAT.mkdir(parents=True, exist_ok=True)
     shutil.copy2(app_icon_master, COMPAT / "app_icon.png")
     fg1024.save(COMPAT / "app_icon_fg.png", "PNG")
-    splash.save(COMPAT / "splash_logo.png", "PNG")
-    # Replace obsolete house-icon source with master reference
+    # Do not overwrite splash_logo.png here if present (splash is intentional inverse).
+    if not (COMPAT / "splash_logo.png").is_file():
+        splash.save(COMPAT / "splash_logo.png", "PNG")
     shutil.copy2(app_icon_master, COMPAT / "app_icon_source.png")
-    print("updated assets/branding compat copies")
+    print("updated assets/branding compat copies (splash untouched if present)")
 
     # Android density drawables
     for folder, size in FG_SIZES.items():
@@ -200,28 +208,34 @@ def main() -> None:
         )
         print(f"  {folder}/ foreground+monochrome {size}px")
 
-    # Legacy full plate icon (Play/legacy look)
-    master = Image.open(app_icon_master).convert("RGBA")
+    # Legacy / round raster: solid dark-green canvas + cream KR (same optics as adaptive).
+    # Do NOT use rounded-plate master here — transparent plate corners cause
+    # double-frame / light-bleed differences between home and app drawer.
     for folder, size in LEGACY_SIZES.items():
         d = RES / folder
         d.mkdir(parents=True, exist_ok=True)
-        legacy = master.resize((size, size), Image.Resampling.LANCZOS)
+        legacy = Image.new("RGBA", (size, size), GREEN_BG)
+        layer = fg1024.resize((size, size), Image.Resampling.LANCZOS)
+        legacy.alpha_composite(layer)
         legacy.save(d / "ic_launcher.png", "PNG")
         legacy.save(d / "ic_launcher_round.png", "PNG")
-        print(f"  {folder}/ ic_launcher(+round) {size}px")
+        print(f"  {folder}/ ic_launcher(+round) solid+cream {size}px")
 
     write_adaptive_xml()
     write_colors()
 
-    # Splash drawable (nodpi-ish single bitmap)
+    # Splash drawable: keep existing production splash (cream bg + green KR).
     splash_drawable = RES / "drawable" / "splash_logo.png"
-    splash.resize((512, 512), Image.Resampling.LANCZOS).save(splash_drawable, "PNG")
-    print(f"wrote {splash_drawable.relative_to(ROOT)}")
+    if not splash_drawable.is_file():
+        splash.resize((512, 512), Image.Resampling.LANCZOS).save(splash_drawable, "PNG")
+        print(f"wrote {splash_drawable.relative_to(ROOT)}")
+    else:
+        print(f"kept existing {splash_drawable.relative_to(ROOT)}")
 
-    # Play Store assets
+    # Play Store assets still use plate master (marketing), not launcher adaptive FG
     STORE.mkdir(parents=True, exist_ok=True)
+    master = Image.open(app_icon_master).convert("RGBA")
     shutil.copy2(app_icon_master, STORE / "app_icon_512x512.png")
-    # Upscale master only for 1024 source archive (LANCZOS once)
     master.resize((1024, 1024), Image.Resampling.LANCZOS).save(
         STORE / "app_icon_source_1024x1024.png", "PNG"
     )
@@ -235,7 +249,6 @@ def main() -> None:
         bg = Image.new("RGBA", (size, size), GREEN_BG)
         fg = fg1024.resize((size, size), Image.Resampling.LANCZOS)
         bg.alpha_composite(fg)
-        # soft circular / rounded crop visualization
         mask_im = Image.new("L", (size, size), 0)
         from PIL import ImageDraw
 
@@ -243,9 +256,13 @@ def main() -> None:
         if mask == "circle":
             draw.ellipse((0, 0, size - 1, size - 1), fill=255)
         elif mask == "squircle":
-            draw.rounded_rectangle((0, 0, size - 1, size - 1), radius=size // 4, fill=255)
+            draw.rounded_rectangle(
+                (0, 0, size - 1, size - 1), radius=size // 4, fill=255
+            )
         else:
-            draw.rounded_rectangle((0, 0, size - 1, size - 1), radius=size // 6, fill=255)
+            draw.rounded_rectangle(
+                (0, 0, size - 1, size - 1), radius=size // 6, fill=255
+            )
         out = Image.new("RGBA", (size, size), (0, 0, 0, 0))
         out.paste(bg, mask=mask_im)
         return out
@@ -255,8 +272,27 @@ def main() -> None:
         compose_preview(name).save(p, "PNG")
         print(f"preview {p.relative_to(ROOT)}")
 
-    print("DONE finalize_kirarota_branding")
+    # Optical sanity: farthest opaque pixel must stay inside safe-zone radius.
+    import math
 
+    cx = cy = 512.0
+    maxd = 0.0
+    for y in range(1024):
+        row = fg1024.load()
+        for x in range(1024):
+            if row[x, y][3] > 20:
+                d = math.hypot(x - cx, y - cy)
+                if d > maxd:
+                    maxd = d
+    radius_frac = maxd / 512.0
+    bbox = content_bbox(fg1024)
+    span = max(bbox[2] - bbox[0], bbox[3] - bbox[1]) / 1024
+    assert radius_frac <= 0.58, f"FG too large for safe zone: radius={radius_frac:.3f}"
+    print(
+        f"FG content span={span:.3f} radius_frac={radius_frac:.3f} "
+        f"(safe zone radius ~0.61)"
+    )
+    print("DONE finalize_kirarota_branding")
 
 if __name__ == "__main__":
     main()

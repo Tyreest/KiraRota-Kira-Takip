@@ -30,7 +30,7 @@ App UI design tokens (`AppColors.primary` etc.) were **not** globally retuned; l
 | Asset | Path | Use |
 |---|---|---|
 | Legacy image_path copy | `assets/branding/app_icon.png` | Same as master (flutter_launcher_icons / tools) |
-| Adaptive FG 1024 | `assets/branding/app_icon_fg.png` | Cream KR in ~62% safe zone (no plate) |
+| Adaptive FG 1024 | `assets/branding/app_icon_fg.png` | Cream KR ~32% canvas span (safe-zone radius ≪ 0.61) |
 | Splash drawable source | `assets/branding/splash_logo.png` | Copied into `android/.../drawable/splash_logo.png` |
 
 These are **not** listed in Flutter `pubspec.yaml` `assets:` — they are Android / store tooling only (no duplicate runtime bundle).
@@ -38,12 +38,15 @@ These are **not** listed in Flutter `pubspec.yaml` `assets:` — they are Androi
 ## Android adaptive icon
 
 - **Background:** solid `@color/ic_launcher_background` = `#182E1D`
-- **Foreground:** `@drawable/ic_launcher_foreground` = cream transparent KR (safe zone)
-- **Monochrome:** `@drawable/ic_launcher_monochrome` = white KR mask
+- **Foreground:** `@drawable/ic_launcher_foreground` = cream transparent KR (~32% canvas span; well inside ~61% safe zone)
+- **Monochrome:** `@drawable/ic_launcher_monochrome` = white KR mask (same scale)
+- **Legacy / round mipmaps:** solid `#182E1D` full square + same cream KR (no rounded-plate master; avoids light-bleed / double-frame in app drawer)
 - XML: `mipmap-anydpi-v26/ic_launcher.xml` + `ic_launcher_round.xml`
 - Manifest: `android:icon` + `android:roundIcon`
 
 **Rule:** never put the pre-rounded full plate into adaptive foreground (avoids double-frame).
+
+**QA note:** Pixel dock may draw a system contrast halo around dark icons on dark wallpapers; that halo is launcher chrome, not an app resource. App drawer / full-color adaptive path is solid `#182E1D` + cream KR only.
 
 ## Play Store icon
 

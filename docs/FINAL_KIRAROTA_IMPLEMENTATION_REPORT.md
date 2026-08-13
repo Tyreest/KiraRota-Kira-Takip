@@ -17,11 +17,12 @@ Canonical: `docs/branding/KIRAROTA_BRAND_ASSETS.md` · regenerate: `python tool/
 
 - **Source masters:** `assets/branding/kirarota/` (`app_icon_master`, green/cream/monochrome symbols, splash_symbol). Temporary `Logo/` imported then removed.
 - **Launcher / Play:** dark green plate + cream KR master (`#182E1D` / `#F4E5BC`)
-- **Adaptive:** solid BG `#182E1D` + transparent cream KR foreground (no plate → no double-frame) + monochrome white KR
-- **Splash:** cream `#FCF9F8` + centered green KR (`@drawable/splash_logo`)
+- **Adaptive:** solid BG `#182E1D` + transparent cream KR foreground (scaled ~32% canvas / safe-zone; no plate → no double-frame) + monochrome white KR
+- **Legacy/round:** solid `#182E1D` + same cream KR (not light/cream-bg variants)
+- **Splash:** cream `#FCF9F8` + centered green KR (`@drawable/splash_logo`) — intentionally inverse of launcher; unchanged in icon-scale fix
 - **Runtime:** Flutter bundle does not ship Android-only masters; header remains text **KiraRota**
-- **Emulator QA (`Kira_Test_Pixel8`):** launcher PASS · splash PASS · header PASS — `docs/qa/branding/`
-- **Themed icon:** monochrome resource wired in adaptive XML; device Material You themed-icons toggle not exercised on emulator (resource-level PASS)
+- **Emulator QA (`Kira_Test_Pixel8`):** `docs/qa/branding/launcher_home.png` + `launcher_app_drawer.png` — both dark-green + cream KR, no light legacy icon
+- **Themed icon:** monochrome resource wired; Material You themed mode may recolor (separate from normal launcher path)
 - **Release rebuild:** same `1.1.0+10` APK/AAB regenerated after branding (hashes below)
 
 ## Stitch Integration
@@ -141,17 +142,17 @@ Kritik crash/overflow yok (smoke penceresi).
 ## APK
 
 `build/app/outputs/flutter-apk/app-release.apk` (64.2 MB)  
-SHA-256: `0C3C609F9DAAC7F71AD0EBA282605E021417341BCF984360A3AC9442ACC5B6AD`
+SHA-256: `6AFA8E30C9D3FBAFCE7A56647107CABF2C10AF00FFABBCDB5813420AF6EB2DCC`
 
 ## AAB
 
 `build/app/outputs/bundle/release/app-release.aab` (64.1 MB)  
-SHA-256: `5EFE4284DEC05B3275379947CF6414D72D390D8CFC80C8162A5ABC9E14934A88`  
+SHA-256: `4A59C841E2D44EC01668CE3A9005FAC9405EFA1D2FEBD2B4080C93C7015500EB`  
 AdMob production IDs present · Google test publisher absent · review plaintext absent · minify/shrink enabled · mapping present
 
 ## Final Branding rebuild (v1.1.0+10)
 
-Final KR launcher/adaptive/splash entegrasyonu sonrası aynı versionCode **10** ile APK/AAB yeniden üretildi. Play upload bu görevde yapılmadı.
+Launcher safe-zone / legacy solid-green fix sonrası aynı versionCode **10** ile APK/AAB yeniden üretildi. Play upload yapılmadı.
 
 ## Remaining Notes
 
