@@ -32,6 +32,22 @@
 # Local notifications
 -keep class com.dexterous.flutterlocalnotifications.** { *; }
 
+# ---------------------------------------------------------------------------
+# Room / WorkManager
+# Transitive via: google_mobile_ads -> play-services-ads -> work-runtime (-> Room)
+# R8 was stripping Room-generated WorkDatabase_Impl, crashing
+# InitializationProvider on minified release (Failed to create WorkDatabase).
+# ---------------------------------------------------------------------------
+-keep class * extends androidx.room.RoomDatabase {
+    <init>(...);
+    *;
+}
+-keep class androidx.work.impl.WorkDatabase { *; }
+-keep class androidx.work.impl.WorkDatabase_Impl { *; }
+-keep class androidx.work.impl.model.** { *; }
+-keep class androidx.room.util.** { *; }
+-dontwarn androidx.room.paging.**
+
 # Keep native methods
 -keepclasseswithmembernames class * {
     native <methods>;

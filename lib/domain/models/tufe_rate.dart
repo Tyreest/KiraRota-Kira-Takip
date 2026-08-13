@@ -3,6 +3,7 @@ class TufeRate {
     required this.renewalMonth,
     required this.ratePercent,
     required this.tuikReleaseDate,
+    this.sourceUrl,
   });
 
   /// `YYYY-MM` — bu yenileme ayında uygulanacak oran satırı.
@@ -10,19 +11,27 @@ class TufeRate {
   final double ratePercent;
   final DateTime tuikReleaseDate;
 
+  /// Doğrulanmış resmî TÜİK bülten URL’si (opsiyonel). Yoksa genel portal kullanılır.
+  final String? sourceUrl;
+
   factory TufeRate.fromJson(Map<String, dynamic> json) {
+    final rawUrl = json['source_url'] as String?;
     return TufeRate(
       renewalMonth: json['renewal_month'] as String,
       ratePercent: (json['rate_percent'] as num).toDouble(),
       tuikReleaseDate: DateTime.parse(json['tuik_release_date'] as String),
+      sourceUrl: (rawUrl == null || rawUrl.trim().isEmpty)
+          ? null
+          : rawUrl.trim(),
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'renewal_month': renewalMonth,
-        'rate_percent': ratePercent,
-        'tuik_release_date': tuikReleaseDate.toIso8601String().split('T').first,
-      };
+    'renewal_month': renewalMonth,
+    'rate_percent': ratePercent,
+    'tuik_release_date': tuikReleaseDate.toIso8601String().split('T').first,
+    if (sourceUrl != null && sourceUrl!.isNotEmpty) 'source_url': sourceUrl,
+  };
 }
 
 class TufeRateBundle {
@@ -39,10 +48,11 @@ class TufeRateBundle {
   final List<TufeRate> rates;
 
   factory TufeRateBundle.fromJson(Map<String, dynamic> json) {
-    final rates = (json['rates'] as List<dynamic>)
-        .map((e) => TufeRate.fromJson(e as Map<String, dynamic>))
-        .toList()
-      ..sort((a, b) => a.renewalMonth.compareTo(b.renewalMonth));
+    final rates =
+        (json['rates'] as List<dynamic>)
+            .map((e) => TufeRate.fromJson(e as Map<String, dynamic>))
+            .toList()
+          ..sort((a, b) => a.renewalMonth.compareTo(b.renewalMonth));
     return TufeRateBundle(
       version: json['version'] as int,
       updatedAt: DateTime.parse(json['updated_at'] as String),
@@ -64,10 +74,7 @@ class TufeRateBundle {
 enum RateSource { asset, remote }
 
 class LoadedRates {
-  const LoadedRates({
-    required this.bundle,
-    required this.source,
-  });
+  const LoadedRates({required this.bundle, required this.source});
 
   final TufeRateBundle bundle;
   final RateSource source;

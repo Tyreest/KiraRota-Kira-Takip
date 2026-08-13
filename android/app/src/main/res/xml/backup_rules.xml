@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  SharedPreferences (geçmiş, hatırlatma, onboarding, sayaçlar) yedeklenir.
+  Keystore / key.properties app data'da değildir.
+  Pro local flag yedeklenebilir ama satın alma kanıtı değildir (Play Billing).
+-->
+<full-backup-content>
+    <include domain="sharedpref" path="." />
+    <include domain="database" path="." />
+    <include domain="file" path="." />
+</full-backup-content>

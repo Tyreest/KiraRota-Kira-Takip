@@ -34,6 +34,6 @@
     { "renewal_month": "2026-05", "rate_percent": 32.43, "tuik_release_date": "2026-05-05" },
     { "renewal_month": "2026-06", "rate_percent": 32.24, "tuik_release_date": "2026-06-03" },
     { "renewal_month": "2026-07", "rate_percent": 32.03, "tuik_release_date": "2026-07-03" },
-    { "renewal_month": "2026-08", "rate_percent": 31.90, "tuik_release_date": "2026-08-03" }
+    { "renewal_month": "2026-08", "rate_percent": 31.90, "tuik_release_date": "2026-08-03", "source_url": "https://data.tuik.gov.tr/Bulten/Index?p=Tuketici-Fiyat-Endeksi-Temmuz-2026-58297" }
   ]
 }

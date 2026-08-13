@@ -79,8 +79,12 @@ class IapCatalogState {
   String get priceForUi {
     if (hasStorePrice) return localizedPrice!.trim();
     if (loading) return 'Fiyat yükleniyor…';
-    return 'Mağazadan alın';
+    if (!storeAvailable) return 'Mağazadan alın';
+    return 'Fiyat şu anda alınamadı';
   }
+
+  /// Katalog yüklendi ama mağaza fiyatı yok (retry gösterilebilir).
+  bool get priceUnavailable => !loading && storeAvailable && !hasStorePrice;
 
   IapCatalogState copyWith({
     bool? loading,
@@ -97,8 +101,9 @@ class IapCatalogState {
     return IapCatalogState(
       loading: loading ?? this.loading,
       storeAvailable: storeAvailable ?? this.storeAvailable,
-      localizedPrice:
-          clearPrice ? null : (localizedPrice ?? this.localizedPrice),
+      localizedPrice: clearPrice
+          ? null
+          : (localizedPrice ?? this.localizedPrice),
       currencyCode: currencyCode ?? this.currencyCode,
       productTitle: productTitle ?? this.productTitle,
       purchasePending: purchasePending ?? this.purchasePending,
@@ -177,46 +182,73 @@ class IapService extends ChangeNotifier {
     await syncOwnershipFromStore();
   }
 
-  Future<void> _refreshCatalog() async {
-    final response = await _gateway.queryProductDetails({productId});
-    if (response.error != null) {
-      _setState(
-        _state.copyWith(
-          loading: false,
-          storeAvailable: true,
-          lastMessage: response.error!.message,
-          clearPrice: response.productDetails.isEmpty,
-        ),
-      );
-    }
+  /// Paywall / Ayarlar “Tekrar dene” — satın alma/entitlement’a dokunmaz.
+  Future<void> refreshCatalog() => _refreshCatalog();
 
-    if (response.productDetails.isNotEmpty) {
-      _product = response.productDetails.firstWhere(
-        (p) => p.id == productId,
-        orElse: () => response.productDetails.first,
+  Future<void> _refreshCatalog() async {
+    try {
+      final response = await _gateway.queryProductDetails({productId});
+
+      // Android’de liste runtime’da List<GooglePlayProductDetails> olabilir.
+      // firstWhere(..., orElse: () => ProductDetails) tip hatası fırlatır;
+      // elemanları genel ProductDetails olarak kopyala / seç.
+      final ProductDetails? matched = _findProduct(
+        response.productDetails,
+        productId,
       );
-      _setState(
-        _state.copyWith(
-          loading: false,
-          storeAvailable: true,
-          localizedPrice: _product!.price,
-          currencyCode: _product!.currencyCode,
-          productTitle: _product!.title,
-          clearMessage: response.error == null,
-        ),
-      );
-    } else {
+
+      if (matched != null) {
+        _product = matched;
+        _setState(
+          _state.copyWith(
+            loading: false,
+            storeAvailable: true,
+            localizedPrice: matched.price,
+            currencyCode: matched.currencyCode,
+            productTitle: matched.title,
+            clearMessage: response.error == null,
+            lastMessage: response.error?.message,
+          ),
+        );
+        return;
+      }
+
       _product = null;
+      final notFound =
+          response.notFoundIDs.contains(productId) ||
+          response.productDetails.isEmpty;
       _setState(
         _state.copyWith(
           loading: false,
           storeAvailable: true,
           clearPrice: true,
-          lastMessage: response.error?.message ??
-              'Ürün bulunamadı. Play Console’da "$productId" ekleyin.',
+          lastMessage:
+              response.error?.message ??
+              (notFound
+                  ? 'Ürün bulunamadı. Play Console’da "$productId" ekleyin.'
+                  : 'Fiyat şu anda alınamadı'),
+        ),
+      );
+    } catch (e) {
+      _product = null;
+      _setState(
+        _state.copyWith(
+          loading: false,
+          // Katalog ancak mağaza açıkken çağrılır; retry için available kalsın.
+          storeAvailable: true,
+          clearPrice: true,
+          lastMessage: 'Fiyat şu anda alınamadı',
         ),
       );
     }
+  }
+
+  /// [GooglePlayProductDetails] gibi alt tipli listelerde de güvenli seçim.
+  static ProductDetails? _findProduct(List<ProductDetails> details, String id) {
+    for (final p in details) {
+      if (p.id == id) return p;
+    }
+    return null;
   }
 
   /// Play ownership ile yerel Pro’yu hizalar.
@@ -235,11 +267,7 @@ class IapService extends ChangeNotifier {
       await _gateway.restorePurchases();
     } catch (e) {
       _ownershipProbe = null;
-      _setState(
-        _state.copyWith(
-          lastMessage: 'Geri yükleme başlatılamadı: $e',
-        ),
-      );
+      _setState(_state.copyWith(lastMessage: 'Geri yükleme başlatılamadı: $e'));
       return OwnershipSyncResult.storeFailed;
     }
 
@@ -282,7 +310,8 @@ class IapService extends ChangeNotifier {
       await _refreshCatalog();
     }
     if (_product == null) {
-      final msg = _state.lastMessage ??
+      final msg =
+          _state.lastMessage ??
           'Ürün bulunamadı. Play Console’da "$productId" ekleyin.';
       _setState(_state.copyWith(busy: false, lastMessage: msg));
       return BuyOutcome(BuyLaunchResult.productMissing, message: msg);
@@ -375,8 +404,7 @@ class IapService extends ChangeNotifier {
     var sawOwned = false;
 
     for (final p in purchases) {
-      final matchesProduct =
-          p.productID.isEmpty || p.productID == productId;
+      final matchesProduct = p.productID.isEmpty || p.productID == productId;
 
       if (!matchesProduct) continue;
 

@@ -7,6 +7,7 @@ import '../../core/format.dart';
 import '../../core/theme.dart';
 import '../../domain/models/tufe_rate.dart';
 import '../../providers/app_providers.dart';
+import '../../services/external_link_service.dart';
 import '../widgets/design_system.dart';
 
 class RatesScreen extends ConsumerStatefulWidget {
@@ -23,10 +24,12 @@ class _RatesScreenState extends ConsumerState<RatesScreen> {
     final age = DateTime.now().difference(loaded.bundle.updatedAt).inDays;
     if (loaded.source == RateSource.asset &&
         AppConstants.remoteRatesUrl.trim().isNotEmpty) {
-      return age > 45 ? 'Offline yedek (uzaktan güncellenemedi olabilir)' : 'Offline paket';
+      return age > 45
+          ? 'Yerel yedek (güncelleme alınamadı olabilir)'
+          : 'Yerel paket';
     }
     if (age > 45) return 'Eski olabilir — güncelleme bekleniyor';
-    return loaded.source == RateSource.remote ? 'Uzaktan güncel' : 'Güncel paket';
+    return 'Veriler güncel';
   }
 
   @override
@@ -45,22 +48,32 @@ class _RatesScreenState extends ConsumerState<RatesScreen> {
           padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
           children: [
             Text(
-              AppConstants.appName,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            const SizedBox(height: 8),
-            Text(
               'TÜFE Oranları',
               style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              AppConstants.appName,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 12),
             InfoBanner(
               message:
                   'Son güncelleme: ${formatDateTr(loaded.bundle.updatedAt)}\n'
-                  'Kaynak: TÜİK verileri · ${loaded.source == RateSource.remote ? 'Uzaktan' : 'Offline'}\n'
-                  'Veri durumu: ${_statusLabel(loaded)}',
+                  'Kaynak: TÜİK\n'
+                  '${_statusLabel(loaded)}',
             ),
-            const SizedBox(height: 16),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                onPressed: () => openTuikSource(context),
+                icon: const Icon(Icons.open_in_new, size: 18),
+                label: const Text('Resmî TÜİK kaynağını görüntüle'),
+              ),
+            ),
+            const SizedBox(height: 8),
             SoftCard(
               padding: EdgeInsets.zero,
               child: Column(
@@ -86,6 +99,13 @@ class _RatesScreenState extends ConsumerState<RatesScreen> {
             Text(
               loaded.bundle.sourceNote,
               style: Theme.of(context).textTheme.bodySmall,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              AppConstants.notOfficialDisclaimer,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AppColors.onSurfaceVariant,
+              ),
             ),
           ],
         );
@@ -115,9 +135,8 @@ class _RateRow extends StatelessWidget {
                     Flexible(
                       child: Text(
                         formatMonthKey(rate.renewalMonth),
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              color: AppColors.primaryDeep,
-                            ),
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(color: AppColors.primaryDeep),
                       ),
                     ),
                     if (isNew) ...[
@@ -158,6 +177,12 @@ class _RateRow extends StatelessWidget {
               fontWeight: FontWeight.w700,
               color: AppColors.onSurface,
             ),
+          ),
+          IconButton(
+            tooltip: 'Kaynak',
+            visualDensity: VisualDensity.compact,
+            icon: const Icon(Icons.open_in_new, size: 18),
+            onPressed: () => openTuikSource(context, sourceUrl: rate.sourceUrl),
           ),
         ],
       ),

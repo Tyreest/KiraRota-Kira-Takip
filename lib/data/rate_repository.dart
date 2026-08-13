@@ -42,7 +42,9 @@ class RateRepository {
   }
 
   Future<TufeRateBundle> _loadRemote(String url) async {
-    final res = await _client.get(Uri.parse(url)).timeout(const Duration(seconds: 8));
+    final res = await _client
+        .get(Uri.parse(url))
+        .timeout(const Duration(seconds: 8));
     if (res.statusCode < 200 || res.statusCode >= 300) {
       throw StateError('Remote rates HTTP ${res.statusCode}');
     }

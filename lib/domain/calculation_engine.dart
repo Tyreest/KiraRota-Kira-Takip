@@ -10,8 +10,16 @@ class CalculationEngine {
     required DateTime contractStart,
     required DateTime renewalDate,
   }) {
-    final start = DateTime(contractStart.year, contractStart.month, contractStart.day);
-    final renewal = DateTime(renewalDate.year, renewalDate.month, renewalDate.day);
+    final start = DateTime(
+      contractStart.year,
+      contractStart.month,
+      contractStart.day,
+    );
+    final renewal = DateTime(
+      renewalDate.year,
+      renewalDate.month,
+      renewalDate.day,
+    );
     final fifthAnniversary = DateTime(start.year + 5, start.month, start.day);
     return !renewal.isBefore(fifthAnniversary);
   }
@@ -78,6 +86,7 @@ class CalculationEngine {
         tuikReleaseDate: rate.tuikReleaseDate,
         datasetUpdatedAt: bundle.updatedAt,
         rateSourceLabel: rateSourceLabel,
+        tuikSourceUrl: rate.sourceUrl,
       ),
     );
   }

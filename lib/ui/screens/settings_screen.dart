@@ -1,17 +1,33 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../core/constants.dart';
 import '../../core/theme.dart';
 import '../../providers/app_providers.dart';
+import '../../services/ads_service.dart';
+import '../../services/external_link_service.dart';
+import '../../services/ump_consent_service.dart';
 import '../widgets/design_system.dart';
 import '../widgets/pro_paywall.dart';
+import '../widgets/review_access_sheet.dart';
 import 'legal_document_screen.dart';
 
-class SettingsScreen extends ConsumerWidget {
+class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
+
+  @override
+  ConsumerState<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends ConsumerState<SettingsScreen> {
+  int _versionTapCount = 0;
+  DateTime? _lastVersionTap;
 
   void _openLegal(BuildContext context, String title, String asset) {
     Navigator.of(context).push(
@@ -21,26 +37,168 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
+  void _onVersionTap() {
+    final now = DateTime.now();
+    if (_lastVersionTap == null ||
+        now.difference(_lastVersionTap!) > const Duration(seconds: 3)) {
+      _versionTapCount = 0;
+    }
+    _lastVersionTap = now;
+    _versionTapCount++;
+    if (_versionTapCount >= 7) {
+      _versionTapCount = 0;
+      _showReviewAccessSheet();
+    }
+  }
+
+  Future<void> _showReviewAccessSheet() async {
+    final reviewOn = ref.read(reviewAccessEnabledProvider);
+    final controller = TextEditingController();
+    var errorText = '';
+    var busy = false;
+
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppColors.background,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setLocal) {
+            return ReviewAccessSheetScaffold(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    'İnceleme erişimi',
+                    style: Theme.of(ctx).textTheme.headlineSmall,
+                  ),
+                  const SizedBox(height: 12),
+                  if (reviewOn) ...[
+                    Text(
+                      'İnceleme erişimi bu cihazda açık.',
+                      style: Theme.of(ctx).textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 12),
+                    OutlinedButton(
+                      onPressed: busy
+                          ? null
+                          : () async {
+                              setLocal(() => busy = true);
+                              await ref
+                                  .read(reviewAccessEnabledProvider.notifier)
+                                  .disable();
+                              if (ctx.mounted) Navigator.pop(ctx);
+                            },
+                      child: const Text('İnceleme erişimini kapat'),
+                    ),
+                    const SizedBox(height: 8),
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      child: const Text('İptal'),
+                    ),
+                  ] else ...[
+                    TextField(
+                      controller: controller,
+                      obscureText: true,
+                      autocorrect: false,
+                      enableSuggestions: false,
+                      decoration: InputDecoration(
+                        labelText: 'Kod',
+                        errorText: errorText.isEmpty ? null : errorText,
+                      ),
+                      onSubmitted: (_) async {
+                        if (busy) return;
+                        setLocal(() {
+                          busy = true;
+                          errorText = '';
+                        });
+                        final ok = await ref
+                            .read(reviewAccessEnabledProvider.notifier)
+                            .unlockWithCode(controller.text);
+                        if (!ctx.mounted) return;
+                        if (ok) {
+                          Navigator.pop(ctx);
+                        } else {
+                          setLocal(() {
+                            busy = false;
+                            errorText = 'Kod geçersiz';
+                          });
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    FilledButton(
+                      onPressed: busy
+                          ? null
+                          : () async {
+                              setLocal(() {
+                                busy = true;
+                                errorText = '';
+                              });
+                              final ok = await ref
+                                  .read(reviewAccessEnabledProvider.notifier)
+                                  .unlockWithCode(controller.text);
+                              if (!ctx.mounted) return;
+                              if (ok) {
+                                Navigator.pop(ctx);
+                              } else {
+                                setLocal(() {
+                                  busy = false;
+                                  errorText = 'Kod geçersiz';
+                                });
+                              }
+                            },
+                      child: const Text('Doğrula'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      child: const Text('İptal'),
+                    ),
+                  ],
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+    controller.dispose();
+  }
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isPro = ref.watch(isProProvider);
+  Widget build(BuildContext context) {
+    // Billing UI: yalnız gerçek Play entitlement
+    final realProOwned = ref.watch(isProProvider);
+    final hasProFeatures = ref.watch(hasProFeaturesProvider);
     final catalog = ref.watch(iapServiceProvider).state;
     final price = catalog.priceForUi;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
       children: [
-        Text(
-          AppConstants.appName,
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Ayarlar',
-          style: Theme.of(context).textTheme.headlineMedium,
-        ),
+        Text('Ayarlar', style: Theme.of(context).textTheme.headlineMedium),
         const SizedBox(height: 16),
-        if (!isPro)
+        if (realProOwned)
+          SoftCard(
+            color: AppColors.sageSoft,
+            child: Row(
+              children: [
+                const Icon(Icons.verified, color: AppColors.primary),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Pro aktif — Ömür boyu',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+              ],
+            ),
+          )
+        else if (!hasProFeatures)
           SoftCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -50,7 +208,7 @@ class SettingsScreen extends ConsumerWidget {
                     const ProBadge(),
                     const SizedBox(width: 8),
                     Text(
-                      'Kira Asistanı Pro',
+                      'KiraRota Pro',
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ],
@@ -73,6 +231,7 @@ class SettingsScreen extends ConsumerWidget {
                 const SizedBox(height: 12),
                 const _CheckLine('Reklamsız kullanım'),
                 const _CheckLine('PDF özet'),
+                const _CheckLine('Sınırsız kira takibi'),
                 const _CheckLine('Sınırsız geçmiş'),
                 const SizedBox(height: 12),
                 FilledButton(
@@ -81,22 +240,6 @@ class SettingsScreen extends ConsumerWidget {
                     catalog.hasStorePrice
                         ? 'Pro’ya Geç — $price'
                         : 'Pro’ya Geç',
-                  ),
-                ),
-              ],
-            ),
-          )
-        else
-          SoftCard(
-            color: AppColors.sageSoft,
-            child: Row(
-              children: [
-                const Icon(Icons.verified, color: AppColors.primary),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    'Pro aktif — Lifetime',
-                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
               ],
@@ -111,9 +254,29 @@ class SettingsScreen extends ConsumerWidget {
                 icon: Icons.notifications_active_outlined,
                 title: 'Yenileme Hatırlatması',
                 subtitle: '30 gün · 7 gün · yenileme günü',
-                trailing: isPro ? null : const ProBadge(compact: true),
+                trailing: hasProFeatures ? null : const ProBadge(compact: true),
                 onTap: () => openReminderOrPaywall(context, ref),
               ),
+              if (ref.watch(privacyOptionsRequiredProvider)) ...[
+                const Divider(),
+                _SettingsTile(
+                  icon: Icons.privacy_tip_outlined,
+                  title: 'Gizlilik seçenekleri',
+                  subtitle: 'Reklam tercihlerini yönet',
+                  onTap: () async {
+                    await UmpConsentService.showPrivacyOptionsForm();
+                    try {
+                      final status = await UmpConsentService.bridge
+                          .getPrivacyOptionsRequirementStatus();
+                      final required =
+                          status == PrivacyOptionsRequirementStatus.required;
+                      ref.read(privacyOptionsRequiredProvider.notifier).state =
+                          required;
+                      AdsService.setPrivacyOptionsRequired(required);
+                    } catch (_) {}
+                  },
+                ),
+              ],
               const Divider(),
               _SettingsTile(
                 icon: Icons.lock_outline,
@@ -151,16 +314,35 @@ class SettingsScreen extends ConsumerWidget {
                 onTap: () async {
                   final info = await PackageInfo.fromPlatform();
                   if (!context.mounted) return;
-                  _showTextSheet(
-                    context,
-                    'Uygulama Hakkında',
-                    '${AppConstants.appName}\n'
-                    '${AppConstants.brandName}\n'
-                    'Tyreest Studio\n'
-                    'v${info.version} (${info.buildNumber})\n'
-                    'Paket: ${AppConstants.packageId}',
-                  );
+                  _showAboutSheet(context, info);
                 },
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 16),
+        SoftCard(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Veri ve Yedekleme',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Kira kayıtlarınız cihazda saklanır. Android Auto Backup '
+                'açıksa uygulama verileri cihaz değişiminde geri yüklenebilir. '
+                'Ayrı bir bulut yedekleme hesabı yoktur.',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: () => _exportRentalsJson(context),
+                icon: const Icon(Icons.share_outlined),
+                label: const Text('Kira verilerini JSON olarak paylaş'),
               ),
             ],
           ),
@@ -174,7 +356,20 @@ class SettingsScreen extends ConsumerWidget {
                 ? 'Tyreest Studio'
                 : 'Tyreest Studio · v${v.version}';
             return Center(
-              child: Text(label, style: Theme.of(context).textTheme.bodySmall),
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: _onVersionTap,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
+                  child: Text(
+                    label,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
+                ),
+              ),
             );
           },
         ),
@@ -182,30 +377,75 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  void _showTextSheet(BuildContext context, String title, String body) {
+  void _showAboutSheet(BuildContext context, PackageInfo info) {
     showModalBottomSheet<void>(
       context: context,
+      isScrollControlled: true,
       backgroundColor: AppColors.background,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (ctx) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, style: Theme.of(ctx).textTheme.headlineSmall),
-            const SizedBox(height: 12),
-            Text(body, style: Theme.of(ctx).textTheme.bodyLarge),
-            const SizedBox(height: 16),
-            FilledButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: const Text('Tamam'),
-            ),
-          ],
+      builder: (ctx) => SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                'Uygulama Hakkında',
+                style: Theme.of(ctx).textTheme.headlineSmall,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                '${AppConstants.appName}\n'
+                'Tyreest Studio\n'
+                'v${info.version} (${info.buildNumber})\n'
+                'Paket: ${AppConstants.packageId}',
+                style: Theme.of(ctx).textTheme.bodyLarge,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                AppConstants.notOfficialDisclaimer,
+                style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Resmî veri kaynağı',
+                style: Theme.of(ctx).textTheme.titleSmall,
+              ),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton.icon(
+                  onPressed: () => openTuikSource(ctx),
+                  icon: const Icon(Icons.open_in_new, size: 18),
+                  label: const Text('TÜİK Veri Portalı'),
+                ),
+              ),
+              const SizedBox(height: 16),
+              FilledButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Tamam'),
+              ),
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  Future<void> _exportRentalsJson(BuildContext context) async {
+    final rentals = ref.read(rentalRepositoryProvider).loadAll();
+    final payload = {
+      'app': AppConstants.appName,
+      'exportedAt': DateTime.now().toIso8601String(),
+      'rentals': rentals.map((e) => e.toJson()).toList(),
+    };
+    final text = const JsonEncoder.withIndent('  ').convert(payload);
+    await SharePlus.instance.share(
+      ShareParams(text: text, subject: '${AppConstants.appName} kira verileri'),
     );
   }
 }
@@ -253,10 +493,7 @@ class _SettingsTile extends StatelessWidget {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (trailing != null) ...[
-            trailing!,
-            const SizedBox(width: 8),
-          ],
+          if (trailing != null) ...[trailing!, const SizedBox(width: 8)],
           const Icon(Icons.chevron_right),
         ],
       ),

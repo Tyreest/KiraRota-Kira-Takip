@@ -1,7 +1,7 @@
-# Gizlilik Politikası
+﻿# Gizlilik Politikası
 
 **Son güncelleme:** 7 Ağustos 2026  
-**Uygulama:** Kira Artışı Hesapla (Kira Asistanı)  
+**Uygulama:** KiraRota  
 **Geliştirici:** Tyreest Studio  
 **Paket:** com.tyreest.kiraartisi
 
@@ -28,7 +28,7 @@ Uygulama, TÜFE oranlarını güncellemek için isteğe bağlı olarak bir JSON 
 Pro hatırlatmaları cihazınızda planlanır. Bildirim izni verirseniz yenileme tarihleri için yerel bildirim gösterilir.
 
 ## 4. Çocuklar
-Uygulama 13 yaş altı çocuklara yönelik değildir.
+Uygulama 18 yaş altındaki kullanıcılara yönelik değildir.
 
 ## 5. Haklarınız
 Cihaz verilerini uygulama verilerini silerek temizleyebilirsiniz. Play üzerinden satın alma iade talepleri Google politikalarına tabidir.

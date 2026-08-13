@@ -29,12 +29,7 @@ class CalculationInput {
       DateTime(renewalYear, renewalMonth, renewalDay.clamp(1, 31));
 }
 
-enum ContractCompareKind {
-  none,
-  contractLower,
-  contractHigher,
-  contractEqual,
-}
+enum ContractCompareKind { none, contractLower, contractHigher, contractEqual }
 
 class CalculationResult {
   const CalculationResult({
@@ -48,6 +43,7 @@ class CalculationResult {
     required this.tuikReleaseDate,
     required this.datasetUpdatedAt,
     required this.rateSourceLabel,
+    this.tuikSourceUrl,
   });
 
   final CalculationInput input;
@@ -60,6 +56,9 @@ class CalculationResult {
   final DateTime tuikReleaseDate;
   final DateTime datasetUpdatedAt;
   final String rateSourceLabel;
+
+  /// Kullanılan oranın doğrulanmış bülten URL’si (yoksa UI genel portal’a düşer).
+  final String? tuikSourceUrl;
 }
 
 sealed class CalculationOutcome {}

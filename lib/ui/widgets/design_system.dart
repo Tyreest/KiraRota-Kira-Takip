@@ -3,6 +3,24 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/theme.dart';
 
+/// Tam ekran (tab dışı) scroll sayfalarında sistem navigation inset’ini ekler.
+///
+/// [base] içerik boşluğu; altına [MediaQuery.viewPadding] bottom eklenir.
+/// Ana sekmelerde kullanma — [HomeShell] zaten SafeArea / NavigationBar yönetir.
+EdgeInsets scrollablePagePadding(
+  BuildContext context, {
+  double horizontal = 20,
+  double top = 20,
+  double bottom = 20,
+}) {
+  return EdgeInsets.fromLTRB(
+    horizontal,
+    top,
+    horizontal,
+    bottom + MediaQuery.viewPaddingOf(context).bottom,
+  );
+}
+
 class ProBadge extends StatelessWidget {
   const ProBadge({super.key, this.compact = false});
 
@@ -85,10 +103,7 @@ class InfoBanner extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                 ],
-                Text(
-                  message,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
+                Text(message, style: Theme.of(context).textTheme.bodyMedium),
               ],
             ),
           ),
@@ -164,18 +179,32 @@ class DatePickerTile extends StatelessWidget {
     required this.label,
     required this.valueText,
     required this.onTap,
+    this.helperText,
+    this.exampleText,
   });
 
   final String label;
   final String valueText;
   final VoidCallback onTap;
+  final String? helperText;
+  final String? exampleText;
 
   @override
   Widget build(BuildContext context) {
+    final helperStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
+      color: AppColors.onSurfaceVariant,
+      height: 1.35,
+    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         FieldLabel(label),
+        if (helperText != null) ...[
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Text(helperText!, style: helperStyle),
+          ),
+        ],
         Material(
           color: AppColors.surfaceLowest,
           borderRadius: BorderRadius.circular(12),
@@ -204,6 +233,10 @@ class DatePickerTile extends StatelessWidget {
             ),
           ),
         ),
+        if (exampleText != null) ...[
+          const SizedBox(height: 6),
+          Text(exampleText!, style: helperStyle),
+        ],
       ],
     );
   }

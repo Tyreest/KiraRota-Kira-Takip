@@ -47,5 +47,10 @@ app.*.map.json
 # Release signing secrets (never commit)
 android/key.properties
 android/keystore/
+android/admob.properties
 *.jks
 *.keystore
+
+# Review access secrets (plaintext + hash for release dart-define)
+android/review_access.properties
+store/secrets/

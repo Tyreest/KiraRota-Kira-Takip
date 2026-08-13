@@ -1,5 +1,4 @@
-import 'dart:typed_data';
-
+import 'package:file_saver/file_saver.dart';
 import 'package:flutter/services.dart';
 import 'package:kira_artisi_hesapla/core/constants.dart';
 import 'package:kira_artisi_hesapla/core/format.dart';
@@ -8,22 +7,91 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
+/// PDF kaydetme sonucu (SAF / paylaşım).
+enum PdfSaveOutcome {
+  /// Kullanıcı konum seçti ve dosya yazıldı.
+  saved,
+
+  /// Kullanıcı seçiciyi iptal etti — hata gösterilmez.
+  cancelled,
+
+  /// Yazma / platform hatası.
+  failed,
+}
+
+class PdfSaveResult {
+  const PdfSaveResult(this.outcome, {this.path, this.error});
+
+  final PdfSaveOutcome outcome;
+  final String? path;
+  final Object? error;
+
+  bool get isSuccess => outcome == PdfSaveOutcome.saved;
+}
+
 class PdfReportService {
-  Future<void> shareCalculation(CalculationResult result) async {
-    final bytes = await buildPdfBytes(result);
+  /// Varsayılan dosya adı (uzantısız), örn. `kirarota-2026-05`.
+  String reportBaseFileName(CalculationResult result, {String? rentalName}) {
+    final suffix = rentalName != null && rentalName.trim().isNotEmpty
+        ? '-${rentalName.trim().replaceAll(' ', '-').toLowerCase()}'
+        : '';
+    return 'kirarota$suffix-${result.input.renewalMonthKey}';
+  }
+
+  String reportFileName(CalculationResult result, {String? rentalName}) =>
+      '${reportBaseFileName(result, rentalName: rentalName)}.pdf';
+
+  Future<void> shareCalculation(
+    CalculationResult result, {
+    String? rentalName,
+  }) async {
+    final bytes = await buildPdfBytes(result, rentalName: rentalName);
     await Printing.sharePdf(
       bytes: bytes,
-      filename: 'kira-artisi-${result.input.renewalMonthKey}.pdf',
+      filename: reportFileName(result, rentalName: rentalName),
     );
   }
 
+  /// Android SAF (`ACTION_CREATE_DOCUMENT`) — konum/ad kullanıcı seçer; ekstra
+  /// depolama izni gerekmez.
+  Future<PdfSaveResult> saveCalculationToDevice(
+    CalculationResult result, {
+    String? rentalName,
+  }) async {
+    try {
+      final bytes = await buildPdfBytes(result, rentalName: rentalName);
+      final path = await FileSaver.instance.saveAs(
+        name: reportBaseFileName(result, rentalName: rentalName),
+        bytes: bytes,
+        fileExtension: 'pdf',
+        mimeType: MimeType.pdf,
+      );
+      if (path == null || path.trim().isEmpty) {
+        return const PdfSaveResult(PdfSaveOutcome.cancelled);
+      }
+      return PdfSaveResult(PdfSaveOutcome.saved, path: path);
+    } on MissingPluginException catch (e) {
+      return PdfSaveResult(PdfSaveOutcome.failed, error: e);
+    } catch (e) {
+      // Bazı platformlarda iptal exception olarak gelebilir.
+      final msg = e.toString().toLowerCase();
+      if (msg.contains('cancel') || msg.contains('iptal')) {
+        return const PdfSaveResult(PdfSaveOutcome.cancelled);
+      }
+      return PdfSaveResult(PdfSaveOutcome.failed, error: e);
+    }
+  }
+
   /// Bundled Noto Sans — offline Türkçe / ₺ desteği (Google Fonts indirmeye bağımlı değil).
-  Future<Uint8List> buildPdfBytes(CalculationResult result) async {
-    final baseData =
-        await rootBundle.load('assets/fonts/NotoSans-Regular.ttf');
+  Future<Uint8List> buildPdfBytes(
+    CalculationResult result, {
+    String? rentalName,
+  }) async {
+    final baseData = await rootBundle.load('assets/fonts/NotoSans-Regular.ttf');
     final boldData = await rootBundle.load('assets/fonts/NotoSans-Bold.ttf');
-    final italicData =
-        await rootBundle.load('assets/fonts/NotoSans-Italic.ttf');
+    final italicData = await rootBundle.load(
+      'assets/fonts/NotoSans-Italic.ttf',
+    );
     final base = pw.Font.ttf(baseData);
     final bold = pw.Font.ttf(boldData);
     final italic = pw.Font.ttf(italicData);
@@ -40,14 +108,27 @@ class PdfReportService {
             children: [
               pw.Text(
                 AppConstants.appName,
-                style: pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold),
+                style: pw.TextStyle(
+                  fontSize: 22,
+                  fontWeight: pw.FontWeight.bold,
+                ),
               ),
               pw.SizedBox(height: 4),
-              pw.Text(AppConstants.brandName),
+              pw.Text('Kira artışı özet raporu'),
+              if (rentalName != null && rentalName.trim().isNotEmpty) ...[
+                pw.SizedBox(height: 8),
+                pw.Text(
+                  'Kayıt: ${rentalName.trim()}',
+                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold),
+                ),
+              ],
               pw.SizedBox(height: 24),
               pw.Text(
-                'Bu orana göre hesaplanan kira',
-                style: const pw.TextStyle(fontSize: 12, color: PdfColors.grey700),
+                'Hesaplanan yeni kira',
+                style: const pw.TextStyle(
+                  fontSize: 12,
+                  color: PdfColors.grey700,
+                ),
               ),
               pw.Text(
                 formatMoney(result.calculatedRent),
@@ -57,12 +138,15 @@ class PdfReportService {
                 ),
               ),
               pw.SizedBox(height: 8),
-              pw.Text('Artış: ${formatMoney(result.increaseAmount)}'),
+              pw.Text('Artış tutarı: ${formatMoney(result.increaseAmount)}'),
               pw.SizedBox(height: 16),
               pw.Divider(),
               pw.SizedBox(height: 12),
               _row('Mevcut aylık kira', formatMoney(result.input.currentRent)),
-              _row('Yenileme', formatMonthKey(result.input.renewalMonthKey)),
+              _row(
+                'Kira artış tarihi',
+                formatMonthKey(result.input.renewalMonthKey),
+              ),
               _row(
                 'TÜFE esaslı azami artış oranı',
                 formatPercent(result.tufeMaxRatePercent),
@@ -80,10 +164,7 @@ class PdfReportService {
                 'TÜİK açıklama tarihi',
                 formatDateTr(result.tuikReleaseDate),
               ),
-              _row(
-                'Veri güncelleme',
-                formatDateTr(result.datasetUpdatedAt),
-              ),
+              _row('Veri güncelleme', formatDateTr(result.datasetUpdatedAt)),
               if (result.isFiveYearsOrMore) ...[
                 pw.SizedBox(height: 16),
                 pw.Text(
@@ -95,7 +176,18 @@ class PdfReportService {
               pw.Spacer(),
               pw.Text(
                 AppConstants.disclaimerShort,
-                style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey700),
+                style: const pw.TextStyle(
+                  fontSize: 10,
+                  color: PdfColors.grey700,
+                ),
+              ),
+              pw.SizedBox(height: 6),
+              pw.Text(
+                AppConstants.notOfficialDisclaimer,
+                style: const pw.TextStyle(
+                  fontSize: 10,
+                  color: PdfColors.grey700,
+                ),
               ),
               pw.SizedBox(height: 6),
               pw.Text(

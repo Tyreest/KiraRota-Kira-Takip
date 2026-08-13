@@ -17,7 +17,8 @@ abstract class BillingGateway {
 
 /// Gerçek [InAppPurchase] sarmalayıcısı.
 class PlayBillingGateway implements BillingGateway {
-  PlayBillingGateway([InAppPurchase? iap]) : _iap = iap ?? InAppPurchase.instance;
+  PlayBillingGateway([InAppPurchase? iap])
+    : _iap = iap ?? InAppPurchase.instance;
 
   final InAppPurchase _iap;
 

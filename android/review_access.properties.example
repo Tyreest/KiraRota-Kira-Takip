@@ -1,0 +1,5 @@
+# Local only — NEVER commit real values.
+# Build script passes reviewAccessCodeSha256 as REVIEW_ACCESS_CODE_SHA256 dart-define.
+# Plaintext review code lives in store/secrets/REVIEW_ACCESS_CODE.txt (also gitignored).
+
+reviewAccessCodeSha256=

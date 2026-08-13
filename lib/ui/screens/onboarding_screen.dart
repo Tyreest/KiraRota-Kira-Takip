@@ -43,21 +43,19 @@ class OnboardingScreen extends StatelessWidget {
                       Text(
                         AppConstants.brandName,
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.montserrat(
-                          fontSize: 32,
+                        style: GoogleFonts.inter(
+                          fontSize: 34,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.primaryDeep,
+                          color: AppColors.primary,
+                          letterSpacing: -0.5,
                         ),
                       ),
-                      const SizedBox(height: 6),
+                      const SizedBox(height: 8),
                       Text(
-                        AppConstants.appName.toUpperCase(),
+                        'Kira takibi ve TÜFE hesabı',
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.hankenGrotesk(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 1.2,
-                          color: AppColors.secondary,
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color: AppColors.onSurfaceVariant,
                         ),
                       ),
                       const SizedBox(height: 28),
@@ -69,24 +67,34 @@ class OnboardingScreen extends StatelessWidget {
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
-                          Icons.show_chart_rounded,
+                          Icons.home_work_outlined,
                           size: 56,
                           color: AppColors.primary,
                         ),
                       ),
                       const SizedBox(height: 28),
                       const _InfoCard(
-                        icon: Icons.check_circle_outline,
-                        title: 'Ne yapar?',
+                        icon: Icons.domain_outlined,
+                        title: 'Kiralarını takip et',
                         body:
-                            'Yenileme döneminiz için TÜFE esaslı azami artış oranını ve bu orana göre hesaplanan kirayı gösterir.',
+                            'Taşınmazlarınızı kaydedin; mevcut kira, yenileme tarihi '
+                            've hesaplama geçmişini tek yerden izleyin.',
+                      ),
+                      const SizedBox(height: 10),
+                      const _InfoCard(
+                        icon: Icons.trending_up,
+                        title: 'TÜFE ile hesapla',
+                        body:
+                            'Yenileme döneminiz için TÜFE esaslı azami artış oranına '
+                            'göre tahmini yeni kirayı hesaplayın.',
                       ),
                       const SizedBox(height: 10),
                       const _InfoCard(
                         icon: Icons.info_outline,
-                        title: 'Ne değildir?',
+                        title: 'Hukuki tavsiye değildir',
                         body:
-                            'Bir hukuki tavsiye veya kesin bağlayıcı belge niteliği taşımaz.',
+                            'Sonuçlar tahmindir; bağlayıcı belge veya hukuki danışmanlık '
+                            'niteliği taşımaz. Resmî TÜİK uygulaması değildir.',
                       ),
                       const SizedBox(height: 10),
                       const _InfoCard(

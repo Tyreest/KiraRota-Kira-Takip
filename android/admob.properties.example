@@ -1,0 +1,7 @@
+# Production AdMob — gitignore'lanan android/admob.properties dosyasını bu şablondan oluşturun.
+# Debug build bu dosyayı kullanmaz; Google resmi test ID'leri kullanır.
+# Release: App ID → AndroidManifest; Banner/Interstitial → flutter --dart-define (tool/build_release_aab.ps1)
+
+admobAppId=
+admobBannerUnitId=
+admobInterstitialUnitId=

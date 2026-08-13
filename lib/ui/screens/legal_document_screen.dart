@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../core/theme.dart';
+import '../widgets/design_system.dart';
+import '../widgets/simple_markdown.dart';
 
 class LegalDocumentScreen extends StatefulWidget {
   const LegalDocumentScreen({
@@ -42,18 +44,16 @@ class _LegalDocumentScreenState extends State<LegalDocumentScreen> {
       backgroundColor: AppColors.background,
       appBar: AppBar(title: Text(widget.title)),
       body: _error != null
-          ? Center(child: Text('Belge yüklenemedi: $_error'))
+          ? SafeArea(
+              top: false,
+              child: Center(child: Text('Belge yüklenemedi: $_error')),
+            )
           : _body == null
-              ? const Center(child: CircularProgressIndicator())
-              : SingleChildScrollView(
-                  padding: const EdgeInsets.all(20),
-                  child: SelectableText(
-                    _body!,
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          height: 1.45,
-                        ),
-                  ),
-                ),
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              padding: scrollablePagePadding(context),
+              child: SimpleMarkdownView(data: _body!),
+            ),
     );
   }
 }
