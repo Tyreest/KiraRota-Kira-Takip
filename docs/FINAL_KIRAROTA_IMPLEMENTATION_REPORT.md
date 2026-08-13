@@ -21,7 +21,7 @@ KiraRota görünür marka olarak uygulandı (Android label, UI, paywall, PDF/sha
 
 ## Dashboard
 
-Gerçek rental verisinden özet, yaklaşan yenilemeler, son işlemler, hızlı işlemler. Empty state: “Kiranı takip etmeye başla” + manuel hesaplama kaçış yolu.
+Üst sayfa başlığı **KiraRota** (nav etiketi **Ana** ayrı kalır). Gerçek rental verisinden özet, yaklaşan yenilemeler, son işlemler, hızlı işlemler. Empty state: “Kiranı takip etmeye başla” + manuel hesaplama kaçış yolu. RC micro-fix: `dashboard_page_title` key + regression.
 
 ## Rentals
 
@@ -114,13 +114,17 @@ Kritik crash/overflow yok (smoke penceresi).
 ## APK
 
 `build/app/outputs/flutter-apk/app-release.apk` (64.2 MB)  
-SHA-256: `D2CF90A54987482A06B7159B910117A702828393FBA0485C950EF7A5DFB731CC`
+SHA-256: `73FC4BC1DCF9AFCE02774232661A98CAB9D283567D6442D66183DF3F39875049`
 
 ## AAB
 
-`build/app/outputs/bundle/release/app-release.aab` (64.0 MB)  
-SHA-256: `556C9972E56BAD68B7F4D62626E570F170735251FE370144A5B17ADFD19DB9F5`  
+`build/app/outputs/bundle/release/app-release.aab` (64.1 MB)  
+SHA-256: `3BE9D2B11FC5F26F19766E4F7820C6CD525B3A5BB50CA8C0B999712587C589AF`  
 AdMob production IDs present · Google test publisher absent · review plaintext absent · minify/shrink enabled · mapping present
+
+## RC micro-fix (v1.1.0+10 rebuild)
+
+Dashboard üst başlık **KiraRota** / alt nav **Ana** doğrulandı; `01_home.png` + `02_home_empty.png` yenilendi; aynı versionCode 10 ile APK/AAB yeniden üretildi. Play’e yüklemeye hazır: **YES**.
 
 ## Remaining Notes
 

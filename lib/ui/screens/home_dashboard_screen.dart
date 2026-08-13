@@ -52,7 +52,11 @@ class HomeDashboardScreen extends ConsumerWidget {
           children: [
             const Icon(Icons.home_work_outlined, color: AppColors.primary),
             const SizedBox(width: 8),
-            Text('KiraRota', style: Theme.of(context).textTheme.headlineLarge),
+            Text(
+              'KiraRota',
+              key: const Key('dashboard_page_title'),
+              style: Theme.of(context).textTheme.headlineLarge,
+            ),
           ],
         ),
         const SizedBox(height: 16),
@@ -368,7 +372,11 @@ class _EmptyHome extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
       children: [
-        Text('KiraRota', style: Theme.of(context).textTheme.headlineLarge),
+        Text(
+          'KiraRota',
+          key: const Key('dashboard_page_title'),
+          style: Theme.of(context).textTheme.headlineLarge,
+        ),
         const SizedBox(height: 48),
         Center(
           child: Container(

@@ -6,8 +6,8 @@ Folder: `docs/qa/final_screenshots/`
 
 | Filename | Route / state | Test data | Edge-to-edge | Status |
 |---|---|---|---|---|
-| `01_home.png` | Ana · seeded dashboard | Beşiktaş · Daire 4, 38.000 TL, 12 gün | Status + gesture bar visible; content above nav | PASS |
-| `02_home_empty.png` | Ana · empty | `SCREENSHOT_MODE=empty` | Empty CTA above bottom nav | PASS |
+| `01_home.png` | Ana · seeded dashboard | Beşiktaş · Daire 4, 38.000 TL, 12 gün · üst başlık **KiraRota**, alt nav **Ana** | Status + gesture bar visible; content above nav | PASS |
+| `02_home_empty.png` | Ana · empty | `SCREENSHOT_MODE=empty` · üst **KiraRota**, alt **Ana** | Empty CTA above bottom nav | PASS |
 | `03_rentals.png` | Kiralarım | 1 aktif kira, filtreler | Nav + system inset OK | PASS |
 | `04_rental_detail.png` | Kira Detayı | Seed rental + history | AppBar/status OK; CTA clear | PASS |
 | `05_rental_add.png` | Kira Ekle | Empty form | Keyboard not open; bottom CTA area clear | PASS |

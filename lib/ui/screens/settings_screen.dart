@@ -52,11 +52,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _showReviewAccessSheet() async {
-    final reviewOn = ref.read(reviewAccessEnabledProvider);
-    final controller = TextEditingController();
-    var errorText = '';
-    var busy = false;
-
     await showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
@@ -64,109 +59,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (ctx) {
-        return StatefulBuilder(
-          builder: (ctx, setLocal) {
-            return ReviewAccessSheetScaffold(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    'İnceleme erişimi',
-                    style: Theme.of(ctx).textTheme.headlineSmall,
-                  ),
-                  const SizedBox(height: 12),
-                  if (reviewOn) ...[
-                    Text(
-                      'İnceleme erişimi bu cihazda açık.',
-                      style: Theme.of(ctx).textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: 12),
-                    OutlinedButton(
-                      onPressed: busy
-                          ? null
-                          : () async {
-                              setLocal(() => busy = true);
-                              await ref
-                                  .read(reviewAccessEnabledProvider.notifier)
-                                  .disable();
-                              if (ctx.mounted) Navigator.pop(ctx);
-                            },
-                      child: const Text('İnceleme erişimini kapat'),
-                    ),
-                    const SizedBox(height: 8),
-                    TextButton(
-                      onPressed: () => Navigator.pop(ctx),
-                      child: const Text('İptal'),
-                    ),
-                  ] else ...[
-                    TextField(
-                      controller: controller,
-                      obscureText: true,
-                      autocorrect: false,
-                      enableSuggestions: false,
-                      decoration: InputDecoration(
-                        labelText: 'Kod',
-                        errorText: errorText.isEmpty ? null : errorText,
-                      ),
-                      onSubmitted: (_) async {
-                        if (busy) return;
-                        setLocal(() {
-                          busy = true;
-                          errorText = '';
-                        });
-                        final ok = await ref
-                            .read(reviewAccessEnabledProvider.notifier)
-                            .unlockWithCode(controller.text);
-                        if (!ctx.mounted) return;
-                        if (ok) {
-                          Navigator.pop(ctx);
-                        } else {
-                          setLocal(() {
-                            busy = false;
-                            errorText = 'Kod geçersiz';
-                          });
-                        }
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    FilledButton(
-                      onPressed: busy
-                          ? null
-                          : () async {
-                              setLocal(() {
-                                busy = true;
-                                errorText = '';
-                              });
-                              final ok = await ref
-                                  .read(reviewAccessEnabledProvider.notifier)
-                                  .unlockWithCode(controller.text);
-                              if (!ctx.mounted) return;
-                              if (ok) {
-                                Navigator.pop(ctx);
-                              } else {
-                                setLocal(() {
-                                  busy = false;
-                                  errorText = 'Kod geçersiz';
-                                });
-                              }
-                            },
-                      child: const Text('Doğrula'),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.pop(ctx),
-                      child: const Text('İptal'),
-                    ),
-                  ],
-                ],
-              ),
-            );
-          },
-        );
-      },
+      builder: (ctx) => const _ReviewAccessSheetBody(),
     );
-    controller.dispose();
   }
 
   @override
@@ -498,6 +392,118 @@ class _SettingsTile extends StatelessWidget {
         ],
       ),
       onTap: onTap,
+    );
+  }
+}
+
+/// Review Access sheet — controller sheet State’inde dispose edilir
+/// (route kapanınca erken dispose → `_dependents.isEmpty` assertion’ını önler).
+class _ReviewAccessSheetBody extends ConsumerStatefulWidget {
+  const _ReviewAccessSheetBody();
+
+  @override
+  ConsumerState<_ReviewAccessSheetBody> createState() =>
+      _ReviewAccessSheetBodyState();
+}
+
+class _ReviewAccessSheetBodyState
+    extends ConsumerState<_ReviewAccessSheetBody> {
+  late final TextEditingController _controller;
+  String _errorText = '';
+  bool _busy = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    if (_busy) return;
+    setState(() {
+      _busy = true;
+      _errorText = '';
+    });
+    final ok = await ref
+        .read(reviewAccessEnabledProvider.notifier)
+        .unlockWithCode(_controller.text);
+    if (!mounted) return;
+    if (ok) {
+      Navigator.pop(context);
+    } else {
+      setState(() {
+        _busy = false;
+        _errorText = 'Kod geçersiz';
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final reviewOn = ref.watch(reviewAccessEnabledProvider);
+    return ReviewAccessSheetScaffold(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'İnceleme erişimi',
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+          const SizedBox(height: 12),
+          if (reviewOn) ...[
+            Text(
+              'İnceleme erişimi bu cihazda açık.',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 12),
+            OutlinedButton(
+              onPressed: _busy
+                  ? null
+                  : () async {
+                      setState(() => _busy = true);
+                      await ref
+                          .read(reviewAccessEnabledProvider.notifier)
+                          .disable();
+                      if (mounted) Navigator.pop(context);
+                    },
+              child: const Text('İnceleme erişimini kapat'),
+            ),
+            const SizedBox(height: 8),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('İptal'),
+            ),
+          ] else ...[
+            TextField(
+              controller: _controller,
+              obscureText: true,
+              autocorrect: false,
+              enableSuggestions: false,
+              decoration: InputDecoration(
+                labelText: 'Kod',
+                errorText: _errorText.isEmpty ? null : _errorText,
+              ),
+              onSubmitted: (_) => _submit(),
+            ),
+            const SizedBox(height: 16),
+            FilledButton(
+              onPressed: _busy ? null : _submit,
+              child: const Text('Doğrula'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('İptal'),
+            ),
+          ],
+        ],
+      ),
     );
   }
 }

@@ -133,7 +133,25 @@ void main() {
 
     expect(find.text('Başla'), findsNothing);
     expect(find.text('Kiranı takip etmeye başla'), findsOneWidget);
-    expect(find.text('Ana'), findsOneWidget);
+    expect(find.byKey(const Key('dashboard_page_title')), findsOneWidget);
+    expect(
+      (tester.widget<Text>(find.byKey(const Key('dashboard_page_title')))).data,
+      'KiraRota',
+    );
+    expect(
+      find.descendant(
+        of: find.byType(NavigationBar),
+        matching: find.text('Ana'),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: find.byType(NavigationBar),
+        matching: find.text('Kiralarım'),
+      ),
+      findsOneWidget,
+    );
 
     final prefs = await SharedPreferences.getInstance();
     await tester.pumpWidget(_app(prefs));
@@ -393,6 +411,27 @@ void main() {
     expect(find.text('Gizlilik Politikası'), findsWidgets);
     expect(find.textContaining('#'), findsNothing);
     expect(find.textContaining('**'), findsNothing);
+  });
+
+  testWidgets('Review Access İptal — controller dispose crash yok', (
+    tester,
+  ) async {
+    await _pumpApp(tester, home: const Scaffold(body: SettingsScreen()));
+    await _waitFor(tester, find.textContaining('Tyreest Studio'));
+
+    final version = find.textContaining('Tyreest Studio');
+    for (var i = 0; i < 7; i++) {
+      await tester.tap(version);
+      await tester.pump(const Duration(milliseconds: 50));
+    }
+    await tester.pumpAndSettle();
+    expect(find.text('İnceleme erişimi'), findsOneWidget);
+    expect(find.text('İptal'), findsOneWidget);
+
+    await tester.tap(find.text('İptal'));
+    await tester.pumpAndSettle();
+    expect(find.text('İnceleme erişimi'), findsNothing);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('Pro aktif görünümü Ayarlar', (tester) async {
