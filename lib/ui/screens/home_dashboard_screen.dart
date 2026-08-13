@@ -7,7 +7,6 @@ import '../../core/theme.dart';
 import '../../domain/dashboard_logic.dart';
 import '../../domain/models/rental.dart';
 import '../../providers/app_providers.dart';
-import '../widgets/design_system.dart';
 import 'calculate_screen.dart';
 import 'rental_detail_screen.dart';
 import 'rental_edit_screen.dart';
@@ -17,6 +16,24 @@ class HomeDashboardScreen extends ConsumerWidget {
 
   final VoidCallback? onOpenCalculate;
 
+  void _openManual(BuildContext context) {
+    if (onOpenCalculate != null) {
+      onOpenCalculate!();
+    } else {
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => const Scaffold(body: CalculateScreen()),
+        ),
+      );
+    }
+  }
+
+  void _openAdd(BuildContext context) {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute<void>(builder: (_) => const RentalEditScreen()));
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final rentals = ref.watch(rentalsProvider);
@@ -24,20 +41,8 @@ class HomeDashboardScreen extends ConsumerWidget {
 
     if (rentals.isEmpty) {
       return _EmptyHome(
-        onAdd: () => Navigator.of(context).push(
-          MaterialPageRoute<void>(builder: (_) => const RentalEditScreen()),
-        ),
-        onManual: () {
-          if (onOpenCalculate != null) {
-            onOpenCalculate!();
-          } else {
-            Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => const Scaffold(body: CalculateScreen()),
-              ),
-            );
-          }
-        },
+        onAdd: () => _openAdd(context),
+        onManual: () => _openManual(context),
       );
     }
 
@@ -45,59 +50,34 @@ class HomeDashboardScreen extends ConsumerWidget {
     final upcoming = DashboardLogic.upcomingRentals(rentals);
     final activities = DashboardLogic.recentActivities(rentals);
 
+    // Shell NavigationBar sistem inset’ini yönetir; body’de double inset yok.
     return ListView(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpace.margin,
+        AppSpace.sm,
+        AppSpace.margin,
+        AppSpace.lg,
+      ),
       children: [
-        Row(
-          children: [
-            const Icon(Icons.home_work_outlined, color: AppColors.primary),
-            const SizedBox(width: 8),
-            Text(
-              'KiraRota',
-              key: const Key('dashboard_page_title'),
-              style: Theme.of(context).textTheme.headlineLarge,
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: _MetricCard(
-                label: 'Aktif Kiralar',
-                value: '${summary.activeCount}',
-                accent: AppColors.primary,
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _MetricCard(
-                label: 'Yaklaşan',
-                value: '${summary.upcomingCount}',
-                accent: AppColors.amber,
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _MetricCard(
-                label: 'Bu Ay',
-                value: '${summary.thisMonthCount}',
-                accent: AppColors.secondary,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 24),
+        const _DashboardHeader(),
+        const SizedBox(height: AppSpace.md),
+        _SummaryStrip(summary: summary),
+        const SizedBox(height: AppSpace.lg),
         Text(
           'Yaklaşan Yenilemeler',
-          style: Theme.of(context).textTheme.headlineMedium,
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+            color: AppColors.primary,
+            fontWeight: FontWeight.w600,
+          ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: AppSpace.sm),
         if (upcoming.isEmpty)
-          SoftCard(
+          _SurfaceCard(
             child: Text(
               'Yakın dönemde yenileme yok.',
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: AppColors.onSurfaceVariant,
+              ),
             ),
           )
         else
@@ -110,7 +90,7 @@ class HomeDashboardScreen extends ConsumerWidget {
               orElse: () => null,
             );
             return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.only(bottom: AppSpace.md),
               child: _UpcomingCard(
                 rental: r,
                 estimate: estimate,
@@ -127,66 +107,63 @@ class HomeDashboardScreen extends ConsumerWidget {
               ),
             );
           }),
-        const SizedBox(height: 12),
-        Text('Son İşlemler', style: Theme.of(context).textTheme.headlineMedium),
-        const SizedBox(height: 10),
-        SoftCard(
-          padding: EdgeInsets.zero,
-          child: Column(
-            children: [
-              for (var i = 0; i < activities.length; i++) ...[
-                if (i > 0) const Divider(height: 1),
-                ListTile(
-                  dense: true,
-                  title: Text(activities[i].title),
-                  subtitle: Text(activities[i].subtitle),
-                  trailing: Text(
-                    formatDateTr(activities[i].at),
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
-                  onTap: activities[i].rentalId == null
-                      ? null
-                      : () => Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                            builder: (_) => RentalDetailScreen(
-                              rentalId: activities[i].rentalId!,
-                            ),
-                          ),
-                        ),
-                ),
-              ],
-            ],
+        const SizedBox(height: AppSpace.sm),
+        Text(
+          'Son İşlemler',
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+            color: AppColors.primary,
+            fontWeight: FontWeight.w600,
           ),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: AppSpace.sm),
+        if (activities.isEmpty)
+          Text(
+            'Henüz işlem yok.',
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: AppColors.onSurfaceVariant),
+          )
+        else
+          ...activities.map(
+            (a) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: _ActivityRow(
+                activity: a,
+                onTap: a.rentalId == null
+                    ? null
+                    : () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) =>
+                              RentalDetailScreen(rentalId: a.rentalId!),
+                        ),
+                      ),
+              ),
+            ),
+          ),
+        const SizedBox(height: AppSpace.lg),
         Text(
           'Hızlı İşlemler',
-          style: Theme.of(context).textTheme.headlineMedium,
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+            color: AppColors.primary,
+            fontWeight: FontWeight.w600,
+          ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: AppSpace.sm),
         Row(
           children: [
             Expanded(
-              child: FilledButton.tonalIcon(
-                onPressed: () {
-                  if (onOpenCalculate != null) {
-                    onOpenCalculate!();
-                  }
-                },
-                icon: const Icon(Icons.calculate_outlined),
-                label: const Text('Manuel Hesaplama'),
+              child: _QuickActionCard(
+                icon: Icons.calculate_outlined,
+                label: 'Manuel Hesaplama',
+                onTap: () => _openManual(context),
               ),
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: 12),
             Expanded(
-              child: FilledButton.icon(
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (_) => const RentalEditScreen(),
-                  ),
-                ),
-                icon: const Icon(Icons.add_home_work_outlined),
-                label: const Text('Kira Ekle'),
+              child: _QuickActionCard(
+                icon: Icons.add_home_outlined,
+                label: 'Kira Ekle',
+                onTap: () => _openAdd(context),
               ),
             ),
           ],
@@ -196,68 +173,141 @@ class HomeDashboardScreen extends ConsumerWidget {
   }
 }
 
-class _MetricCard extends StatelessWidget {
-  const _MetricCard({
-    required this.label,
-    required this.value,
-    required this.accent,
-  });
+class _DashboardHeader extends StatelessWidget {
+  const _DashboardHeader();
 
-  final String label;
-  final String value;
-  final Color accent;
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 56,
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          'KiraRota',
+          key: const Key('dashboard_page_title'),
+          style: GoogleFonts.inter(
+            fontSize: 20,
+            height: 28 / 20,
+            fontWeight: FontWeight.w700,
+            color: AppColors.primary,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SummaryStrip extends StatelessWidget {
+  const _SummaryStrip({required this.summary});
+
+  final DashboardSummary summary;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 104,
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceLow,
+        borderRadius: BorderRadius.circular(AppRadii.lg),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: _SummaryMetric(
+              label: 'Aktif Kiralar',
+              value: '${summary.activeCount}',
+            ),
+          ),
+          Container(
+            width: 1,
+            height: 40,
+            color: AppColors.outlineVariant.withValues(alpha: 0.3),
+          ),
+          Expanded(
+            child: _SummaryMetric(
+              label: 'Yaklaşan',
+              value: '${summary.upcomingCount}',
+            ),
+          ),
+          Container(
+            width: 1,
+            height: 40,
+            color: AppColors.outlineVariant.withValues(alpha: 0.3),
+          ),
+          Expanded(
+            child: _SummaryMetric(
+              label: 'Bu Ay',
+              value: '${summary.thisMonthCount}',
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SummaryMetric extends StatelessWidget {
+  const _SummaryMetric({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          label,
+          textAlign: TextAlign.center,
+          style: GoogleFonts.inter(
+            fontSize: 12,
+            height: 16 / 12,
+            fontWeight: FontWeight.w500,
+            letterSpacing: 0.5,
+            color: AppColors.onSurfaceVariant,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          textAlign: TextAlign.center,
+          style: GoogleFonts.inter(
+            fontSize: 20,
+            height: 28 / 20,
+            fontWeight: FontWeight.w700,
+            color: AppColors.primary,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SurfaceCard extends StatelessWidget {
+  const _SurfaceCard({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: AppColors.surfaceLowest,
-        borderRadius: BorderRadius.circular(AppRadii.xl),
+        borderRadius: BorderRadius.circular(AppRadii.lg),
+        border: Border.all(
+          color: AppColors.outlineVariant.withValues(alpha: 0.2),
+        ),
         boxShadow: const [
           BoxShadow(
             color: AppColors.cardShadow,
-            blurRadius: 24,
-            offset: Offset(0, 8),
+            blurRadius: 8,
+            offset: Offset(0, 2),
           ),
         ],
       ),
-      child: Stack(
-        children: [
-          Positioned(
-            left: 0,
-            top: 0,
-            bottom: 0,
-            child: Container(
-              width: 4,
-              decoration: BoxDecoration(
-                color: accent,
-                borderRadius: const BorderRadius.horizontal(
-                  left: Radius.circular(AppRadii.xl),
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(14, 12, 10, 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(label, style: Theme.of(context).textTheme.labelSmall),
-                const Spacer(),
-                Text(
-                  value,
-                  style: GoogleFonts.inter(
-                    fontSize: 28,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.primary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+      child: child,
     );
   }
 }
@@ -284,37 +334,47 @@ class _UpcomingCard extends StatelessWidget {
         ? 'Bugün'
         : '$days gün kaldı';
 
-    return SoftCard(
+    return _SurfaceCard(
       child: InkWell(
         onTap: onOpen,
-        borderRadius: BorderRadius.circular(AppRadii.xl),
+        borderRadius: BorderRadius.circular(AppRadii.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                   child: Text(
                     rental.propertyName,
-                    style: Theme.of(context).textTheme.headlineMedium,
+                    style: GoogleFonts.inter(
+                      fontSize: 20,
+                      height: 28 / 20,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primary,
+                    ),
                   ),
                 ),
+                const SizedBox(width: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
+                    horizontal: 8,
+                    vertical: 2,
                   ),
                   decoration: BoxDecoration(
                     color: days < 0
                         ? AppColors.errorContainer
-                        : AppColors.amberSoft,
-                    borderRadius: BorderRadius.circular(AppRadii.pill),
+                        : const Color(0xFFFEF3C7),
+                    borderRadius: BorderRadius.circular(AppRadii.sm),
                   ),
                   child: Text(
                     daysLabel,
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: days < 0 ? AppColors.error : AppColors.primary,
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: days < 0
+                          ? AppColors.error
+                          : const Color(0xFF92400E),
                     ),
                   ),
                 ),
@@ -322,39 +382,220 @@ class _UpcomingCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              'Mevcut kira: ${formatMoney(rental.currentRent)}',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            Text(
               'Yenileme: ${formatDateTr(rental.increaseDate)}',
-              style: Theme.of(context).textTheme.bodyMedium,
+              style: GoogleFonts.inter(
+                fontSize: 14,
+                height: 20 / 14,
+                color: AppColors.onSurfaceVariant,
+              ),
             ),
-            if (estimate != null) ...[
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: _MoneyColumn(
+                    label: 'Mevcut kira',
+                    value: formatMoney(rental.currentRent),
+                  ),
+                ),
+                Expanded(
+                  child: _MoneyColumn(
+                    label: estimate == null
+                        ? 'Tahmini yeni kira'
+                        : (estimate!.isOfficialForPeriod
+                              ? 'Hesaplanan yeni kira'
+                              : 'Tahmini yeni kira'),
+                    value: estimate == null
+                        ? '—'
+                        : formatMoney(estimate!.amount),
+                  ),
+                ),
+              ],
+            ),
+            if (estimate != null && !estimate!.isOfficialForPeriod) ...[
               const SizedBox(height: 8),
               Text(
-                estimate!.isOfficialForPeriod
-                    ? 'Hesaplanan yeni kira: ${formatMoney(estimate!.amount)}'
-                    : 'Tahmini yeni kira (son bilinen TÜFE %${estimate!.ratePercent.toStringAsFixed(2).replaceAll('.', ',')}): ${formatMoney(estimate!.amount)}',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.primary,
+                'Son bilinen TÜFE ile tahmini; resmî dönem oranı yayınlanınca değişebilir.',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.onSurfaceVariant,
                 ),
               ),
-              if (!estimate!.isOfficialForPeriod)
-                Text(
-                  'Bu tutar tahminidir; resmî dönem oranı yayınlanınca değişebilir.',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
             ],
-            const SizedBox(height: 12),
+            const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
-              child: FilledButton(
+              child: FilledButton.icon(
                 onPressed: onCalculate,
-                child: const Text('Yeni dönemi hesapla'),
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: AppColors.onPrimary,
+                  minimumSize: const Size.fromHeight(44),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppRadii.md),
+                  ),
+                ),
+                icon: const Icon(Icons.calculate_outlined, size: 18),
+                label: Text(
+                  'Yeni dönemi hesapla',
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _MoneyColumn extends StatelessWidget {
+  const _MoneyColumn({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: GoogleFonts.inter(
+            fontSize: 12,
+            height: 16 / 12,
+            fontWeight: FontWeight.w500,
+            letterSpacing: 0.5,
+            color: AppColors.onSurfaceVariant,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: GoogleFonts.inter(
+            fontSize: 16,
+            height: 24 / 16,
+            fontWeight: FontWeight.w600,
+            color: AppColors.primary,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ActivityRow extends StatelessWidget {
+  const _ActivityRow({required this.activity, this.onTap});
+
+  final DashboardActivity activity;
+  final VoidCallback? onTap;
+
+  IconData get _icon => switch (activity.kind) {
+    DashboardActivityKind.periodCalculated => Icons.history,
+    DashboardActivityKind.rentalAdded => Icons.add_home_outlined,
+    DashboardActivityKind.renewalUpdated => Icons.event_outlined,
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AppRadii.md),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: 32,
+            height: 32,
+            margin: const EdgeInsets.only(top: 4),
+            decoration: const BoxDecoration(
+              color: AppColors.surfaceContainerHigh,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(_icon, size: 16, color: AppColors.primary),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${activity.title} - ${activity.subtitle}',
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    height: 20 / 14,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.primary,
+                  ),
+                ),
+                Text(
+                  formatDateTr(activity.at),
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    height: 20 / 14,
+                    color: AppColors.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _QuickActionCard extends StatelessWidget {
+  const _QuickActionCard({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: AppColors.surfaceLowest,
+      borderRadius: BorderRadius.circular(AppRadii.md),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppRadii.md),
+        child: Container(
+          constraints: const BoxConstraints(minHeight: 72),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppRadii.md),
+            border: Border.all(
+              color: AppColors.outlineVariant.withValues(alpha: 0.2),
+            ),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 22, color: AppColors.primary),
+              const SizedBox(height: 8),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  height: 16 / 12,
+                  fontWeight: FontWeight.w500,
+                  letterSpacing: 0.5,
+                  color: AppColors.primary,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -370,14 +611,15 @@ class _EmptyHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpace.margin,
+        AppSpace.sm,
+        AppSpace.margin,
+        AppSpace.lg,
+      ),
       children: [
-        Text(
-          'KiraRota',
-          key: const Key('dashboard_page_title'),
-          style: Theme.of(context).textTheme.headlineLarge,
-        ),
-        const SizedBox(height: 48),
+        const _DashboardHeader(),
+        const SizedBox(height: 40),
         Center(
           child: Container(
             width: 72,
@@ -398,13 +640,18 @@ class _EmptyHome extends StatelessWidget {
         Text(
           'Kiranı takip etmeye başla',
           textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.headlineMedium,
+          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+            color: AppColors.primary,
+            fontWeight: FontWeight.w600,
+          ),
         ),
         const SizedBox(height: 10),
         Text(
           'Yenileme tarihini, artış geçmişini ve hesaplamalarını tek yerde tut.',
           textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.bodyMedium,
+          style: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.copyWith(color: AppColors.onSurfaceVariant),
         ),
         const SizedBox(height: 24),
         FilledButton.icon(

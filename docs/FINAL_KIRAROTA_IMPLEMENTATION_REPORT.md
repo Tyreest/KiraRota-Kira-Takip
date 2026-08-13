@@ -17,11 +17,25 @@ KiraRota görünür marka olarak uygulandı (Android label, UI, paywall, PDF/sha
 
 ## Navigation
 
-5 sekme: **Ana · Kiralarım · Hesapla · Oranlar · Ayarlar** (`lib/ui/home_shell.dart`). İngilizce/eski dashboard etiketleri yok.
+5 sekme: **Özet · Kiralarım · Hesapla · Oranlar · Ayarlar** (`lib/ui/home_shell.dart`). Eski **Ana** label yok.
 
 ## Dashboard
 
-Üst sayfa başlığı **KiraRota** (nav etiketi **Ana** ayrı kalır). Gerçek rental verisinden özet, yaklaşan yenilemeler, son işlemler, hızlı işlemler. Empty state: “Kiranı takip etmeye başla” + manuel hesaplama kaçış yolu. RC micro-fix: `dashboard_page_title` key + regression.
+Üst sayfa başlığı **KiraRota**. Gerçek rental verisinden özet, yaklaşan yenilemeler, son işlemler, hızlı işlemler. Empty state: “Kiranı takip etmeye başla” + manuel hesaplama kaçış yolu. `dashboard_page_title` key + regression.
+
+## Final Dashboard
+
+`tasarimozet/` (code.html + DESIGN.md + screen.png) SOURCE OF TRUTH olarak yalnızca Özet ekranına uygulandı:
+
+- Tek kompakt summary strip: Aktif / Yaklaşan / Bu Ay (gerçek local veri)
+- Yaklaşan Yenilemeler kartı + koyu yeşil **Yeni dönemi hesapla** CTA
+- Son İşlemler (ödeme event’i yok)
+- Hızlı İşlemler: açık iki kart (Manuel Hesaplama / Kira Ekle)
+- Nav rename: **Ana → Özet**
+- Populated screenshot `01_home.png`: **PASS**
+- Empty screenshot `02_home_empty.png`: **PASS**
+- Edge-to-edge (Hızlı İşlemler nav/gesture altında değil): **PASS**
+- Diğer ekranlar redesign edilmedi
 
 ## Rentals
 
@@ -37,7 +51,7 @@ Mevcut calculation engine ile detay → hesapla → kaydet; duplicate apply koru
 
 ## Manual Calculation
 
-Kira kaydı zorunlu değil; Hesapla tab / Ana hızlı işlem.
+Kira kaydı zorunlu değil; Hesapla tab / Özet hızlı işlem.
 
 ## Requested Rent Comparison
 
@@ -97,7 +111,7 @@ targetSdk 36 · API 36 emulator smoke.
 
 ## Tests
 
-`flutter test` → **164 passed, 1 skipped** (screenshot generator intentional skip)
+`flutter test` → **165 passed, 1 skipped** (screenshot generator intentional skip)
 
 ## Smoke Test
 
@@ -114,17 +128,17 @@ Kritik crash/overflow yok (smoke penceresi).
 ## APK
 
 `build/app/outputs/flutter-apk/app-release.apk` (64.2 MB)  
-SHA-256: `73FC4BC1DCF9AFCE02774232661A98CAB9D283567D6442D66183DF3F39875049`
+SHA-256: `21E5182A4C074AB754C00E7DBC9BC4FE45135648D3F795840EBE4E4F4C25E6F0`
 
 ## AAB
 
 `build/app/outputs/bundle/release/app-release.aab` (64.1 MB)  
-SHA-256: `3BE9D2B11FC5F26F19766E4F7820C6CD525B3A5BB50CA8C0B999712587C589AF`  
+SHA-256: `7BD06DB318C3D17849A59B67AB842333623642C0BA0C51062DFA841B75F3CBB0`  
 AdMob production IDs present · Google test publisher absent · review plaintext absent · minify/shrink enabled · mapping present
 
-## RC micro-fix (v1.1.0+10 rebuild)
+## Final Dashboard rebuild (v1.1.0+10)
 
-Dashboard üst başlık **KiraRota** / alt nav **Ana** doğrulandı; `01_home.png` + `02_home_empty.png` yenilendi; aynı versionCode 10 ile APK/AAB yeniden üretildi. Play’e yüklemeye hazır: **YES**.
+`tasarimozet` Özet entegrasyonu + nav **Özet**; `01_home.png` + `02_home_empty.png` yenilendi; aynı versionCode **10** ile APK/AAB yeniden üretildi. Play’e yüklemeye hazır: **YES** (upload bu görevde yapılmadı).
 
 ## Remaining Notes
 

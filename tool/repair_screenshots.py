@@ -62,7 +62,7 @@ def tap_exact(label: str, wait=1.3) -> bool:
             continue
         x1, y1, x2, y2 = map(int, m.group(2, 3, 4, 5))
         cy = (y1 + y2) // 2
-        if cy >= NAV_Y_MIN and label in ("Hesapla", "Ana", "Oranlar", "Ayarlar", "Kiralarım"):
+        if cy >= NAV_Y_MIN and label in ("Hesapla", "Özet", "Oranlar", "Ayarlar", "Kiralarım"):
             continue
         score = 0
         if first == label:
@@ -91,7 +91,7 @@ def tap(x, y, wait=1.0):
 
 def tab(name):
     coords = {
-        "Ana": (108, 2248),
+        "Özet": (108, 2248),
         "Kiralarım": (324, 2248),
         "Hesapla": (540, 2248),
         "Oranlar": (756, 2248),
@@ -200,7 +200,7 @@ def main():
 
     # Result: from home "Yeni dönemi hesapla" then compute
     back()
-    tab("Ana")
+    tab("Özet")
     if tap_exact("Yeni dönemi hesapla"):
         time.sleep(1.5)
         swipe(1)

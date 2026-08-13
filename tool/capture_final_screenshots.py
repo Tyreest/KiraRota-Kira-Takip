@@ -19,7 +19,7 @@ ACTIVITY = f"{PKG}/com.tyreest.kira_artisi_hesapla.MainActivity"
 NAV_Y_MIN = 2100
 
 TAB = {
-    "Ana": (108, 2248),
+    "Özet": (108, 2248),
     "Kiralarım": (324, 2248),
     "Hesapla": (540, 2248),
     "Oranlar": (756, 2248),

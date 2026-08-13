@@ -21,7 +21,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
   int _index = 0;
   bool? _showOnboarding;
 
-  /// Banner: Ana / Kiralarım / Hesapla. Oranlar opsiyonel; Ayarlar yok.
+  /// Banner: Özet / Kiralarım / Hesapla. Oranlar opsiyonel; Ayarlar yok.
   static const _bannerTabs = {0, 1, 2};
 
   @override
@@ -85,7 +85,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
           NavigationDestination(
             icon: Icon(Icons.dashboard_outlined),
             selectedIcon: Icon(Icons.dashboard),
-            label: 'Ana',
+            label: 'Özet',
           ),
           NavigationDestination(
             icon: Icon(Icons.home_work_outlined),

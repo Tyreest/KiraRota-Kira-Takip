@@ -280,7 +280,8 @@ void main() {
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 300));
       expect(find.text('Bildirim izni gerekli'), findsNothing);
-      expect(find.text('Ana'), findsOneWidget);
+      expect(find.text('Özet'), findsOneWidget);
+      expect(find.text('Ana'), findsNothing);
       expect(find.text('Kiranı takip etmeye başla'), findsOneWidget);
     });
 

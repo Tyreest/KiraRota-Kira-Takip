@@ -141,7 +141,7 @@ void main() {
     expect(
       find.descendant(
         of: find.byType(NavigationBar),
-        matching: find.text('Ana'),
+        matching: find.text('Özet'),
       ),
       findsOneWidget,
     );
@@ -269,11 +269,12 @@ void main() {
     expect(find.text('Şimdi Al'), findsOneWidget);
   });
 
-  testWidgets('sekme başlıkları: 5-tab + Ana dashboard', (tester) async {
+  testWidgets('sekme başlıkları: 5-tab + Özet dashboard', (tester) async {
     await _pumpApp(tester);
     await _waitFor(tester, find.text('Kiranı takip etmeye başla'));
 
-    expect(find.text('Ana'), findsOneWidget);
+    expect(find.text('Özet'), findsOneWidget);
+    expect(find.text('Ana'), findsNothing);
     expect(find.text('Kiralarım'), findsOneWidget);
     expect(find.text('Hesapla'), findsOneWidget);
     expect(find.text('Oranlar'), findsOneWidget);

@@ -18,7 +18,7 @@ ACTIVITY = f"{PKG}/com.tyreest.kira_artisi_hesapla.MainActivity"
 DEVICE = "emulator-5554"
 
 TAB = {
-    "Ana": (108, 2248),
+    "Özet": (108, 2248),
     "Kiralarım": (324, 2248),
     "Hesapla": (540, 2248),
     "Oranlar": (756, 2248),

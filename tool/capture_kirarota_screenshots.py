@@ -25,7 +25,7 @@ ACTIVITY = f"{PKG}/com.tyreest.kira_artisi_hesapla.MainActivity"
 
 # Bottom NavigationBar centers on 1080x2400 (gesture nav)
 TAB = {
-    "Ana": (108, 2248),
+    "Özet": (108, 2248),
     "Kiralarım": (324, 2248),
     "Hesapla": (540, 2248),
     "Oranlar": (756, 2248),
@@ -240,7 +240,7 @@ def main() -> None:
     else:
         print("WARN: rental card not opened", flush=True)
 
-    tab(device, "Ana")
+    tab(device, "Özet")
     if tap_desc(device, "Kira Ekle"):
         time.sleep(1.2)
         shot(device, "05_rental_add.png")

@@ -6,8 +6,8 @@ Folder: `docs/qa/final_screenshots/`
 
 | Filename | Route / state | Test data | Edge-to-edge | Status |
 |---|---|---|---|---|
-| `01_home.png` | Ana · seeded dashboard | Beşiktaş · Daire 4, 38.000 TL, 12 gün · üst başlık **KiraRota**, alt nav **Ana** | Status + gesture bar visible; content above nav | PASS |
-| `02_home_empty.png` | Ana · empty | `SCREENSHOT_MODE=empty` · üst **KiraRota**, alt **Ana** | Empty CTA above bottom nav | PASS |
+| `01_home.png` | Özet · seeded dashboard (`tasarimozet`) | Beşiktaş · Daire 4, 38.000 TL, 12 gün · üst **KiraRota**, tek summary strip, Yaklaşan Yenilemeler, Son İşlemler, Hızlı İşlemler · alt nav **Özet** | Status + gesture bar visible; Hızlı İşlemler above banner/nav | PASS |
+| `02_home_empty.png` | Özet · empty | `SCREENSHOT_MODE=empty` · üst **KiraRota**, alt **Özet** · empty CTA’lar | Empty CTA above bottom nav | PASS |
 | `03_rentals.png` | Kiralarım | 1 aktif kira, filtreler | Nav + system inset OK | PASS |
 | `04_rental_detail.png` | Kira Detayı | Seed rental + history | AppBar/status OK; CTA clear | PASS |
 | `05_rental_add.png` | Kira Ekle | Empty form | Keyboard not open; bottom CTA area clear | PASS |
@@ -25,6 +25,7 @@ Folder: `docs/qa/final_screenshots/`
 ## Notes
 
 - Screenshots taken from real Flutter debug builds with `SCREENSHOT_MODE=empty|seed` (release does not auto-seed).
+- `01_home.png` / `02_home_empty.png` yenilendi: final Özet dashboard (`tasarimozet`) + nav label **Özet** (eski **Ana** yok).
 - Gesture navigation used on emulator. 3-button nav mode was **not** switched on-device; inset behavior covered by widget tests (`edge_to_edge_inset_test.dart`, `review_access_sheet_inset_test.dart`).
 - Requested-rent math (55.000 − 50.122 = 4.878) covered by unit/regression tests.
 - Obsolete brand “KİRA ASİSTANI PRO” on reminder fixed to **KIRAROTA PRO** before final reminder shot.

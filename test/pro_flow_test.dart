@@ -133,7 +133,7 @@ void main() {
       ),
     );
     await tester.pump();
-    await _waitFor(tester, find.text('Ana'));
+    await _waitFor(tester, find.text('Özet'));
     return ProviderScope.containerOf(tester.element(find.byType(HomeShell)));
   }
 
