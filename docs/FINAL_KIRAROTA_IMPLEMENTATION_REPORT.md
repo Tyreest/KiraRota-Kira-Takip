@@ -132,7 +132,12 @@ AdMob production IDs present · Google test publisher absent · review plaintext
 
 ## Git commits
 
-(Commit hash’leri bu rapordan hemen sonra oluşturulan commit’lerde listelenir — `git log`.)
+- `3b60293` Rebrand to KiraRota and ship Stitch-aligned product UI.
+- `5f781c2` Add regression tests and QA capture tooling for KiraRota.
+- `53e53b0` Add KiraRota release notes, final QA report, and emulator screenshots.
+- `b4d6e9d` Refresh Stitch design sources and store readiness docs for KiraRota.
+
+Push yapılmadı.
 
 ## Sabah yapılacaklar (kısa)
 
