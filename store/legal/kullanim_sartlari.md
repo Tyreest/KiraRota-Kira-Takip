@@ -1,7 +1,7 @@
-# Kullanım Şartları
+﻿# Kullanım Şartları
 
 **Son güncelleme:** 7 Ağustos 2026  
-**Uygulama:** Kira Artışı Hesapla (Kira Asistanı)  
+**Uygulama:** KiraRota  
 **Geliştirici:** Tyreest Studio
 
 ## 1. Hizmetin niteliği

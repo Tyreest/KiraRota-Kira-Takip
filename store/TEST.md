@@ -10,7 +10,7 @@ Uygulamayı tam restart ile aç: `flutter run`
 - [x] Başla sonrası tekrar gelmez *(widget)*
 
 ## 2. Hesapla
-- [x] Konut / çatılı işyeri seçimi *(widget)*
+- [x] Konut / işyeri seçimi *(widget)*
 - [x] Temmuz 2026 + 25000 → sonuç ekranı (oranlı) *(widget)*
 - [x] Soft etiketler: azami oran / buna göre hesaplanan kira *(widget)*
 - [x] Sözleşme %40 → bilgilendirme uyarısı *(widget)*
@@ -44,8 +44,8 @@ Uygulamayı tam restart ile aç: `flutter run`
 - [ ] Gerçek Play IAP — **Internal/Closed track zorunlu** → `store/BILLING_TEST.md`
 - [ ] AAB closed track — `store/signing.md`
 
-Gizlilik: https://tyreest.github.io/kira-artisi-hesapla/  
-Kurulum: `store/iap_setup.md`
+Gizlilik: https://tyreest.github.io/kira-artisi-hesapla/privacy-policy.html  
+Kurulum: `store/PRIVACY_POLICY_SETUP.md` · `store/iap_setup.md`
 
 ### Emulator’da Pro
 Debug Pro toggle **kaldırıldı** (release’de de yok). Pro yalnızca Play Billing / test prefs ile.

@@ -1,0 +1,301 @@
+<!DOCTYPE html><html lang="tr"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>KiraRota - Kiralarım</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed-variant": "#364c3c",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed-variant": "#404943",
+                        "background": "#fcf9f8",
+                        "on-secondary-fixed": "#151d19",
+                        "on-background": "#1b1c1c",
+                        "primary-container": "#1b3022",
+                        "secondary-fixed-dim": "#c0c9c1",
+                        "on-primary-fixed": "#0b2013",
+                        "surface-tint": "#4d6453",
+                        "tertiary-fixed": "#e4e2de",
+                        "inverse-on-surface": "#f3f0f0",
+                        "error-container": "#ffdad6",
+                        "inverse-surface": "#303030",
+                        "on-primary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "outline": "#737973",
+                        "primary-fixed-dim": "#b4cdb8",
+                        "on-tertiary-fixed": "#1b1c1a",
+                        "on-primary-container": "#819986",
+                        "surface-dim": "#dcd9d9",
+                        "surface-container-low": "#f6f3f2",
+                        "on-error": "#ffffff",
+                        "primary": "#061b0e",
+                        "on-secondary-container": "#5e6660",
+                        "secondary": "#58605a",
+                        "outline-variant": "#c3c8c1",
+                        "on-tertiary-container": "#949390",
+                        "surface-bright": "#fcf9f8",
+                        "on-surface": "#1b1c1c",
+                        "surface-container-high": "#eae7e7",
+                        "tertiary": "#171715",
+                        "on-surface-variant": "#434843",
+                        "surface-variant": "#e4e2e1",
+                        "surface": "#fcf9f8",
+                        "secondary-fixed": "#dce5dd",
+                        "surface-container-highest": "#e4e2e1",
+                        "inverse-primary": "#b4cdb8",
+                        "error": "#ba1a1a",
+                        "surface-container": "#f0eded",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "secondary-container": "#dce5dd",
+                        "tertiary-container": "#2b2c2a",
+                        "on-tertiary-fixed-variant": "#474744",
+                        "primary-fixed": "#d0e9d4",
+                        "tertiary-fixed-dim": "#c8c6c3"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "lg": "24px",
+                        "sm": "8px",
+                        "md": "16px",
+                        "xl": "32px",
+                        "margin-mobile": "16px",
+                        "gutter": "12px",
+                        "base": "4px",
+                        "margin-desktop": "24px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display-currency": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "label-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "display-currency-mobile": ["Inter"],
+                        "headline-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-currency": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.1px", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "500" }],
+                        "display-currency-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["24px", { "lineHeight": "32px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: #fcf9f8; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .filled-icon { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        
+        /* Hide scrollbar for chip scroll area */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background font-body-md h-screen flex flex-col antialiased">
+<!-- TopAppBar -->
+<header class="flex items-center justify-between px-margin-mobile w-full h-16 bg-surface dark:bg-surface top-0 sticky z-10 transition-colors duration-200">
+<div class="flex items-center gap-2 text-primary dark:text-primary-fixed-dim">
+<span class="material-symbols-outlined filled-icon text-2xl">home_work</span>
+<span class="font-headline-lg-mobile text-headline-lg-mobile font-bold">KiraRota</span>
+</div>
+<div>
+<div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A close-up, softly lit portrait of a professional individual looking approachable, serving as a user avatar profile picture in a modern corporate application. Neutral, warm lighting highlights clear features against a clean, light cream background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRP23R0ms1sSRCWSC0h30EBP7ZycTs8ARWjWqAZhRJ3eniPGc9RlMP0OJ5WWXJKp8qcZP8tpkXpV2wdGZnEMlQCu7APYsCyoxI3PsijZkVApm6W3bX2j9sjJbTAZmkhrj53mxIVcfZh_odUE189CPeDNgJ3RJiDAMGg5W90-7KcDn7uMhpt7TjfiH6GPwZiwh1qYhHM2Ou7clysfnXT61Am8qpLiMmRdWhbiXH9BdMlo3BpqSCOlgLZw">
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 overflow-y-auto pb-24 px-margin-mobile pt-4 flex flex-col gap-md">
+<!-- Header & Search -->
+<section class="flex flex-col gap-sm">
+<div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-background">Kiralarım</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">4 aktif kira</p>
+</div>
+<div class="relative w-full mt-2">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline">search</span>
+</div>
+<input class="w-full bg-surface-container-low border-0 border-b-2 border-transparent focus:border-primary rounded-t-lg pl-10 pr-4 py-3 font-body-md text-body-md text-on-surface placeholder-on-surface-variant transition-colors duration-200 focus:ring-0 focus:bg-surface-container-high" placeholder="Kiracı veya mülk ara..." type="text">
+</div>
+</section>
+<!-- Filter Chips -->
+<section class="overflow-x-auto no-scrollbar py-1 -mx-margin-mobile px-margin-mobile">
+<div class="flex gap-2 w-max">
+<button class="bg-primary text-on-primary font-label-sm text-label-sm px-4 py-2 rounded-full border border-primary transition-colors">Tümü</button>
+<button class="bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container-highest transition-colors">Yaklaşan</button>
+<button class="bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container-highest transition-colors">Bu Ay</button>
+<button class="bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm px-4 py-2 rounded-full border border-outline-variant hover:bg-surface-container-highest transition-colors">Gecikenler</button>
+</div>
+</section>
+<!-- Rental List -->
+<section class="flex flex-col gap-3 mt-2">
+<!-- Card 1 -->
+<article class="bg-surface-container-lowest rounded-xl p-4 shadow-[0_4px_20px_-4px_rgba(6,27,14,0.05)] border border-surface-container-low relative overflow-hidden flex gap-4 items-center">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-xl">apartment</span>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="font-label-lg text-label-lg text-on-surface truncate">Beşiktaş · Daire 4</h3>
+<p class="font-body-md text-body-md text-on-surface-variant truncate">Ahmet Yılmaz</p>
+<div class="flex items-center gap-1 mt-1 text-primary">
+<span class="material-symbols-outlined text-[14px]">calendar_today</span>
+<span class="font-label-sm text-label-sm">15 Ağustos 2026</span>
+</div>
+</div>
+<div class="text-right shrink-0 flex flex-col items-end">
+<span class="font-body-lg text-body-lg font-semibold text-on-surface">38.000 TL</span>
+<span class="inline-block mt-1 font-label-sm text-label-sm text-secondary bg-secondary-container px-2 py-0.5 rounded-full">
+                        12 gün kaldı
+                    </span>
+</div>
+</article>
+<!-- Card 2 -->
+<article class="bg-surface-container-lowest rounded-xl p-4 shadow-[0_4px_20px_-4px_rgba(6,27,14,0.05)] border border-surface-container-low relative overflow-hidden flex gap-4 items-center">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary opacity-40"></div>
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-surface-variant text-xl">house</span>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="font-label-lg text-label-lg text-on-surface truncate">Kadıköy · Villa</h3>
+<p class="font-body-md text-body-md text-on-surface-variant truncate">Elif Kaya</p>
+<div class="flex items-center gap-1 mt-1 text-on-surface-variant opacity-80">
+<span class="material-symbols-outlined text-[14px]">calendar_today</span>
+<span class="font-label-sm text-label-sm">01 Eylül 2026</span>
+</div>
+</div>
+<div class="text-right shrink-0 flex flex-col items-end">
+<span class="font-body-lg text-body-lg font-semibold text-on-surface">55.000 TL</span>
+<span class="inline-block mt-1 font-label-sm text-label-sm text-on-surface-variant bg-surface-variant px-2 py-0.5 rounded-full">
+                        28 gün kaldı
+                    </span>
+</div>
+</article>
+<!-- Card 3 -->
+<article class="bg-surface-container-lowest rounded-xl p-4 shadow-[0_4px_20px_-4px_rgba(6,27,14,0.05)] border border-surface-container-low relative overflow-hidden flex gap-4 items-center">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-error"></div>
+<div class="w-10 h-10 rounded-full bg-error-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-error text-xl">storefront</span>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="font-label-lg text-label-lg text-on-surface truncate">Şişli · Merkez</h3>
+<p class="font-body-md text-body-md text-on-surface-variant truncate">Mehmet Demir (Dükkan)</p>
+<div class="flex items-center gap-1 mt-1 text-error">
+<span class="material-symbols-outlined text-[14px]">warning</span>
+<span class="font-label-sm text-label-sm">01 Ağustos 2026</span>
+</div>
+</div>
+<div class="text-right shrink-0 flex flex-col items-end">
+<span class="font-body-lg text-body-lg font-semibold text-on-surface">120.000 TL</span>
+<span class="inline-block mt-1 font-label-sm text-label-sm text-error bg-error-container px-2 py-0.5 rounded-full font-semibold">Yenileme geçti</span>
+</div>
+</article>
+<!-- Card 4 -->
+<article class="bg-surface-container-lowest rounded-xl p-4 shadow-[0_4px_20px_-4px_rgba(6,27,14,0.05)] border border-surface-container-low relative overflow-hidden flex gap-4 items-center">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary opacity-40"></div>
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-surface-variant text-xl">apartment</span>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="font-label-lg text-label-lg text-on-surface truncate">Beşiktaş · Daire 7</h3>
+<p class="font-body-md text-body-md text-on-surface-variant truncate">Zeynep Şahin</p>
+<div class="flex items-center gap-1 mt-1 text-on-surface-variant opacity-80">
+<span class="material-symbols-outlined text-[14px]">calendar_today</span>
+<span class="font-label-sm text-label-sm">10 Eylül 2026</span>
+</div>
+</div>
+<div class="text-right shrink-0 flex flex-col items-end">
+<span class="font-body-lg text-body-lg font-semibold text-on-surface">35.000 TL</span>
+<span class="inline-block mt-1 font-label-sm text-label-sm text-on-surface-variant bg-surface-variant px-2 py-0.5 rounded-full">
+                        37 gün kaldı
+                    </span>
+</div>
+</article>
+</section>
+</main>
+<!-- Floating Action Button -->
+<button class="fixed right-margin-mobile bottom-24 w-14 h-14 bg-primary text-on-primary rounded-2xl shadow-[0_8px_16px_rgba(6,27,14,0.2)] flex items-center justify-center hover:bg-on-primary-fixed-variant transition-transform active:scale-95 z-40">
+<span class="material-symbols-outlined text-2xl">add</span>
+</button>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full flex justify-around items-center px-2 py-3 bg-surface dark:bg-surface shadow-[0_-1px_0_0_rgba(0,0,0,0.05)] z-50 md:hidden">
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant opacity-60 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest active:scale-95 transition-transform duration-150 rounded-lg p-1">
+<span class="material-symbols-outlined mb-1">dashboard</span>
+<span class="font-label-sm text-label-sm">Ana</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-secondary-container dark:bg-primary-container text-primary dark:text-on-primary-container rounded-full px-5 py-1 active:scale-95 transition-transform duration-150">
+<span class="material-symbols-outlined mb-1 filled-icon">domain</span>
+<span class="font-label-sm text-label-sm">Kiralarım</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant opacity-60 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest active:scale-95 transition-transform duration-150 rounded-lg p-1">
+<span class="material-symbols-outlined mb-1">calculate</span>
+<span class="font-label-sm text-label-sm">Hesapla</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant opacity-60 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest active:scale-95 transition-transform duration-150 rounded-lg p-1">
+<span class="material-symbols-outlined mb-1">trending_up</span>
+<span class="font-label-sm text-label-sm">Oranlar</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant opacity-60 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest active:scale-95 transition-transform duration-150 rounded-lg p-1">
+<span class="material-symbols-outlined mb-1">settings</span>
+<span class="font-label-sm text-label-sm">Ayarlar</span>
+</button>
+</nav>
+<!-- Desktop Sidebar Navigation (Hidden on Mobile) -->
+<aside class="hidden md:flex flex-col w-64 h-screen fixed left-0 top-0 bg-surface border-r border-outline-variant pt-20 px-4 z-0">
+<button class="flex items-center gap-3 w-full p-3 mb-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-lg text-label-lg">Ana</span>
+</button>
+<button class="flex items-center gap-3 w-full p-3 mb-2 bg-secondary-container text-primary rounded-lg transition-colors">
+<span class="material-symbols-outlined filled-icon">domain</span>
+<span class="font-label-lg text-label-lg font-bold">Kiralarım</span>
+</button>
+<button class="flex items-center gap-3 w-full p-3 mb-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors">
+<span class="material-symbols-outlined">calculate</span>
+<span class="font-label-lg text-label-lg">Hesapla</span>
+</button>
+<button class="flex items-center gap-3 w-full p-3 mb-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors">
+<span class="material-symbols-outlined">trending_up</span>
+<span class="font-label-lg text-label-lg">Oranlar</span>
+</button>
+<button class="flex items-center gap-3 w-full p-3 mb-2 text-on-surface-variant hover:bg-surface-container-low rounded-lg transition-colors mt-auto mb-6">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-lg text-label-lg">Ayarlar</span>
+</button>
+</aside>
+<!-- Desktop Main Margin Adjustment -->
+<style>
+        @media (min-width: 768px) {
+            main { margin-left: 16rem; }
+            header { margin-left: 16rem; width: calc(100% - 16rem); }
+        }
+    </style>
+
+
+</body></html>

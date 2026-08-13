@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+
+<html class="light" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>KiraRota - Hesap Sonucu</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed-variant": "#364c3c",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed-variant": "#404943",
+                        "background": "#fcf9f8",
+                        "on-secondary-fixed": "#151d19",
+                        "on-background": "#1b1c1c",
+                        "primary-container": "#1b3022",
+                        "secondary-fixed-dim": "#c0c9c1",
+                        "on-primary-fixed": "#0b2013",
+                        "surface-tint": "#4d6453",
+                        "tertiary-fixed": "#e4e2de",
+                        "inverse-on-surface": "#f3f0f0",
+                        "error-container": "#ffdad6",
+                        "inverse-surface": "#303030",
+                        "on-primary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "outline": "#737973",
+                        "primary-fixed-dim": "#b4cdb8",
+                        "on-tertiary-fixed": "#1b1c1a",
+                        "on-primary-container": "#819986",
+                        "surface-dim": "#dcd9d9",
+                        "surface-container-low": "#f6f3f2",
+                        "on-error": "#ffffff",
+                        "primary": "#061b0e",
+                        "on-secondary-container": "#5e6660",
+                        "secondary": "#58605a",
+                        "outline-variant": "#c3c8c1",
+                        "on-tertiary-container": "#949390",
+                        "surface-bright": "#fcf9f8",
+                        "on-surface": "#1b1c1c",
+                        "surface-container-high": "#eae7e7",
+                        "tertiary": "#171715",
+                        "on-surface-variant": "#434843",
+                        "surface-variant": "#e4e2e1",
+                        "surface": "#fcf9f8",
+                        "secondary-fixed": "#dce5dd",
+                        "surface-container-highest": "#e4e2e1",
+                        "inverse-primary": "#b4cdb8",
+                        "error": "#ba1a1a",
+                        "surface-container": "#f0eded",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "secondary-container": "#dce5dd",
+                        "tertiary-container": "#2b2c2a",
+                        "on-tertiary-fixed-variant": "#474744",
+                        "primary-fixed": "#d0e9d4",
+                        "tertiary-fixed-dim": "#c8c6c3"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "lg": "24px",
+                        "sm": "8px",
+                        "md": "16px",
+                        "xl": "32px",
+                        "margin-mobile": "16px",
+                        "gutter": "12px",
+                        "base": "4px",
+                        "margin-desktop": "24px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display-currency": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "label-lg": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "display-currency-mobile": ["Inter"],
+                        "headline-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-currency": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.1px", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "500" }],
+                        "display-currency-mobile": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["24px", { "lineHeight": "32px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #fcf9f8;
+            color: #1b1c1c;
+            -webkit-font-smoothing: antialiased;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="min-h-screen pb-24 md:pb-0">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-surface w-full top-0 flat no shadows flex items-center justify-between px-margin-mobile w-full h-16 sticky z-40 transition-colors duration-200">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim" style="font-variation-settings: 'FILL' 0;">home_work</span>
+<span class="font-headline-lg-mobile text-headline-lg-mobile text-primary dark:text-primary-fixed-dim font-bold">KiraRota</span>
+</div>
+<div class="flex items-center">
+<!-- Trailing avatar -->
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-label-sm text-label-sm">
+                UP
+            </div>
+</div>
+</header>
+<main class="max-w-3xl mx-auto px-margin-mobile pt-md pb-xl space-y-lg">
+<!-- Header Section -->
+<div class="flex items-center justify-between mb-sm">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Hesap Sonucu</h1>
+<button class="text-tertiary-fixed-dim hover:text-primary transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Primary Result Card -->
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_4px_24px_rgba(6,27,14,0.08)] p-md md:p-lg relative overflow-hidden border border-surface-container">
+<!-- Left accent bar -->
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+<div class="text-center mb-md pb-md border-b border-surface-variant">
+<p class="font-label-lg text-label-lg text-on-surface-variant mb-xs">Hesaplanan Yeni Kira</p>
+<h2 class="font-display-currency-mobile text-display-currency-mobile md:font-display-currency md:text-display-currency text-primary">50.122 TL</h2>
+</div>
+<div class="grid grid-cols-3 gap-sm text-center">
+<div class="p-sm bg-surface-container-low rounded-lg">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-[2px]">Mevcut Kira</p>
+<p class="font-label-lg text-label-lg text-on-surface">38.000 TL</p>
+</div>
+<div class="p-sm bg-surface-container-low rounded-lg">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-[2px]">TÜFE Oranı</p>
+<p class="font-label-lg text-label-lg text-primary">%31,90</p>
+</div>
+<div class="p-sm bg-primary-container rounded-lg">
+<p class="font-label-sm text-label-sm text-on-primary-container mb-[2px]">Net Artış</p>
+<p class="font-label-lg text-label-lg text-on-primary-container">+12.122 TL</p>
+</div>
+</div>
+<div class="mt-md text-right">
+<a class="font-label-sm text-label-sm text-outline hover:text-primary underline flex items-center justify-end gap-1" href="#">
+<span class="material-symbols-outlined text-[14px]">info</span>
+                    Kaynak: TÜİK
+                </a>
+</div>
+</div>
+<!-- Compare Section -->
+<div class="bg-secondary-fixed rounded-xl p-md">
+<h3 class="font-headline-md text-headline-md text-on-secondary-fixed mb-sm flex items-center gap-2">
+<span class="material-symbols-outlined">compare_arrows</span>
+                Talep Edilen Kira ile Karşılaştır
+            </h3>
+<div class="flex flex-col md:flex-row gap-md items-end">
+<div class="w-full md:w-1/2">
+<label class="block font-label-sm text-label-sm text-on-secondary-fixed-variant mb-xs" for="requested-rent">Talep Edilen Kira (TL)</label>
+<div class="relative">
+<input class="w-full bg-surface-container-lowest border-0 border-b-2 border-primary rounded-t-DEFAULT px-sm py-[10px] font-body-lg text-body-lg text-on-surface focus:ring-0 focus:border-primary-fixed-dim transition-colors" id="requested-rent" placeholder="0" type="text" value="55.000"/>
+<span class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant font-body-md text-body-md">TL</span>
+</div>
+</div>
+<div class="w-full md:w-1/2 bg-surface-container-lowest rounded-lg p-sm flex items-center justify-between border border-error-container">
+<span class="font-label-lg text-label-lg text-on-surface-variant">Fark</span>
+<span class="font-headline-md text-headline-md text-error">+4.878 TL</span>
+</div>
+</div>
+</div>
+<!-- Action Buttons -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-sm pt-sm">
+<button class="bg-primary text-on-primary rounded-full py-2 px-4 font-label-lg text-label-lg flex flex-col items-center justify-center gap-1 hover:bg-on-primary-fixed-variant transition-colors shadow-sm h-20 col-span-2 md:col-span-1">
+<span class="material-symbols-outlined">save</span>
+                Kiralarıma Kaydet
+            </button>
+<button class="bg-transparent border border-outline-variant text-primary rounded-xl py-2 px-4 font-label-lg text-label-lg flex flex-col items-center justify-center gap-1 hover:bg-surface-container-high transition-colors h-20">
+<span class="material-symbols-outlined">picture_as_pdf</span>
+                PDF Oluştur
+            </button>
+<button class="bg-transparent border border-outline-variant text-primary rounded-xl py-2 px-4 font-label-lg text-label-lg flex flex-col items-center justify-center gap-1 hover:bg-surface-container-high transition-colors h-20">
+<span class="material-symbols-outlined">share</span>
+                Paylaş
+            </button>
+<button class="bg-transparent border border-outline-variant text-primary rounded-xl py-2 px-4 font-label-lg text-label-lg flex flex-col items-center justify-center gap-1 hover:bg-surface-container-high transition-colors h-20 col-span-2 md:col-span-1">
+<span class="material-symbols-outlined">content_copy</span>
+                Kopyala
+            </button>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="bg-surface dark:bg-surface shadow-[0_-1px_0_0_rgba(0,0,0,0.05)] flat no shadows fixed bottom-0 w-full flex justify-around items-center px-2 py-3 bg-surface dark:bg-surface z-50 md:hidden">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant opacity-60 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest rounded-lg p-1 active:scale-95 transition-transform duration-150 w-16" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+<span class="font-label-sm text-label-sm text-center leading-tight">Panel</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant opacity-60 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest rounded-lg p-1 active:scale-95 transition-transform duration-150 w-16" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">domain</span>
+<span class="font-label-sm text-label-sm text-center leading-tight">Kiralarım</span>
+</a>
+<!-- Active Tab -->
+<a class="flex flex-col items-center justify-center bg-secondary-container dark:bg-primary-container text-primary dark:text-on-primary-container rounded-full px-5 py-1 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">calculate</span>
+<span class="font-label-sm text-label-sm text-center leading-tight">Hesapla</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant opacity-60 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest rounded-lg p-1 active:scale-95 transition-transform duration-150 w-16" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">trending_up</span>
+<span class="font-label-sm text-label-sm text-center leading-tight">Oranlar</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant opacity-60 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest rounded-lg p-1 active:scale-95 transition-transform duration-150 w-16" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">settings</span>
+<span class="font-label-sm text-label-sm text-center leading-tight">Ayarlar</span>
+</a>
+</nav>
+<script>
+        // Simple micro-interaction for the input field to update the difference visually (mock logic)
+        const requestedInput = document.getElementById('requested-rent');
+        requestedInput.addEventListener('input', function(e) {
+            // In a real app, this would recalculate and format
+            const val = e.target.value.replace(/\D/g,'');
+            if(val > 50122) {
+                // Highlight difference area
+                e.target.closest('.flex-col').nextElementSibling.classList.add('bg-error-container');
+                setTimeout(() => {
+                    e.target.closest('.flex-col').nextElementSibling.classList.remove('bg-error-container');
+                }, 300);
+            }
+        });
+    </script>
+</body></html>

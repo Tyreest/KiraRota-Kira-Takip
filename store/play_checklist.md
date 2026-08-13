@@ -7,8 +7,9 @@
 - [x] `applicationId` = `com.tyreest.kiraartisi`
 - [ ] Sürüm: versionName / versionCode Play’de artıyor
 - [ ] Pro IAP product ID: `kira_pro_lifetime` (managed / one-time)
-- [ ] AdMob: test ID’ler → gerçek App ID + banner unit
-- [ ] AndroidManifest APPLICATION_ID gerçek AdMob App ID
+- [x] AdMob: production App ID + banner + interstitial (`admob.properties` + release dart-define)
+- [x] AndroidManifest release App ID production
+- [ ] Internal Testing: test device kaydı; production reklama tıklama
 - [ ] Bildirim izni (Android 13+) akışı denendi *(emulator diyalog görüldü; Allow ile tekrar dene)*
 - [ ] Remote oran URL (opsiyonel) host edildi; `AppConstants.remoteRatesUrl` dolduruldu
 
@@ -23,7 +24,7 @@ Beyan:
 - [ ] Çocuklara yönelik değil
 
 ## C) Mağaza varlığı
-- [x] Gizlilik politikası **HTTPS URL** (zorunlu) — https://tyreest.github.io/kira-artisi-hesapla/
+- [x] Gizlilik politikası **HTTPS URL** — https://tyreest.github.io/kira-artisi-hesapla/privacy-policy.html (`store/PRIVACY_POLICY_SETUP.md`)
 - [ ] listing_tr.md metinleri yapıştırıldı
 - [ ] İkon 512 + feature graphic 1024x500
 - [ ] En az 2–4 telefon ekran görüntüsü

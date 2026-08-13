@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+
+<html class="light" lang="tr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Kira Ekle - KiraRota</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config injected from prompt -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "on-primary-fixed-variant": "#364c3c",
+                "on-error-container": "#93000a",
+                "on-secondary-fixed-variant": "#404943",
+                "background": "#fcf9f8",
+                "on-secondary-fixed": "#151d19",
+                "on-background": "#1b1c1c",
+                "primary-container": "#1b3022",
+                "secondary-fixed-dim": "#c0c9c1",
+                "on-primary-fixed": "#0b2013",
+                "surface-tint": "#4d6453",
+                "tertiary-fixed": "#e4e2de",
+                "inverse-on-surface": "#f3f0f0",
+                "error-container": "#ffdad6",
+                "inverse-surface": "#303030",
+                "on-primary": "#ffffff",
+                "surface-container-lowest": "#ffffff",
+                "outline": "#737973",
+                "primary-fixed-dim": "#b4cdb8",
+                "on-tertiary-fixed": "#1b1c1a",
+                "on-primary-container": "#819986",
+                "surface-dim": "#dcd9d9",
+                "surface-container-low": "#f6f3f2",
+                "on-error": "#ffffff",
+                "primary": "#061b0e",
+                "on-secondary-container": "#5e6660",
+                "secondary": "#58605a",
+                "outline-variant": "#c3c8c1",
+                "on-tertiary-container": "#949390",
+                "surface-bright": "#fcf9f8",
+                "on-surface": "#1b1c1c",
+                "surface-container-high": "#eae7e7",
+                "tertiary": "#171715",
+                "on-surface-variant": "#434843",
+                "surface-variant": "#e4e2e1",
+                "surface": "#fcf9f8",
+                "secondary-fixed": "#dce5dd",
+                "surface-container-highest": "#e4e2e1",
+                "inverse-primary": "#b4cdb8",
+                "error": "#ba1a1a",
+                "surface-container": "#f0eded",
+                "on-secondary": "#ffffff",
+                "on-tertiary": "#ffffff",
+                "secondary-container": "#dce5dd",
+                "tertiary-container": "#2b2c2a",
+                "on-tertiary-fixed-variant": "#474744",
+                "primary-fixed": "#d0e9d4",
+                "tertiary-fixed-dim": "#c8c6c3"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xs": "4px",
+                    "lg": "24px",
+                    "sm": "8px",
+                    "md": "16px",
+                    "xl": "32px",
+                    "margin-mobile": "16px",
+                    "gutter": "12px",
+                    "base": "4px",
+                    "margin-desktop": "24px"
+            },
+            "fontFamily": {
+                    "body-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "display-currency": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "label-lg": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "display-currency-mobile": ["Inter"],
+                    "headline-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "display-currency": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.1px", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "500"}],
+                    "display-currency-mobile": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        /* Custom styles for Material 3 input fields */
+        .input-group {
+            position: relative;
+            margin-bottom: 24px;
+        }
+        
+        .m3-input {
+            width: 100%;
+            background-color: var(--color-surface-container); /* Very light Sage Green tint fallback */
+            border: none;
+            border-bottom: 1px solid var(--color-outline);
+            padding: 24px 16px 8px 16px;
+            border-radius: 4px 4px 0 0;
+            transition: border-bottom-color 0.2s, background-color 0.2s;
+            font-family: inherit;
+        }
+        
+        /* Apply tailwind color via class to ensure accuracy if needed, but styling inline for ease of specific M3 look */
+        .m3-input:focus {
+            outline: none;
+            border-bottom: 2px solid #061b0e; /* Primary */
+            background-color: #eae7e7; /* surface-container-high */
+        }
+        
+        .m3-label {
+            position: absolute;
+            left: 16px;
+            top: 16px;
+            color: #434843; /* on-surface-variant */
+            transition: 0.2s ease all;
+            pointer-events: none;
+        }
+        
+        .m3-input:focus ~ .m3-label,
+        .m3-input:not(:placeholder-shown) ~ .m3-label {
+            top: 6px;
+            font-size: 12px;
+            color: #061b0e; /* Primary */
+        }
+        
+        .m3-input-icon {
+            position: absolute;
+            right: 16px;
+            top: 16px;
+            color: #434843;
+            pointer-events: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col antialiased">
+<!-- Top App Bar (Transactional intent - simplified header) -->
+<header class="bg-surface w-full top-0 sticky z-50 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
+<div class="flex items-center justify-between px-margin-mobile w-full h-16">
+<button aria-label="Geri" class="text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 transition-colors duration-200">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary font-bold">Kira Ekle</h1>
+<div class="w-10"></div> <!-- Placeholder for balance -->
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 px-margin-mobile py-lg pb-32">
+<!-- Form Container -->
+<form action="#" class="max-w-3xl mx-auto space-y-xl" method="POST">
+<!-- Section 1: Temel Bilgiler -->
+<section class="bg-surface-container-lowest rounded-xl p-md shadow-sm border border-surface-variant">
+<h2 class="font-headline-md text-headline-md text-primary mb-lg flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container">info</span>
+                    Temel Bilgiler
+                </h2>
+<div class="input-group">
+<input class="m3-input bg-surface-container" id="property_name" placeholder=" " required="" type="text"/>
+<label class="m3-label font-body-lg text-body-lg" for="property_name">Taşınmaz adı (örn. Beşiktaş Daire 4)</label>
+<span class="material-symbols-outlined m3-input-icon">apartment</span>
+</div>
+<div class="input-group">
+<input class="m3-input bg-surface-container" id="current_rent" placeholder=" " required="" type="number"/>
+<label class="m3-label font-body-lg text-body-lg" for="current_rent">Mevcut kira (TL)</label>
+<span class="material-symbols-outlined m3-input-icon">payments</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<div class="input-group">
+<input class="m3-input bg-surface-container" id="contract_start" placeholder=" " required="" type="date"/>
+<label class="m3-label font-body-lg text-body-lg" for="contract_start">Sözleşme başlangıcı</label>
+</div>
+<div class="input-group">
+<input class="m3-input bg-surface-container border-b-2 border-primary" id="renewal_date" placeholder=" " required="" type="date"/>
+<label class="m3-label font-body-lg text-body-lg text-primary font-semibold" for="renewal_date">Yenileme tarihi</label>
+</div>
+</div>
+</section>
+<!-- Section 2: İsteğe Bağlı Bilgiler -->
+<section class="bg-surface-container-lowest rounded-xl p-md shadow-sm border border-surface-variant">
+<h2 class="font-headline-md text-headline-md text-on-surface-variant mb-lg flex items-center gap-2 opacity-80">
+<span class="material-symbols-outlined text-outline">tune</span>
+                    İsteğe Bağlı Bilgiler
+                </h2>
+<div class="input-group">
+<input class="m3-input bg-surface-container" id="tenant_name" placeholder=" " type="text"/>
+<label class="m3-label font-body-lg text-body-lg" for="tenant_name">Kiracı adı</label>
+<span class="material-symbols-outlined m3-input-icon">person</span>
+</div>
+<div class="input-group">
+<input class="m3-input bg-surface-container" id="landlord_name" placeholder=" " type="text"/>
+<label class="m3-label font-body-lg text-body-lg" for="landlord_name">Ev sahibi adı</label>
+<span class="material-symbols-outlined m3-input-icon">badge</span>
+</div>
+<div class="input-group">
+<textarea class="m3-input bg-surface-container min-h-[100px] resize-none" id="address" placeholder=" "></textarea>
+<label class="m3-label font-body-lg text-body-lg" for="address">Adres</label>
+<span class="material-symbols-outlined m3-input-icon">location_on</span>
+</div>
+<div class="input-group mb-0">
+<textarea class="m3-input bg-surface-container min-h-[80px] resize-none" id="notes" placeholder=" "></textarea>
+<label class="m3-label font-body-lg text-body-lg" for="notes">Notlar</label>
+<span class="material-symbols-outlined m3-input-icon">notes</span>
+</div>
+</section>
+</form>
+</main>
+<!-- Bottom Fixed CTA -->
+<div class="fixed bottom-0 left-0 w-full bg-surface border-t border-surface-variant p-margin-mobile pb-[env(safe-area-inset-bottom,16px)] z-50">
+<div class="max-w-3xl mx-auto">
+<button class="w-full bg-primary text-on-primary rounded-full py-3 px-6 font-label-lg text-label-lg flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all shadow-md" type="submit">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">save</span>
+                Kirayı Kaydet
+            </button>
+</div>
+</div>
+<script>
+        // Optional JS for active styling on inputs if native CSS wasn't enough, 
+        // but the CSS :focus and :not(:placeholder-shown) handles the Material 3 floating label effect nicely.
+    </script>
+</body></html>

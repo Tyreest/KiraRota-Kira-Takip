@@ -1,0 +1,378 @@
+<!DOCTYPE html><html class="light" lang="tr"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Ayarlar - KiraRota</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-primary-fixed-variant": "#364c3c",
+                      "on-error-container": "#93000a",
+                      "on-secondary-fixed-variant": "#404943",
+                      "background": "#fcf9f8",
+                      "on-secondary-fixed": "#151d19",
+                      "on-background": "#1b1c1c",
+                      "primary-container": "#1b3022",
+                      "secondary-fixed-dim": "#c0c9c1",
+                      "on-primary-fixed": "#0b2013",
+                      "surface-tint": "#4d6453",
+                      "tertiary-fixed": "#e4e2de",
+                      "inverse-on-surface": "#f3f0f0",
+                      "error-container": "#ffdad6",
+                      "inverse-surface": "#303030",
+                      "on-primary": "#ffffff",
+                      "surface-container-lowest": "#ffffff",
+                      "outline": "#737973",
+                      "primary-fixed-dim": "#b4cdb8",
+                      "on-tertiary-fixed": "#1b1c1a",
+                      "on-primary-container": "#819986",
+                      "surface-dim": "#dcd9d9",
+                      "surface-container-low": "#f6f3f2",
+                      "on-error": "#ffffff",
+                      "primary": "#061b0e",
+                      "on-secondary-container": "#5e6660",
+                      "secondary": "#58605a",
+                      "outline-variant": "#c3c8c1",
+                      "on-tertiary-container": "#949390",
+                      "surface-bright": "#fcf9f8",
+                      "on-surface": "#1b1c1c",
+                      "surface-container-high": "#eae7e7",
+                      "tertiary": "#171715",
+                      "on-surface-variant": "#434843",
+                      "surface-variant": "#e4e2e1",
+                      "surface": "#fcf9f8",
+                      "secondary-fixed": "#dce5dd",
+                      "surface-container-highest": "#e4e2e1",
+                      "inverse-primary": "#b4cdb8",
+                      "error": "#ba1a1a",
+                      "surface-container": "#f0eded",
+                      "on-secondary": "#ffffff",
+                      "on-tertiary": "#ffffff",
+                      "secondary-container": "#dce5dd",
+                      "tertiary-container": "#2b2c2a",
+                      "on-tertiary-fixed-variant": "#474744",
+                      "primary-fixed": "#d0e9d4",
+                      "tertiary-fixed-dim": "#c8c6c3"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "xs": "4px",
+                      "lg": "24px",
+                      "sm": "8px",
+                      "md": "16px",
+                      "xl": "32px",
+                      "margin-mobile": "16px",
+                      "gutter": "12px",
+                      "base": "4px",
+                      "margin-desktop": "24px"
+              },
+              "fontFamily": {
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "display-currency": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "label-lg": [
+                              "Inter"
+                      ],
+                      "label-sm": [
+                              "Inter"
+                      ],
+                      "display-currency-mobile": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-currency": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-lg": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "letterSpacing": "0.1px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.5px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "display-currency-mobile": [
+                              "28px",
+                              {
+                                      "lineHeight": "36px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-lg": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #061b0e;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #061b0e;
+        }
+        .toggle-checkbox:checked + .toggle-label:after {
+            transform: translateX(100%);
+            border-color: white;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen pb-24 md:pb-0 pt-16">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-surface w-full top-0 flat no shadows transition-colors duration-200 flex items-center justify-between px-margin-mobile w-full h-16 fixed z-40 hidden md:flex">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim" data-icon="home_work">home_work</span>
+<span class="font-headline-lg text-headline-lg text-primary dark:text-primary-fixed-dim font-bold">KiraRota</span>
+</div>
+<div>
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-primary-container font-label-lg font-bold">
+                UP
+            </div>
+</div>
+</header>
+<!-- Mobile TopAppBar -->
+<header class="bg-surface dark:bg-surface w-full top-0 flat no shadows transition-colors duration-200 flex items-center justify-between px-margin-mobile w-full h-16 fixed z-40 md:hidden">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim" data-icon="home_work">home_work</span>
+<span class="font-headline-lg-mobile text-headline-lg-mobile text-primary dark:text-primary-fixed-dim font-bold">KiraRota</span>
+</div>
+<div>
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-primary-container font-label-lg font-bold">
+                UP
+            </div>
+</div>
+</header>
+<main class="max-w-4xl mx-auto px-margin-mobile md:px-margin-desktop py-lg space-y-xl">
+<!-- Page Title -->
+<div>
+<h1 class="font-headline-lg text-headline-lg md:text-[32px] md:leading-[40px] text-primary">Ayarlar</h1>
+</div>
+<!-- Pro Card Bento -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-md">
+<div class="md:col-span-3 bg-white rounded-xl shadow-[0_4px_24px_rgba(27,48,34,0.08)] p-lg flex flex-col md:flex-row justify-between items-start md:items-center relative overflow-hidden border border-surface-variant">
+<!-- Decorative background elements -->
+<div class="absolute -right-20 -top-20 w-64 h-64 bg-primary-fixed opacity-30 rounded-full blur-3xl pointer-events-none"></div>
+<div class="z-10 mb-md md:mb-0">
+<div class="flex items-center gap-sm mb-xs">
+<span class="material-symbols-outlined text-primary" data-icon="stars" style="font-variation-settings: 'FILL' 1;">stars</span>
+<h2 class="font-headline-md text-headline-md text-primary">KiraRota Pro</h2>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">Sınırsız mülk takibi, gelişmiş analizler ve öncelikli destek.</p>
+</div>
+<button class="z-10 bg-primary text-on-primary font-label-lg text-label-lg px-lg py-sm rounded-full hover:bg-on-primary-fixed-variant transition-colors flex items-center gap-xs">
+                    Pro'yu İncele
+                    <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</section>
+<!-- Settings Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+<!-- Notifications & Data -->
+<div class="space-y-lg">
+<!-- Notifications -->
+<section class="bg-surface-container-lowest rounded-xl p-md border border-surface-variant">
+<h3 class="font-label-lg text-label-lg text-secondary mb-md uppercase tracking-wide">Bildirimler</h3>
+<div class="space-y-sm">
+<div class="flex items-center justify-between py-sm border-0">
+<div>
+<h4 class="font-body-lg text-body-lg text-on-surface">Kira Yenileme Hatırlatmaları</h4>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">Sözleşme bitimine 30 gün kala bildir.</p>
+</div>
+<!-- Toggle Switch -->
+<div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+<input checked="" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer z-10 transition-transform duration-200 ease-in-out" id="toggle1" name="toggle" type="checkbox">
+<label class="toggle-label block overflow-hidden h-6 rounded-full bg-surface-dim cursor-pointer transition-colors duration-200 ease-in-out" for="toggle1"></label>
+</div>
+</div>
+</div>
+</section>
+<!-- Data & Backup -->
+<section class="bg-surface-container-lowest rounded-xl p-md border border-surface-variant">
+<h3 class="font-label-lg text-label-lg text-secondary mb-md uppercase tracking-wide">Veri ve Yedekleme</h3>
+<div class="space-y-xs">
+<button class="w-full flex items-center justify-between p-sm hover:bg-surface-container-low rounded-lg transition-colors text-left">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined" data-icon="cloud_upload">cloud_upload</span>
+</div>
+<div>
+<h4 class="font-body-lg text-body-lg text-on-surface">Yedek Oluştur</h4>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">Son yedekleme: Dün 14:30</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="chevron_right">chevron_right</span>
+</button>
+<button class="w-full flex items-center justify-between p-sm hover:bg-surface-container-low rounded-lg transition-colors text-left">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined" data-icon="settings_backup_restore">settings_backup_restore</span>
+</div>
+<div>
+<h4 class="font-body-lg text-body-lg text-on-surface">Geri Yükle</h4>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">Buluttaki yedekten verileri al.</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="chevron_right">chevron_right</span>
+</button>
+</div>
+</section>
+</div>
+<!-- Privacy & App Info -->
+<div class="space-y-lg">
+<!-- Privacy & Resources -->
+<section class="bg-surface-container-lowest rounded-xl p-md border border-surface-variant">
+<h3 class="font-label-lg text-label-lg text-secondary mb-md uppercase tracking-wide">Gizlilik ve Kaynaklar</h3>
+<div class="space-y-xs">
+<a class="flex items-center justify-between p-sm hover:bg-surface-container-low rounded-lg transition-colors" href="#">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="policy">policy</span>
+<span class="font-body-lg text-body-lg text-on-surface">Gizlilik Politikası</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="open_in_new">open_in_new</span>
+</a>
+<a class="flex items-center justify-between p-sm hover:bg-surface-container-low rounded-lg transition-colors" href="#">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="database">database</span>
+<span class="font-body-lg text-body-lg text-on-surface">TÜİK Veri Portalı</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="open_in_new">open_in_new</span>
+</a>
+</div>
+</section>
+<!-- Application Info -->
+<section class="bg-surface-container-lowest rounded-xl p-md border border-surface-variant">
+<h3 class="font-label-lg text-label-lg text-secondary mb-md uppercase tracking-wide">Uygulama</h3>
+<div class="space-y-xs">
+<a class="flex items-center justify-between p-sm hover:bg-surface-container-low rounded-lg transition-colors" href="#">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="info">info</span>
+<span class="font-body-lg text-body-lg text-on-surface">Hakkında</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="chevron_right">chevron_right</span>
+</a>
+<div class="flex items-center justify-between p-sm">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="tag">tag</span>
+<span class="font-body-lg text-body-lg text-on-surface">Sürüm</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container-high px-2 py-1 rounded">1.0.0</span>
+</div>
+</div>
+</section>
+<div class="pt-md text-center">
+<button class="text-error font-label-lg text-label-lg hover:underline decoration-error flex items-center justify-center gap-xs mx-auto">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+                        Çıkış Yap
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full flex justify-around items-center px-2 py-3 bg-surface dark:bg-surface z-50 md:hidden bg-surface dark:bg-surface shadow-[0_-1px_0_0_rgba(0,0,0,0.05)] flat no shadows">
+<!-- Dashboard -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant opacity-60 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest active:scale-95 transition-transform duration-150 rounded-lg p-2" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="dashboard">dashboard</span>
+<span class="font-label-sm text-label-sm">Ana</span>
+</a>
+<!-- My Rentals -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant opacity-60 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest active:scale-95 transition-transform duration-150 rounded-lg p-2" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="domain">domain</span>
+<span class="font-label-sm text-label-sm">Kiralarım</span>
+</a>
+<!-- Calculate -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant opacity-60 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest active:scale-95 transition-transform duration-150 rounded-lg p-2" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="calculate">calculate</span>
+<span class="font-label-sm text-label-sm">Hesapla</span>
+</a>
+<!-- Rates -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant opacity-60 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest active:scale-95 transition-transform duration-150 rounded-lg p-2" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="trending_up">trending_up</span>
+<span class="font-label-sm text-label-sm">Oranlar</span>
+</a>
+<!-- Settings (Active) -->
+<a class="flex flex-col items-center justify-center bg-secondary-container dark:bg-primary-container text-primary dark:text-on-primary-container rounded-full px-5 py-1 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="settings" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span class="font-label-sm text-label-sm">Ayarlar</span>
+</a>
+</nav>
+
+
+</body></html>

@@ -1,0 +1,285 @@
+<!DOCTYPE html><html class="light" lang="tr"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Kira Detayı - KiraRota</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-fixed-variant": "#364c3c",
+                    "on-error-container": "#93000a",
+                    "on-secondary-fixed-variant": "#404943",
+                    "background": "#fcf9f8",
+                    "on-secondary-fixed": "#151d19",
+                    "on-background": "#1b1c1c",
+                    "primary-container": "#1b3022",
+                    "secondary-fixed-dim": "#c0c9c1",
+                    "on-primary-fixed": "#0b2013",
+                    "surface-tint": "#4d6453",
+                    "tertiary-fixed": "#e4e2de",
+                    "inverse-on-surface": "#f3f0f0",
+                    "error-container": "#ffdad6",
+                    "inverse-surface": "#303030",
+                    "on-primary": "#ffffff",
+                    "surface-container-lowest": "#ffffff",
+                    "outline": "#737973",
+                    "primary-fixed-dim": "#b4cdb8",
+                    "on-tertiary-fixed": "#1b1c1a",
+                    "on-primary-container": "#819986",
+                    "surface-dim": "#dcd9d9",
+                    "surface-container-low": "#f6f3f2",
+                    "on-error": "#ffffff",
+                    "primary": "#061b0e",
+                    "on-secondary-container": "#5e6660",
+                    "secondary": "#58605a",
+                    "outline-variant": "#c3c8c1",
+                    "on-tertiary-container": "#949390",
+                    "surface-bright": "#fcf9f8",
+                    "on-surface": "#1b1c1c",
+                    "surface-container-high": "#eae7e7",
+                    "tertiary": "#171715",
+                    "on-surface-variant": "#434843",
+                    "surface-variant": "#e4e2e1",
+                    "surface": "#fcf9f8",
+                    "secondary-fixed": "#dce5dd",
+                    "surface-container-highest": "#e4e2e1",
+                    "inverse-primary": "#b4cdb8",
+                    "error": "#ba1a1a",
+                    "surface-container": "#f0eded",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "secondary-container": "#dce5dd",
+                    "tertiary-container": "#2b2c2a",
+                    "on-tertiary-fixed-variant": "#474744",
+                    "primary-fixed": "#d0e9d4",
+                    "tertiary-fixed-dim": "#c8c6c3"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "xs": "4px",
+                    "lg": "24px",
+                    "sm": "8px",
+                    "md": "16px",
+                    "xl": "32px",
+                    "margin-mobile": "16px",
+                    "gutter": "12px",
+                    "base": "4px",
+                    "margin-desktop": "24px"
+            },
+            "fontFamily": {
+                    "body-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "display-currency": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "label-lg": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "display-currency-mobile": ["Inter"],
+                    "headline-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "display-currency": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.1px", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "500"}],
+                    "display-currency-mobile": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background antialiased pb-24 md:pb-0 pt-16">
+<!-- TopAppBar -->
+<header class="w-full top-0 fixed z-50 bg-surface dark:bg-surface flex items-center justify-between px-margin-mobile h-16 transition-colors duration-200 flat no shadows">
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-low p-2 rounded-full md:hidden">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
+</button>
+<span class="material-symbols-outlined hidden md:block text-primary dark:text-primary-fixed-dim" style="font-variation-settings: 'FILL' 1;">home_work</span>
+<span class="font-headline-lg-mobile text-headline-lg-mobile text-primary dark:text-primary-fixed-dim font-bold hidden md:block">KiraRota</span>
+</div>
+<!-- Web Navigation (Hidden on Mobile) -->
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Kontrol Paneli</a>
+<a class="text-primary dark:text-primary-fixed-dim font-medium hover:text-primary transition-colors duration-200" href="#">Mülklerim</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Hesapla</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Oranlar</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary transition-colors duration-200" href="#">Ayarlar</a>
+</nav>
+<div class="flex items-center gap-2">
+<button class="text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">more_vert</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden hidden md:block border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A small circular avatar placeholder image showing a subtle, modern geometric pattern in light sage green and white tones, suitable for a corporate or professional dashboard profile picture. High quality, clean lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlaC2L4MhlL6zCOPLCH7JS9bokG93gtNG6EQQwt_C4aXp7VugIHsp7ZruoXfiEzUhv_ktYjPDR-XcFiJRqNFiCwhdAB0o7-F6DfPpst_3ah0WkwFaynAvtbwoWcmU3aXzjVnYv8TZOdhbgGVJDq0tnWO1z6Vl-5yqyO9HsHvsccvVPKvUYBVO14lwzSAiX2_WPdUFH-dIsEyY7rxRXjYrXlRKUVwvWRu_xVEkgNCs9F1oH464YAAaw4w">
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop py-6">
+<!-- Header Section -->
+<div class="mb-6 flex justify-between items-end">
+<div>
+<div class="flex items-center gap-1 text-on-surface-variant mb-1">
+<span class="material-symbols-outlined text-[16px]">location_on</span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider">Beşiktaş</span>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile md:font-headline-lg md:text-headline-lg text-primary leading-tight">Daire 4</h1>
+</div>
+<div class="text-right">
+<p class="font-label-sm text-label-sm text-on-surface-variant">Yenileme</p>
+<p class="font-body-md text-body-md font-medium text-primary">15 Ağu 2026</p>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- Main Content Column -->
+<div class="md:col-span-8 flex flex-col gap-4">
+<!-- Hero Compact Card -->
+<div class="bg-surface-container-lowest rounded-xl p-5 shadow-[0_2px_12px_rgba(27,48,34,0.06)] relative overflow-hidden group">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-primary rounded-l-xl"></div>
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 relative z-10">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">Mevcut Kira</p>
+<div class="flex items-baseline gap-2">
+<p class="font-display-currency-mobile text-[24px] md:font-display-currency md:text-display-currency text-primary font-bold">38.000 TL</p>
+<div class="flex items-center gap-1 text-on-secondary-container bg-secondary-container px-2 py-0.5 rounded-full inline-flex">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">timer</span>
+<span class="font-label-sm text-[11px] whitespace-nowrap">12 gün kaldı</span>
+</div>
+</div>
+</div>
+<!-- Forecast Integrated into Hero -->
+<div class="w-full sm:w-auto border-t sm:border-t-0 sm:border-l border-surface-variant pt-3 sm:pt-0 sm:pl-5">
+<p class="font-label-sm text-label-sm text-primary mb-1">Tahmini Yeni Kira</p>
+<p class="font-headline-md text-[20px] text-primary font-bold mb-2">50.122 TL</p>
+<button class="w-full sm:w-auto bg-primary text-on-primary hover:bg-on-primary-fixed-variant transition-colors duration-200 px-4 py-2 rounded-full font-label-sm text-label-sm flex items-center justify-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-[16px]">calculate</span>
+        Yeni Dönemi Hesapla
+    </button>
+</div>
+</div>
+</div>
+<!-- Info Grid -->
+<div class="grid grid-cols-2 gap-4">
+<!-- TÜFE Card -->
+<div class="bg-surface-container-lowest rounded-lg p-4 border border-surface-variant flex flex-col justify-between">
+<div class="flex justify-between items-start mb-2">
+<p class="font-label-sm text-label-sm text-on-surface-variant">Son Bilinen TÜFE</p>
+<span class="material-symbols-outlined text-on-surface-variant opacity-60 text-[18px]">trending_up</span>
+</div>
+<div>
+<p class="font-headline-lg-mobile text-[22px] text-on-background font-bold">%31,90</p>
+<p class="font-label-sm text-[11px] text-on-surface-variant mt-1">Temmuz 2024</p>
+</div>
+</div>
+<!-- Actions Card replacing Forecast -->
+<div class="grid grid-cols-2 gap-2">
+<button class="flex flex-col items-center justify-center p-3 rounded-lg bg-surface-container-low hover:bg-surface-container-highest transition-colors text-on-surface-variant group h-full">
+<span class="material-symbols-outlined mb-1 group-hover:text-primary transition-colors">notifications</span>
+<span class="font-label-sm text-[10px] sm:text-label-sm text-center">Yenileme<br>Hatırlat</span>
+</button>
+<button class="flex flex-col items-center justify-center p-3 rounded-lg bg-surface-container-low hover:bg-surface-container-highest transition-colors text-on-surface-variant group h-full">
+<span class="material-symbols-outlined mb-1 group-hover:text-primary transition-colors">edit</span>
+<span class="font-label-sm text-[10px] sm:text-label-sm">Düzenle</span>
+</button>
+</div>
+</div>
+<!-- History Chart Section (Simplified) -->
+<div class="bg-surface-container-lowest rounded-xl p-5 border border-surface-variant">
+<h3 class="font-label-lg text-label-lg text-on-background mb-4">Kira Geçmişi</h3>
+<div class="flex items-end justify-between gap-2 w-full pt-6 relative h-auto"><div class="absolute inset-0 flex items-center px-4"><div class="w-full h-px bg-outline-variant opacity-30"></div></div><div class="relative flex justify-between w-full px-4 items-center h-24"><div class="flex flex-col items-center gap-2"><div class="w-3 h-3 rounded-full bg-secondary-fixed border-2 border-white shadow-sm z-10"></div><span class="font-label-sm text-[11px] text-on-surface-variant">2024</span><span class="font-bold text-xs">25K</span></div><div class="flex flex-col items-center gap-2"><div class="w-3 h-3 rounded-full bg-primary-fixed border-2 border-white shadow-sm z-10"></div><span class="font-label-sm text-[11px] text-on-surface-variant">2025</span><span class="font-bold text-xs">38K</span></div><div class="flex flex-col items-center gap-2"><div class="w-4 h-4 rounded-full bg-primary border-2 border-white shadow-md z-10"></div><span class="font-label-sm text-[11px] text-primary font-medium">2026 (T)</span><span class="font-bold text-xs text-primary">50K</span></div></div></div>
+</div>
+</div>
+<!-- Sidebar Column -->
+<div class="md:col-span-4 flex flex-col gap-4">
+<!-- Contract Details -->
+<div class="bg-surface-container-lowest rounded-xl p-5 border border-surface-variant">
+<h3 class="font-label-lg text-label-lg text-on-background mb-4">Sözleşme Bilgileri</h3>
+<ul class="flex flex-col gap-4">
+<li class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">calendar_today</span>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Başlangıç Tarihi</p>
+<p class="font-body-md text-body-md text-on-background">15 Ağustos 2023</p>
+</div>
+</li>
+<li class="flex items-start gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">update</span>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Yenileme Periyodu</p>
+<p class="font-body-md text-body-md text-on-background">12 Ay (Yıllık)</p>
+</div>
+</li>
+<li class="flex items-start gap-3 pt-3 border-t border-surface-variant">
+<div class="w-8 h-8 rounded-full bg-surface-container-low flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">description</span>
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">Notlar</p>
+<p class="font-body-md text-body-md text-on-background text-sm">Depozito: 1 kira bedeli (alındı).</p>
+</div>
+</li>
+</ul>
+</div>
+<!-- Extra Actions for Sidebar -->
+<div class="grid grid-cols-2 gap-3 hidden md:grid">
+<button class="flex flex-col items-center justify-center p-3 rounded-lg bg-surface-container-low hover:bg-surface-container-highest transition-colors text-on-surface-variant group">
+<span class="material-symbols-outlined mb-1 group-hover:text-primary transition-colors">picture_as_pdf</span>
+<span class="font-label-sm text-label-sm">PDF İndir</span>
+</button>
+<button class="flex flex-col items-center justify-center p-3 rounded-lg bg-surface-container-low hover:bg-surface-container-highest transition-colors text-on-surface-variant group">
+<span class="material-symbols-outlined mb-1 group-hover:text-primary transition-colors">share</span>
+<span class="font-label-sm text-label-sm">Paylaş</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 w-full flex justify-around items-center px-2 py-3 bg-surface dark:bg-surface shadow-[0_-1px_0_0_rgba(0,0,0,0.05)] z-50 transition-colors duration-200 flat no shadows">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant opacity-60 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest rounded-lg p-2 active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+<span class="font-label-sm text-[10px]">Ana</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container dark:bg-primary-container text-primary dark:text-on-primary-container rounded-full px-5 py-1 active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">domain</span>
+<span class="font-label-sm text-[10px]">Kiralarım</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant opacity-60 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest rounded-lg p-2 active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">calculate</span>
+<span class="font-label-sm text-[10px]">Hesapla</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant opacity-60 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest rounded-lg p-2 active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">trending_up</span>
+<span class="font-label-sm text-[10px]">Oranlar</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant opacity-60 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest rounded-lg p-2 active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">settings</span>
+<span class="font-label-sm text-[10px]">Ayarlar</span>
+</a>
+</nav>
+
+
+</body></html>

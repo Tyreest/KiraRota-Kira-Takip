@@ -108,6 +108,7 @@ Aşağıdakiler yeşil unit test olsa bile **Internal Testing tablosu (C) işare
 
 ## E) Production ID’ler (ayrı iş)
 
-- [ ] AdMob App ID + Banner unit → test ID’den gerçek ID’ye  
+- [x] AdMob App ID + Banner + Interstitial → production (`store/ADMOB.md`)
+- [ ] Internal Testing’de production reklam (test device; reklama tıklama)  
 - [ ] Data safety / gizlilik formu Play Console  
 - [ ] Closed → Production rollout kararı  

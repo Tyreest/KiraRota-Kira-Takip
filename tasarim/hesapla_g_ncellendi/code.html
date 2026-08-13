@@ -1,0 +1,282 @@
+<!DOCTYPE html><html class="light" lang="tr"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Kira Artışı Hesapla - KiraRota</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-primary-fixed-variant": "#364c3c",
+                      "on-error-container": "#93000a",
+                      "on-secondary-fixed-variant": "#404943",
+                      "background": "#fcf9f8",
+                      "on-secondary-fixed": "#151d19",
+                      "on-background": "#1b1c1c",
+                      "primary-container": "#1b3022",
+                      "secondary-fixed-dim": "#c0c9c1",
+                      "on-primary-fixed": "#0b2013",
+                      "surface-tint": "#4d6453",
+                      "tertiary-fixed": "#e4e2de",
+                      "inverse-on-surface": "#f3f0f0",
+                      "error-container": "#ffdad6",
+                      "inverse-surface": "#303030",
+                      "on-primary": "#ffffff",
+                      "surface-container-lowest": "#ffffff",
+                      "outline": "#737973",
+                      "primary-fixed-dim": "#b4cdb8",
+                      "on-tertiary-fixed": "#1b1c1a",
+                      "on-primary-container": "#819986",
+                      "surface-dim": "#dcd9d9",
+                      "surface-container-low": "#f6f3f2",
+                      "on-error": "#ffffff",
+                      "primary": "#061b0e",
+                      "on-secondary-container": "#5e6660",
+                      "secondary": "#58605a",
+                      "outline-variant": "#c3c8c1",
+                      "on-tertiary-container": "#949390",
+                      "surface-bright": "#fcf9f8",
+                      "on-surface": "#1b1c1c",
+                      "surface-container-high": "#eae7e7",
+                      "tertiary": "#171715",
+                      "on-surface-variant": "#434843",
+                      "surface-variant": "#e4e2e1",
+                      "surface": "#fcf9f8",
+                      "secondary-fixed": "#dce5dd",
+                      "surface-container-highest": "#e4e2e1",
+                      "inverse-primary": "#b4cdb8",
+                      "error": "#ba1a1a",
+                      "surface-container": "#f0eded",
+                      "on-secondary": "#ffffff",
+                      "on-tertiary": "#ffffff",
+                      "secondary-container": "#dce5dd",
+                      "tertiary-container": "#2b2c2a",
+                      "on-tertiary-fixed-variant": "#474744",
+                      "primary-fixed": "#d0e9d4",
+                      "tertiary-fixed-dim": "#c8c6c3"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "xs": "4px",
+                      "lg": "24px",
+                      "sm": "8px",
+                      "md": "16px",
+                      "xl": "32px",
+                      "margin-mobile": "16px",
+                      "gutter": "12px",
+                      "base": "4px",
+                      "margin-desktop": "24px"
+              },
+              "fontFamily": {
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "display-currency": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "label-lg": [
+                              "Inter"
+                      ],
+                      "label-sm": [
+                              "Inter"
+                      ],
+                      "display-currency-mobile": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-currency": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-lg": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "letterSpacing": "0.1px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.5px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "display-currency-mobile": [
+                              "28px",
+                              {
+                                      "lineHeight": "36px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-lg": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col pt-16 pb-20">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface dark:bg-surface flex items-center justify-between px-margin-mobile h-16 transition-colors duration-200">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary dark:text-primary-fixed-dim" data-icon="home_work">home_work</span>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary dark:text-primary-fixed-dim font-bold">KiraRota</h1>
+</div>
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center overflow-hidden">
+<span class="material-symbols-outlined text-on-secondary-container" data-icon="person">person</span>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 px-margin-mobile pt-md">
+<div class="mb-lg">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-xs">Kira Artışı Hesapla</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Manuel hesaplama için lütfen bilgileri giriniz.</p>
+</div>
+<!-- Glassmorphism Form Card -->
+<div class="bg-surface-container-lowest rounded-xl p-lg shadow-[0_4px_24px_rgba(6,27,14,0.08)] mb-lg relative overflow-hidden">
+<!-- Decorative subtle accent bar -->
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-surface-tint opacity-80"></div>
+<form class="space-y-md">
+<!-- Mevcut Kira -->
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs" for="current_rent">Mevcut kira (₺)</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline-variant" data-icon="payments">payments</span>
+<input class="w-full bg-surface-container-low border-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 rounded-t-DEFAULT pl-10 py-sm font-body-lg text-body-lg text-on-surface transition-colors" id="current_rent" placeholder="Örn: 15000" type="number">
+</div>
+</div>
+<!-- Yenileme Tarihi -->
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs" for="renewal_date">Yenileme tarihi</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline-variant" data-icon="event">event</span>
+<input class="w-full bg-surface-container-low border-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 rounded-t-DEFAULT pl-10 py-sm font-body-lg text-body-lg text-on-surface transition-colors" id="renewal_date" type="month">
+</div>
+</div>
+<!-- Sözleşme Başlangıcı -->
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-xs" for="contract_start">Sözleşme başlangıcı (Opsiyonel)</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline-variant" data-icon="history">history</span>
+<input class="w-full bg-surface-container-low border-0 border-b-2 border-outline-variant focus:border-primary focus:ring-0 rounded-t-DEFAULT pl-10 py-sm font-body-lg text-body-lg text-on-surface transition-colors" id="contract_start" type="date">
+</div>
+</div>
+</form>
+</div>
+<!-- Info Box -->
+<div class="bg-secondary-container rounded-lg p-md flex items-start gap-sm mb-xl shadow-[0_2px_8px_rgba(6,27,14,0.04)]">
+<span class="material-symbols-outlined text-primary mt-xs" data-icon="info" data-weight="fill" style="font-variation-settings: 'FILL' 1;">info</span>
+<p class="font-body-md text-body-md text-on-secondary-container">Yenileme tarihine göre ilgili <strong class="font-semibold text-primary">TÜFE 12 aylık ortalama oranı</strong> kullanılır.</p>
+</div>
+<!-- Action Button -->
+<div class="fixed bottom-[88px] left-0 right-0 px-margin-mobile z-40 bg-gradient-to-t from-background to-transparent pt-lg pb-sm">
+<button class="w-full bg-primary text-on-primary rounded-full py-md font-label-lg text-label-lg shadow-[0_8px_16px_rgba(6,27,14,0.2)] hover:bg-surface-tint transition-colors duration-200 flex items-center justify-center gap-sm active:scale-[0.98]">
+<span class="material-symbols-outlined" data-icon="calculate">calculate</span>
+                Hesapla
+            </button>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 bg-surface dark:bg-surface shadow-[0_-1px_0_0_rgba(0,0,0,0.05)] flex justify-around items-center px-2 py-3 md:hidden">
+<!-- Dashboard (Inactive) -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant opacity-60 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest active:scale-95 transition-transform duration-150 p-sm rounded-lg" href="#">
+<span class="material-symbols-outlined mb-xs" data-icon="dashboard">dashboard</span>
+<span class="font-label-sm text-label-sm">Ana</span>
+</a>
+<!-- My Rentals (Inactive) -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant opacity-60 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest active:scale-95 transition-transform duration-150 p-sm rounded-lg" href="#">
+<span class="material-symbols-outlined mb-xs" data-icon="domain">domain</span>
+<span class="font-label-sm text-label-sm">Kiralarım</span>
+</a>
+<!-- Calculate (Active) -->
+<a class="flex flex-col items-center justify-center bg-secondary-container dark:bg-primary-container text-primary dark:text-on-primary-container rounded-full px-5 py-1 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined mb-xs" data-icon="calculate" data-weight="fill" style="font-variation-settings: 'FILL' 1;">calculate</span>
+<span class="font-label-sm text-label-sm font-semibold">Hesapla</span>
+</a>
+<!-- Rates (Inactive) -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant opacity-60 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest active:scale-95 transition-transform duration-150 p-sm rounded-lg" href="#">
+<span class="material-symbols-outlined mb-xs" data-icon="trending_up">trending_up</span>
+<span class="font-label-sm text-label-sm">Oranlar</span>
+</a>
+<!-- Settings (Inactive) -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant opacity-60 hover:bg-surface-container-highest dark:hover:bg-surface-container-highest active:scale-95 transition-transform duration-150 p-sm rounded-lg" href="#">
+<span class="material-symbols-outlined mb-xs" data-icon="settings">settings</span>
+<span class="font-label-sm text-label-sm">Ayarlar</span>
+</a>
+</nav>
+<script>
+        // Simple micro-interaction for input fields to ensure label feels connected
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.parentElement.classList.add('opacity-100');
+            });
+            input.addEventListener('blur', () => {
+                if(!input.value) {
+                     input.parentElement.parentElement.classList.remove('opacity-100');
+                }
+            });
+        });
+    </script>
+
+
+</body></html>
