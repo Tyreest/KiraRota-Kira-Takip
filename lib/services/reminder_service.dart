@@ -236,14 +236,13 @@ class ReminderService {
   }
 
   Future<bool> _scheduleAlarms(Rental rental) async {
+    // Belirsiz legacy / doğrulanmamış geçmiş tarih için alarm kurma.
+    if (rental.renewalResolved == false) return false;
+
     final ids = RentalNotificationIds.forRental(rental.id);
     final name = rental.displayName;
-    final renewal = DateTime(
-      rental.increaseDate.year,
-      rental.increaseDate.month,
-      rental.increaseDate.day,
-      9,
-    );
+    final next = rental.nextRenewalDate;
+    final renewal = DateTime(next.year, next.month, next.day, 9);
     final prefs = rental.reminder;
 
     try {

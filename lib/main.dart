@@ -86,6 +86,8 @@ class _KiraAppState extends ConsumerState<KiraApp> with WidgetsBindingObserver {
     final reminders = ref.read(reminderServiceProvider);
     // Açılışta permission İSTEMEZ — yalnızca plugin + kayıtlı alarmları yenile.
     await reminders.init();
+    await ref.read(rentalRepositoryProvider).migrateRenewalsIfNeeded();
+    ref.read(rentalsProvider.notifier).refresh();
     await reminders.rescheduleSavedIfPossible();
     await ref.read(rentalsProvider.notifier).rescheduleAllReminders();
   }

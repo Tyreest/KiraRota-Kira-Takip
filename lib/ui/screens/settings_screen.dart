@@ -1,18 +1,17 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../../core/constants.dart';
 import '../../core/theme.dart';
 import '../../providers/app_providers.dart';
 import '../../services/ads_service.dart';
 import '../../services/external_link_service.dart';
+import '../../services/rental_backup_service.dart';
 import '../../services/ump_consent_service.dart';
+import '../widgets/backup_ready_sheet.dart';
 import '../widgets/design_system.dart';
 import '../widgets/pro_paywall.dart';
 import '../widgets/review_access_sheet.dart';
@@ -225,18 +224,30 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Kira kayıtlarınız cihazda saklanır. Android Auto Backup '
-                'açıksa uygulama verileri cihaz değişiminde geri yüklenebilir. '
-                'Ayrı bir bulut yedekleme hesabı yoktur.',
+                'Kira kayıtlarının cihazında saklayabileceğin bir yedeğini oluştur.',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Android Auto Backup açıksa cihaz değişiminde de geri '
+                'yüklenebilir. Ayrı bir bulut yedekleme hesabı yoktur.',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: AppColors.onSurfaceVariant,
                 ),
               ),
               const SizedBox(height: 12),
               OutlinedButton.icon(
-                onPressed: () => _exportRentalsJson(context),
-                icon: const Icon(Icons.share_outlined),
-                label: const Text('Kira verilerini JSON olarak paylaş'),
+                onPressed: () => _createBackup(context),
+                icon: const Icon(Icons.backup_outlined),
+                label: const Text('Yedek oluştur'),
+              ),
+              const SizedBox(height: 8),
+              OutlinedButton.icon(
+                onPressed: () => _restoreBackup(context),
+                icon: const Icon(Icons.restore_outlined),
+                label: const Text('Yedeği geri yükle'),
               ),
             ],
           ),
@@ -330,17 +341,111 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
-  Future<void> _exportRentalsJson(BuildContext context) async {
-    final rentals = ref.read(rentalRepositoryProvider).loadAll();
-    final payload = {
-      'app': AppConstants.appName,
-      'exportedAt': DateTime.now().toIso8601String(),
-      'rentals': rentals.map((e) => e.toJson()).toList(),
-    };
-    final text = const JsonEncoder.withIndent('  ').convert(payload);
-    await SharePlus.instance.share(
-      ShareParams(text: text, subject: '${AppConstants.appName} kira verileri'),
-    );
+  Future<void> _createBackup(BuildContext context) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final service = RentalBackupService();
+    PreparedRentalBackup? prepared;
+    try {
+      final rentals = ref.read(rentalRepositoryProvider).loadAll();
+      prepared = await service.prepareBackup(rentals);
+      if (!context.mounted) return;
+      await showBackupReadySheet(
+        context,
+        onSaveToDevice: () async {
+          final result = await service.savePreparedToDevice(prepared!);
+          if (!context.mounted) return;
+          switch (result.outcome) {
+            case BackupSaveOutcome.saved:
+              messenger.showSnackBar(
+                const SnackBar(content: Text('Yedek kaydedildi')),
+              );
+            case BackupSaveOutcome.cancelled:
+              break;
+            case BackupSaveOutcome.failed:
+              messenger.showSnackBar(
+                const SnackBar(
+                  content: Text('Yedek kaydedilemedi. Lütfen tekrar deneyin.'),
+                ),
+              );
+          }
+        },
+        onShare: () async {
+          await service.sharePrepared(prepared!);
+        },
+      );
+    } catch (_) {
+      if (!context.mounted) return;
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text('Yedek oluşturulamadı. Lütfen tekrar deneyin.'),
+        ),
+      );
+    } finally {
+      await prepared?.dispose();
+    }
+  }
+
+  Future<void> _restoreBackup(BuildContext context) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final service = RentalBackupService();
+    try {
+      final picked = await service.pickBackupFile();
+      if (picked == null) return; // iptal — hata değil
+      if (picked.bytes == null) {
+        if (!context.mounted) return;
+        messenger.showSnackBar(
+          const SnackBar(
+            content: Text(RentalBackupService.invalidBackupMessage),
+          ),
+        );
+        return;
+      }
+      final decoded = service.decodeBackupBytes(picked.bytes!);
+      if (!decoded.isValid) {
+        if (!context.mounted) return;
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text(
+              decoded.errorMessage ?? RentalBackupService.invalidBackupMessage,
+            ),
+          ),
+        );
+        return;
+      }
+      if (!context.mounted) return;
+      final confirmed = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Yedeği geri yükle'),
+          content: Text(
+            'Mevcut kira kayıtlarınız bu yedekteki '
+            '${decoded.rentals!.length} kayıtla değiştirilecek. '
+            'Devam edilsin mi?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('İptal'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('Geri yükle'),
+            ),
+          ],
+        ),
+      );
+      if (confirmed != true) return;
+      await ref.read(rentalsProvider.notifier).restoreRentals(decoded.rentals!);
+      if (!context.mounted) return;
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Yedek geri yüklendi')),
+      );
+    } catch (_) {
+      if (!context.mounted) return;
+      messenger.showSnackBar(
+        const SnackBar(content: Text(RentalBackupService.invalidBackupMessage)),
+      );
+    }
   }
 }
 

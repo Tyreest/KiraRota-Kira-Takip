@@ -56,9 +56,15 @@ abstract final class DashboardLogic {
     var upcoming = 0;
     var thisMonth = 0;
     for (final r in rentals) {
-      final days = daysUntilRenewal(r.increaseDate, now: n);
+      final effective = r.renewalResolved != null
+          ? r
+          : migrateRentalRenewal(r, now: n);
+      final status = renewalStatusOf(effective, now: n);
+      if (status.needsConfirmation) continue;
+      final days = daysUntilRenewal(effective.nextRenewalDate, now: n);
       if (days >= 0 && days <= upcomingHorizonDays) upcoming++;
-      if (r.increaseDate.year == n.year && r.increaseDate.month == n.month) {
+      final next = dateOnly(effective.nextRenewalDate);
+      if (days >= 0 && next.year == n.year && next.month == n.month) {
         thisMonth++;
       }
     }
@@ -75,12 +81,23 @@ abstract final class DashboardLogic {
     int limit = 5,
   }) {
     final n = now ?? DateTime.now();
-    final list = [...rentals]
-      ..sort((a, b) => a.increaseDate.compareTo(b.increaseDate));
-    return list
+    final effectiveList = rentals
+        .map(
+          (r) =>
+              r.renewalResolved != null ? r : migrateRentalRenewal(r, now: n),
+        )
+        .toList();
+    effectiveList.sort(
+      (a, b) => a.nextRenewalDate.compareTo(b.nextRenewalDate),
+    );
+    return effectiveList
         .where((r) {
-          final d = daysUntilRenewal(r.increaseDate, now: n);
-          return d >= -7; // biraz geçmiş yenilemeler de gösterilebilir
+          final status = renewalStatusOf(r, now: n);
+          // Belirsiz legacy tarih dashboard upcoming'e girmez.
+          // Gerçek overdue (pending nextRenewalDate) listelenir; Yaklaşan sayacı
+          // yalnızca gelecekteki nextRenewalDate için artar (summarize).
+          if (status.needsConfirmation) return false;
+          return true;
         })
         .take(limit)
         .toList();
@@ -92,7 +109,7 @@ abstract final class DashboardLogic {
     required TufeRateBundle bundle,
   }) {
     final key =
-        '${rental.increaseDate.year}-${rental.increaseDate.month.toString().padLeft(2, '0')}';
+        '${rental.nextRenewalDate.year}-${rental.nextRenewalDate.month.toString().padLeft(2, '0')}';
     final official = bundle.findByRenewalMonth(key);
     final rate = official ?? bundle.latest;
     if (rate == null) return null;

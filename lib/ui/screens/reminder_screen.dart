@@ -48,7 +48,7 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
     }
     setState(() {
       _displayName = rental.displayName;
-      _renewal = rental.increaseDate;
+      _renewal = rental.nextRenewalDate;
       _enabled = rental.reminder.enabled;
       _d30 = rental.reminder.notify30;
       _d7 = rental.reminder.notify7;
@@ -146,6 +146,7 @@ class _ReminderScreenState extends ConsumerState<ReminderScreen> {
     if (existing == null) return null;
     final updated = existing.copyWith(
       increaseDate: _renewal,
+      renewalResolved: true,
       updatedAt: DateTime.now(),
       reminder: RentalReminderPrefs(
         enabled: enabled,

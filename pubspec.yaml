@@ -1,7 +1,7 @@
 name: kira_artisi_hesapla
 description: "KiraRota — kira takibi ve TÜFE esaslı kira artışı hesaplama."
 publish_to: "none"
-version: 1.1.0+10
+version: 1.1.0+11
 
 environment:
   sdk: ^3.12.2
@@ -30,7 +30,6 @@ dependencies:
   crypto: ^3.0.7
   file_saver: ^0.4.0
   url_launcher: ^6.3.2
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -49,6 +48,7 @@ flutter:
     - assets/fonts/NotoSans-Regular.ttf
     - assets/fonts/NotoSans-Bold.ttf
     - assets/fonts/NotoSans-Italic.ttf
+    - assets/branding/kirarota/symbol_green_transparent.png
 
 flutter_launcher_icons:
   android: true

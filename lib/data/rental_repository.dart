@@ -22,6 +22,30 @@ class RentalRepository {
       ..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
   }
 
+  /// Legacy yenileme alanlarını bir kez çözümler ve gerekirse kaydeder.
+  Future<bool> migrateRenewalsIfNeeded({DateTime? now}) async {
+    final raw = _prefs.getString(storageKey);
+    if (raw == null || raw.isEmpty) return false;
+    final list = jsonDecode(raw) as List<dynamic>;
+    final n = now ?? DateTime.now();
+    var dirty = false;
+    final migrated = <Rental>[];
+    for (final e in list) {
+      final r = Rental.fromJson(e as Map<String, dynamic>);
+      final m = migrateRentalRenewal(r, now: n);
+      if (m.renewalResolved != r.renewalResolved ||
+          m.lastRenewalDate != r.lastRenewalDate ||
+          dateOnly(m.increaseDate) != dateOnly(r.increaseDate)) {
+        dirty = true;
+      }
+      migrated.add(m);
+    }
+    if (dirty) {
+      await _saveAll(migrated);
+    }
+    return dirty;
+  }
+
   Rental? findById(String id) {
     for (final r in loadAll()) {
       if (r.id == id) return r;
@@ -80,7 +104,9 @@ class RentalRepository {
 
     final updated = current.copyWith(
       currentRent: result.calculatedRent,
+      lastRenewalDate: dateOnly(current.increaseDate),
       increaseDate: nextIncreaseAnniversary(current.increaseDate),
+      renewalResolved: true,
       updatedAt: DateTime.now(),
       history: history,
     );
@@ -120,6 +146,7 @@ class RentalRepository {
       currentRent: input.currentRent,
       contractStartDate: input.contractStart,
       increaseDate: input.renewalDate,
+      renewalResolved: true,
       contractIncreaseRate: input.contractIncreasePercent,
       tenantName: tenantName,
       ownerName: ownerName,
@@ -149,4 +176,7 @@ class RentalRepository {
   }
 
   Future<void> clear() => _prefs.remove(storageKey);
+
+  /// Yedekten tüm kayıtları yazar (mevcut listeyi değiştirir).
+  Future<void> replaceAll(List<Rental> items) => _saveAll(List.of(items));
 }

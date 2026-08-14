@@ -96,19 +96,29 @@ void main() {
     });
   });
 
-  group('RequestedRentCompare', () {
-    test('fark = talep − hesaplanan', () {
-      const c = RequestedRentCompare(
-        calculatedRent: 30000,
-        requestedRent: 35000,
-      );
-      expect(c.difference, 5000);
+  group('DashboardLogic next-up vs Yaklaşan metric', () {
+    test('321 gün sonrası: Yaklaşan=0, sıradaki kart mevcut', () {
+      final now = DateTime(2026, 8, 14);
+      final r = _rental(
+        id: 'far',
+        increase: DateTime(2027, 7, 1),
+      ).copyWith(renewalResolved: true);
+      final s = DashboardLogic.summarize([r], now: now);
+      expect(s.upcomingCount, 0);
+      final next = DashboardLogic.upcomingRentals([r], now: now, limit: 1);
+      expect(next, hasLength(1));
+      expect(daysUntilRenewal(next.first.nextRenewalDate, now: now), 321);
+    });
 
-      const under = RequestedRentCompare(
-        calculatedRent: 30000,
-        requestedRent: 28000,
-      );
-      expect(under.difference, -2000);
+    test('20 gün kala Yaklaşan metric’e dahil', () {
+      final now = DateTime(2026, 8, 14);
+      final r = _rental(
+        id: 'near',
+        increase: DateTime(2026, 9, 3),
+      ).copyWith(renewalResolved: true);
+      final s = DashboardLogic.summarize([r], now: now);
+      expect(daysUntilRenewal(r.nextRenewalDate, now: now), 20);
+      expect(s.upcomingCount, 1);
     });
   });
 }

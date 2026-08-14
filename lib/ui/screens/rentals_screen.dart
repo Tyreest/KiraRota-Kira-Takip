@@ -9,6 +9,7 @@ import '../../domain/dashboard_logic.dart';
 import '../../domain/models/rental.dart';
 import '../../providers/app_providers.dart';
 import '../widgets/design_system.dart';
+import '../widgets/past_renewal_sheet.dart';
 import '../widgets/pro_paywall.dart';
 import 'rental_detail_screen.dart';
 import 'rental_edit_screen.dart';
@@ -39,10 +40,59 @@ class _RentalsScreenState extends ConsumerState<RentalsScreen> {
       await showProPaywall(context, ref);
       return;
     }
-    if (!context.mounted) return;
+    if (!mounted) return;
     await Navigator.of(context).push<void>(
       MaterialPageRoute<void>(builder: (_) => const RentalEditScreen()),
     );
+  }
+
+  Future<void> _openRental(Rental rental) async {
+    var current = rental;
+    if (current.renewalResolved == false) {
+      final resolved = await _resolveAmbiguousRenewal(current);
+      if (resolved == null) return;
+      current = resolved;
+    }
+    if (!mounted) return;
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(
+        builder: (_) => RentalDetailScreen(rentalId: current.id),
+      ),
+    );
+  }
+
+  Future<Rental?> _resolveAmbiguousRenewal(Rental rental) async {
+    final past = dateOnly(rental.nextRenewalDate);
+    final suggested = nextIncreaseAnniversary(past);
+    final choice = await showPastRenewalConfirmationSheet(
+      context,
+      pastDate: past,
+      suggestedNext: suggested,
+    );
+    if (!mounted) return null;
+    if (choice == null) return null;
+    if (choice == PastRenewalChoice.changeDate) {
+      await Navigator.of(context).push<void>(
+        MaterialPageRoute<void>(
+          builder: (_) => RentalEditScreen(rentalId: rental.id),
+        ),
+      );
+      return null;
+    }
+    final updated = choice == PastRenewalChoice.completed
+        ? rental.copyWith(
+            lastRenewalDate: past,
+            increaseDate: suggested,
+            renewalResolved: true,
+            updatedAt: DateTime.now(),
+          )
+        : rental.copyWith(
+            increaseDate: past,
+            renewalResolved: true,
+            updatedAt: DateTime.now(),
+          );
+    await ref.read(rentalsProvider.notifier).update(updated);
+    return updated;
   }
 
   List<Rental> _filtered(List<Rental> rentals) {
@@ -61,20 +111,26 @@ class _RentalsScreenState extends ConsumerState<RentalsScreen> {
     }
 
     bool matchesFilter(Rental r) {
-      final days = daysUntilRenewal(r.increaseDate, now: now);
+      final status = renewalStatusOf(r, now: now);
+      final days = daysUntilRenewal(r.nextRenewalDate, now: now);
       return switch (_filter) {
         _RentalFilter.all => true,
         _RentalFilter.upcoming =>
-          days >= 0 && days <= DashboardLogic.upcomingHorizonDays,
+          !status.needsConfirmation &&
+              days >= 0 &&
+              days <= DashboardLogic.upcomingHorizonDays,
         _RentalFilter.thisMonth =>
-          r.increaseDate.year == now.year && r.increaseDate.month == now.month,
-        _RentalFilter.past => days < 0,
+          !status.needsConfirmation &&
+              days >= 0 &&
+              r.nextRenewalDate.year == now.year &&
+              r.nextRenewalDate.month == now.month,
+        _RentalFilter.past => !status.needsConfirmation && days < 0,
       };
     }
 
     final list =
         rentals.where((r) => matchesSearch(r) && matchesFilter(r)).toList()
-          ..sort((a, b) => a.increaseDate.compareTo(b.increaseDate));
+          ..sort((a, b) => a.nextRenewalDate.compareTo(b.nextRenewalDate));
     return list;
   }
 
@@ -178,16 +234,7 @@ class _RentalsScreenState extends ConsumerState<RentalsScreen> {
           )
         else
           for (final rental in visible) ...[
-            _RentalCard(
-              rental: rental,
-              onTap: () {
-                Navigator.of(context).push<void>(
-                  MaterialPageRoute<void>(
-                    builder: (_) => RentalDetailScreen(rentalId: rental.id),
-                  ),
-                );
-              },
-            ),
+            _RentalCard(rental: rental, onTap: () => _openRental(rental)),
             const SizedBox(height: 12),
           ],
         if (!isPro) ...[
@@ -411,13 +458,12 @@ class _RentalCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final days = daysUntilRenewal(rental.increaseDate);
-    final daysLabel = days < 0
-        ? 'Yenileme geçti'
-        : days == 0
-        ? 'Bugün'
-        : '$days gün kaldı';
-    final accent = days < 0 ? AppColors.error : AppColors.primary;
+    final status = renewalStatusOf(rental);
+    final daysLabel = status.shortLabel;
+    final accent = status.isWarning ? AppColors.error : AppColors.primary;
+    final dateLabel = status.needsConfirmation
+        ? formatDateTr(rental.nextRenewalDate)
+        : formatDateTr(rental.nextRenewalDate);
 
     return SoftCard(
       padding: EdgeInsets.zero,
@@ -431,7 +477,7 @@ class _RentalCard extends StatelessWidget {
               Container(
                 width: 4,
                 decoration: BoxDecoration(
-                  color: accent.withValues(alpha: days < 0 ? 1 : 0.85),
+                  color: accent.withValues(alpha: status.isOverdue ? 1 : 0.85),
                   borderRadius: const BorderRadius.horizontal(
                     left: Radius.circular(AppRadii.xl),
                   ),
@@ -446,7 +492,7 @@ class _RentalCard extends StatelessWidget {
                         width: 40,
                         height: 40,
                         decoration: BoxDecoration(
-                          color: days < 0
+                          color: status.isWarning
                               ? AppColors.errorContainer
                               : AppColors.secondaryContainer,
                           shape: BoxShape.circle,
@@ -454,7 +500,9 @@ class _RentalCard extends StatelessWidget {
                         child: Icon(
                           Icons.apartment_outlined,
                           size: 20,
-                          color: days < 0 ? AppColors.error : AppColors.primary,
+                          color: status.isWarning
+                              ? AppColors.error
+                              : AppColors.primary,
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -485,7 +533,7 @@ class _RentalCard extends StatelessWidget {
                             Row(
                               children: [
                                 Icon(
-                                  days < 0
+                                  status.isWarning
                                       ? Icons.warning_amber_rounded
                                       : Icons.calendar_today_outlined,
                                   size: 14,
@@ -493,7 +541,7 @@ class _RentalCard extends StatelessWidget {
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  formatDateTr(rental.increaseDate),
+                                  dateLabel,
                                   style: Theme.of(context).textTheme.labelSmall
                                       ?.copyWith(color: accent),
                                 ),
@@ -508,39 +556,24 @@ class _RentalCard extends StatelessWidget {
                         children: [
                           Text(
                             formatMoney(rental.currentRent),
-                            style: GoogleFonts.inter(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.onSurface,
-                            ),
+                            style: Theme.of(context).textTheme.titleSmall
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.primary,
+                                ),
                           ),
-                          const SizedBox(height: 6),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 3,
-                            ),
-                            decoration: BoxDecoration(
-                              color: days < 0
-                                  ? AppColors.errorContainer
-                                  : AppColors.secondaryContainer,
-                              borderRadius: BorderRadius.circular(
-                                AppRadii.pill,
-                              ),
-                            ),
-                            child: Text(
-                              daysLabel,
-                              style: Theme.of(context).textTheme.labelSmall
-                                  ?.copyWith(
-                                    color: days < 0
-                                        ? AppColors.error
-                                        : AppColors.secondary,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                            ),
+                          const SizedBox(height: 4),
+                          Text(
+                            daysLabel,
+                            style: Theme.of(context).textTheme.labelSmall
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: accent,
+                                ),
                           ),
                         ],
                       ),
+                      const Icon(Icons.chevron_right, color: AppColors.outline),
                     ],
                   ),
                 ),

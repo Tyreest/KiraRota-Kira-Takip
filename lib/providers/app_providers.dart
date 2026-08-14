@@ -119,11 +119,20 @@ final rentalsProvider = StateNotifierProvider<RentalsNotifier, List<Rental>>((
 
 class RentalsNotifier extends StateNotifier<List<Rental>> {
   RentalsNotifier(this._repo, this._reminders, this._hasProFeatures)
-    : super(_repo.loadAll());
+    : super(_repo.loadAll()) {
+    Future.microtask(_migrateIfNeeded);
+  }
 
   final RentalRepository _repo;
   final ReminderService _reminders;
   final bool Function() _hasProFeatures;
+
+  Future<void> _migrateIfNeeded() async {
+    final changed = await _repo.migrateRenewalsIfNeeded();
+    if (changed) {
+      state = _repo.loadAll();
+    }
+  }
 
   void refresh() {
     state = _repo.loadAll();
@@ -192,6 +201,16 @@ class RentalsNotifier extends StateNotifier<List<Rental>> {
   }
 
   Future<void> rescheduleAllReminders() async {
+    await _reminders.rescheduleAllRentals(state);
+  }
+
+  /// Yedekten geri yükleme — mevcut kayıtların yerine yazar.
+  Future<void> restoreRentals(List<Rental> rentals) async {
+    for (final existing in state) {
+      await _reminders.cancelForRental(existing.id);
+    }
+    await _repo.replaceAll(rentals);
+    state = _repo.loadAll();
     await _reminders.rescheduleAllRentals(state);
   }
 }

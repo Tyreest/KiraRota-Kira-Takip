@@ -7,6 +7,7 @@ import '../../core/theme.dart';
 import '../../domain/models/rental.dart';
 import '../../providers/app_providers.dart';
 import '../widgets/design_system.dart';
+import '../widgets/past_renewal_sheet.dart';
 
 class RentalEditScreen extends ConsumerStatefulWidget {
   const RentalEditScreen({super.key, this.rentalId});
@@ -64,7 +65,7 @@ class _RentalEditScreenState extends ConsumerState<RentalEditScreen> {
     _notesCtrl.text = rental.notes ?? '';
     setState(() {
       _role = rental.role;
-      _renewal = rental.increaseDate;
+      _renewal = rental.nextRenewalDate;
       _contractStart = rental.contractStartDate;
       _hydrated = true;
     });
@@ -132,6 +133,35 @@ class _RentalEditScreenState extends ConsumerState<RentalEditScreen> {
     final address = _addressCtrl.text.trim();
     final notes = _notesCtrl.text.trim();
     final now = DateTime.now();
+    final today = dateOnly(now);
+    final picked = dateOnly(_renewal);
+
+    DateTime next = picked;
+    DateTime? last;
+
+    if (widget.isEditing) {
+      final existing = ref
+          .read(rentalRepositoryProvider)
+          .findById(widget.rentalId!);
+      last = existing?.lastRenewalDate;
+    }
+
+    if (picked.isBefore(today)) {
+      final suggested = nextIncreaseAnniversary(picked);
+      final choice = await showPastRenewalConfirmationSheet(
+        context,
+        pastDate: picked,
+        suggestedNext: suggested,
+      );
+      if (!mounted) return;
+      if (choice == null || choice == PastRenewalChoice.changeDate) return;
+      if (choice == PastRenewalChoice.completed) {
+        last = picked;
+        next = suggested;
+      } else {
+        next = picked;
+      }
+    }
 
     if (widget.isEditing) {
       final existing = ref
@@ -143,7 +173,9 @@ class _RentalEditScreenState extends ConsumerState<RentalEditScreen> {
         displayName: name,
         currentRent: rent,
         contractStartDate: _contractStart,
-        increaseDate: _renewal,
+        increaseDate: next,
+        lastRenewalDate: last,
+        renewalResolved: true,
         tenantName: tenant.isEmpty ? null : tenant,
         clearTenantName: tenant.isEmpty,
         ownerName: owner.isEmpty ? null : owner,
@@ -162,7 +194,9 @@ class _RentalEditScreenState extends ConsumerState<RentalEditScreen> {
         displayName: name,
         currentRent: rent,
         contractStartDate: _contractStart,
-        increaseDate: _renewal,
+        increaseDate: next,
+        lastRenewalDate: last,
+        renewalResolved: true,
         tenantName: tenant.isEmpty ? null : tenant,
         ownerName: owner.isEmpty ? null : owner,
         address: address.isEmpty ? null : address,
@@ -244,7 +278,8 @@ class _RentalEditScreenState extends ConsumerState<RentalEditScreen> {
                 DatePickerTile(
                   label: 'Yenileme tarihi',
                   helperText:
-                      'Yeni kira döneminin başladığı tarih. Genellikle sözleşmenin yıl dönümüdür.',
+                      'Bir sonraki yenileme tarihini gir. Son yenileme '
+                      'geçmişteyse kaydederken sana soracağız.',
                   valueText: formatDateTr(_renewal),
                   onTap: _pickRenewal,
                 ),

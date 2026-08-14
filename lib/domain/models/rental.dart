@@ -194,6 +194,8 @@ class Rental {
     required this.increaseDate,
     required this.createdAt,
     required this.updatedAt,
+    this.lastRenewalDate,
+    this.renewalResolved,
     this.contractIncreaseRate,
     this.tenantName,
     this.ownerName,
@@ -211,8 +213,15 @@ class Rental {
   final double currentRent;
   final DateTime contractStartDate;
 
-  /// Yenileme / artış tarihi.
+  /// Sonraki yenileme tarihi (aksiyon tarihi). Legacy JSON: `increaseDate` / `renewalDate`.
   final DateTime increaseDate;
+
+  /// Tamamlanmış son yenileme (opsiyonel).
+  final DateTime? lastRenewalDate;
+
+  /// null = henüz migrate edilmemiş legacy; true/false = kullanıcı/otomatik çözüm.
+  final bool? renewalResolved;
+
   final double? contractIncreaseRate;
   final String? tenantName;
   final String? ownerName;
@@ -226,6 +235,10 @@ class Rental {
   /// Stitch / ürün dili: taşınmaz adı.
   String get propertyName => displayName;
 
+  /// Aksiyon alınacak sonraki yenileme.
+  DateTime get nextRenewalDate => increaseDate;
+
+  /// Legacy alias.
   DateTime get renewalDate => increaseDate;
 
   RentalCalculationSnapshot? get latestCalculation =>
@@ -246,15 +259,26 @@ class Rental {
         ? (json['propertyName'] as String).trim()
         : (json['displayName'] as String? ?? '').trim();
 
+    final nextRaw =
+        (json['nextRenewalDate'] as String?) ??
+        (json['renewalDate'] as String?) ??
+        (json['increaseDate'] as String);
+    final lastRaw = json['lastRenewalDate'] as String?;
+
+    bool? resolved;
+    if (json.containsKey('renewalResolved')) {
+      resolved = json['renewalResolved'] as bool?;
+    }
+
     return Rental(
       id: json['id'] as String,
       role: RentalRole.fromJson(json['role'] as String?),
       displayName: name.isEmpty ? 'Adsız taşınmaz' : name,
       currentRent: (json['currentRent'] as num).toDouble(),
       contractStartDate: DateTime.parse(json['contractStartDate'] as String),
-      increaseDate: DateTime.parse(
-        (json['renewalDate'] as String?) ?? (json['increaseDate'] as String),
-      ),
+      increaseDate: DateTime.parse(nextRaw),
+      lastRenewalDate: lastRaw == null ? null : DateTime.parse(lastRaw),
+      renewalResolved: resolved,
       contractIncreaseRate: (json['contractIncreaseRate'] as num?)?.toDouble(),
       tenantName: (json['tenantName'] as String?)?.trim(),
       ownerName: (json['ownerName'] as String?)?.trim(),
@@ -278,6 +302,10 @@ class Rental {
     'contractStartDate': contractStartDate.toIso8601String(),
     'increaseDate': increaseDate.toIso8601String(),
     'renewalDate': increaseDate.toIso8601String(),
+    'nextRenewalDate': increaseDate.toIso8601String(),
+    if (lastRenewalDate != null)
+      'lastRenewalDate': lastRenewalDate!.toIso8601String(),
+    if (renewalResolved != null) 'renewalResolved': renewalResolved,
     'contractIncreaseRate': contractIncreaseRate,
     if (tenantName != null && tenantName!.isNotEmpty) 'tenantName': tenantName,
     if (ownerName != null && ownerName!.isNotEmpty) 'ownerName': ownerName,
@@ -295,6 +323,9 @@ class Rental {
     double? currentRent,
     DateTime? contractStartDate,
     DateTime? increaseDate,
+    DateTime? lastRenewalDate,
+    bool clearLastRenewalDate = false,
+    bool? renewalResolved,
     double? contractIncreaseRate,
     bool clearContractIncreaseRate = false,
     String? tenantName,
@@ -316,6 +347,10 @@ class Rental {
       currentRent: currentRent ?? this.currentRent,
       contractStartDate: contractStartDate ?? this.contractStartDate,
       increaseDate: increaseDate ?? this.increaseDate,
+      lastRenewalDate: clearLastRenewalDate
+          ? null
+          : (lastRenewalDate ?? this.lastRenewalDate),
+      renewalResolved: renewalResolved ?? this.renewalResolved,
       contractIncreaseRate: clearContractIncreaseRate
           ? null
           : (contractIncreaseRate ?? this.contractIncreaseRate),
@@ -331,19 +366,124 @@ class Rental {
   }
 }
 
+/// Takvim günü (saat/timezone kayması yok).
+DateTime dateOnly(DateTime d) => DateTime(d.year, d.month, d.day);
+
 /// Artış dönemi sonrası bir sonraki yıl dönümü (güvenli gün taşması).
 DateTime nextIncreaseAnniversary(DateTime current) {
-  final next = DateTime(current.year + 1, current.month, current.day);
-  if (next.month != current.month) {
-    return DateTime(current.year + 1, current.month + 1, 0);
+  final d = dateOnly(current);
+  final next = DateTime(d.year + 1, d.month, d.day);
+  if (next.month != d.month) {
+    return DateTime(d.year + 1, d.month + 1, 0);
   }
   return next;
 }
 
-/// Yenilemeye kalan gün (geçmişse negatif).
+/// Yenilemeye kalan gün (geçmişse negatif). [nextRenewalDate] üzerinden.
 int daysUntilRenewal(DateTime renewal, {DateTime? now}) {
   final n = now ?? DateTime.now();
-  final today = DateTime(n.year, n.month, n.day);
-  final day = DateTime(renewal.year, renewal.month, renewal.day);
+  final today = dateOnly(n);
+  final day = dateOnly(renewal);
   return day.difference(today).inDays;
+}
+
+/// Kart / detay yenileme durumu — yalnız [Rental.nextRenewalDate] + resolution.
+enum RenewalUrgency { ok, today, overdue, needsConfirmation }
+
+class RenewalStatusInfo {
+  const RenewalStatusInfo({
+    required this.urgency,
+    required this.daysUntil,
+    required this.shortLabel,
+    required this.detailLabel,
+  });
+
+  final RenewalUrgency urgency;
+  final int daysUntil;
+  final String shortLabel;
+  final String detailLabel;
+
+  bool get isOverdue => urgency == RenewalUrgency.overdue;
+  bool get needsConfirmation => urgency == RenewalUrgency.needsConfirmation;
+  bool get isWarning =>
+      urgency == RenewalUrgency.overdue ||
+      urgency == RenewalUrgency.needsConfirmation;
+}
+
+RenewalStatusInfo renewalStatusOf(Rental rental, {DateTime? now}) {
+  final n = now ?? DateTime.now();
+  // Persist edilmemiş legacy için aynı heuristic (yan etki yok).
+  final r = rental.renewalResolved != null
+      ? rental
+      : migrateRentalRenewal(rental, now: n);
+
+  if (r.renewalResolved == false) {
+    final days = daysUntilRenewal(r.nextRenewalDate, now: n);
+    return RenewalStatusInfo(
+      urgency: RenewalUrgency.needsConfirmation,
+      daysUntil: days,
+      shortLabel: 'Tarihi doğrula',
+      detailLabel: 'Yenileme tarihini doğrula',
+    );
+  }
+  final days = daysUntilRenewal(r.nextRenewalDate, now: n);
+  if (days < 0) {
+    return RenewalStatusInfo(
+      urgency: RenewalUrgency.overdue,
+      daysUntil: days,
+      shortLabel: 'Yenileme geçti',
+      detailLabel: 'Yenileme geçti',
+    );
+  }
+  if (days == 0) {
+    return const RenewalStatusInfo(
+      urgency: RenewalUrgency.today,
+      daysUntil: 0,
+      shortLabel: 'Bugün',
+      detailLabel: 'Bugün yenileniyor',
+    );
+  }
+  return RenewalStatusInfo(
+    urgency: RenewalUrgency.ok,
+    daysUntil: days,
+    shortLabel: '$days gün kaldı',
+    detailLabel: '$days gün kaldı',
+  );
+}
+
+/// Snapshot/history bu tarihte tamamlanmış yenilemeyi destekliyor mu?
+bool historySupportsCompletedRenewal(Rental rental, DateTime candidate) {
+  final c = dateOnly(candidate);
+  final key = '${c.year}-${c.month.toString().padLeft(2, '0')}';
+  for (final s in rental.history) {
+    if (s.tufeReferenceMonth == key) return true;
+    if (dateOnly(s.increaseDate) == c) return true;
+  }
+  return false;
+}
+
+/// Legacy kayıtları bir kez çözümler (idempotent).
+Rental migrateRentalRenewal(Rental rental, {required DateTime now}) {
+  if (rental.renewalResolved != null) return rental;
+
+  final today = dateOnly(now);
+  final next = dateOnly(rental.increaseDate);
+
+  if (!next.isBefore(today)) {
+    return rental.copyWith(renewalResolved: true);
+  }
+
+  if (rental.lastRenewalDate != null) {
+    return rental.copyWith(renewalResolved: true);
+  }
+
+  if (historySupportsCompletedRenewal(rental, next)) {
+    return rental.copyWith(
+      lastRenewalDate: next,
+      increaseDate: nextIncreaseAnniversary(next),
+      renewalResolved: true,
+    );
+  }
+
+  return rental.copyWith(renewalResolved: false);
 }

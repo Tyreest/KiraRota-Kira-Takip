@@ -138,19 +138,17 @@ class RentalDetailScreen extends ConsumerWidget {
   }
 
   String _shareText(Rental rental, EstimatedRenewalRent? estimate) {
-    final days = daysUntilRenewal(rental.increaseDate);
-    final daysLine = days < 0
-        ? 'Yenileme geçti'
-        : days == 0
-        ? 'Yenileme: bugün'
-        : 'Yenilemeye $days gün kaldı';
-
+    final status = renewalStatusOf(rental);
     final b = StringBuffer()
       ..writeln('${AppConstants.brandName} — kira özeti')
       ..writeln(rental.propertyName)
-      ..writeln('Mevcut kira: ${formatMoney(rental.currentRent)}')
-      ..writeln('Yenileme: ${formatDateTr(rental.increaseDate)}')
-      ..writeln(daysLine);
+      ..writeln('Mevcut kira: ${formatMoney(rental.currentRent)}');
+    if (rental.lastRenewalDate != null) {
+      b.writeln('Son yenileme: ${formatDateTr(rental.lastRenewalDate!)}');
+    }
+    b
+      ..writeln('Sonraki yenileme: ${formatDateTr(rental.nextRenewalDate)}')
+      ..writeln(status.detailLabel);
 
     if (estimate != null) {
       if (estimate.isOfficialForPeriod) {
@@ -203,12 +201,8 @@ class RentalDetailScreen extends ConsumerWidget {
       orElse: () => null,
     );
 
-    final days = daysUntilRenewal(active.increaseDate);
-    final daysLabel = days < 0
-        ? 'Yenileme geçti'
-        : days == 0
-        ? 'Bugün'
-        : '$days gün kaldı';
+    final status = renewalStatusOf(active);
+    final daysLabel = status.detailLabel;
 
     final history = isPro
         ? active.history
@@ -313,7 +307,7 @@ class RentalDetailScreen extends ConsumerWidget {
                               vertical: 4,
                             ),
                             decoration: BoxDecoration(
-                              color: days < 0
+                              color: status.isWarning
                                   ? AppColors.errorContainer
                                   : AppColors.secondaryContainer,
                               borderRadius: BorderRadius.circular(
@@ -326,7 +320,7 @@ class RentalDetailScreen extends ConsumerWidget {
                                 Icon(
                                   Icons.timer_outlined,
                                   size: 14,
-                                  color: days < 0
+                                  color: status.isWarning
                                       ? AppColors.error
                                       : AppColors.primary,
                                 ),
@@ -336,7 +330,7 @@ class RentalDetailScreen extends ConsumerWidget {
                                   style: Theme.of(context).textTheme.labelSmall
                                       ?.copyWith(
                                         fontWeight: FontWeight.w700,
-                                        color: days < 0
+                                        color: status.isWarning
                                             ? AppColors.error
                                             : AppColors.primary,
                                       ),
@@ -347,8 +341,14 @@ class RentalDetailScreen extends ConsumerWidget {
                         ],
                       ),
                       const SizedBox(height: AppSpace.sm),
+                      if (active.lastRenewalDate != null)
+                        Text(
+                          'Son yenileme: ${formatDateTr(active.lastRenewalDate!)}',
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(color: AppColors.onSurfaceVariant),
+                        ),
                       Text(
-                        'Yenileme: ${formatDateTr(active.increaseDate)}',
+                        'Sonraki yenileme: ${formatDateTr(active.nextRenewalDate)}',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w500,
                         ),
@@ -543,9 +543,14 @@ class RentalDetailScreen extends ConsumerWidget {
                   label: 'Sözleşme başlangıcı',
                   value: formatDateTr(active.contractStartDate),
                 ),
+                if (active.lastRenewalDate != null)
+                  _InfoRow(
+                    label: 'Son yenileme',
+                    value: formatDateTr(active.lastRenewalDate!),
+                  ),
                 _InfoRow(
-                  label: 'Yenileme tarihi',
-                  value: formatDateTr(active.increaseDate),
+                  label: 'Sonraki yenileme',
+                  value: formatDateTr(active.nextRenewalDate),
                 ),
                 if (active.tenantName != null &&
                     active.tenantName!.trim().isNotEmpty)

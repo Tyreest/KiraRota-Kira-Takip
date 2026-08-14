@@ -143,10 +143,7 @@ class PdfReportService {
               pw.Divider(),
               pw.SizedBox(height: 12),
               _row('Mevcut aylık kira', formatMoney(result.input.currentRent)),
-              _row(
-                'Kira artış tarihi',
-                formatMonthKey(result.input.renewalMonthKey),
-              ),
+              _row('Kira artış tarihi', formatDateTr(result.input.renewalDate)),
               _row(
                 'TÜFE esaslı azami artış oranı',
                 formatPercent(result.tufeMaxRatePercent),
