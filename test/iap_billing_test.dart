@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+﻿import 'package:flutter_test/flutter_test.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:kira_artisi_hesapla/core/constants.dart';
 import 'package:kira_artisi_hesapla/data/local_store.dart';
@@ -74,7 +74,7 @@ void main() {
 
     expect(proRepo.isPro, isTrue);
     expect(iap.state.storeAvailable, isFalse);
-    expect(iap.priceForUi, 'Mağazadan alın');
+    expect(iap.priceForUi, 'Tek seferlik satın alma');
     expect(gateway.restoreCalls, 0);
   });
 
@@ -84,7 +84,7 @@ void main() {
       await setup(catalogHasProduct: false);
       expect(iap.state.loading, isFalse);
       expect(iap.state.priceUnavailable, isTrue);
-      expect(iap.priceForUi, 'Fiyat şu anda alınamadı');
+      expect(iap.priceForUi, 'Tek seferlik satın alma');
       final outcome = await iap.buy();
       expect(outcome.result, BuyLaunchResult.productMissing);
       expect(proRepo.isPro, isFalse);
@@ -130,7 +130,7 @@ void main() {
     ready = true;
 
     expect(iap.state.loading, isFalse);
-    expect(iap.priceForUi, 'Fiyat şu anda alınamadı');
+    expect(iap.priceForUi, 'Tek seferlik satın alma');
     expect(iap.state.priceUnavailable, isTrue);
 
     await iap.refreshCatalog();
@@ -243,9 +243,9 @@ void main() {
     const loading = IapCatalogState();
     expect(loading.priceForUi, 'Fiyat yükleniyor…');
     const noStore = IapCatalogState(loading: false, storeAvailable: false);
-    expect(noStore.priceForUi, 'Mağazadan alın');
+    expect(noStore.priceForUi, 'Tek seferlik satın alma');
     const storeNoPrice = IapCatalogState(loading: false, storeAvailable: true);
-    expect(storeNoPrice.priceForUi, 'Fiyat şu anda alınamadı');
+    expect(storeNoPrice.priceForUi, 'Tek seferlik satın alma');
     expect(storeNoPrice.priceUnavailable, isTrue);
     const priced = IapCatalogState(
       loading: false,

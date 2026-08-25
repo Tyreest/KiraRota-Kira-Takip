@@ -164,7 +164,7 @@ class HomeDashboardScreen extends ConsumerWidget {
             Expanded(
               child: _QuickActionCard(
                 icon: Icons.add_home_outlined,
-                label: 'Kira Ekle',
+                label: 'Kira ekle',
                 onTap: () => _openAdd(context),
               ),
             ),
@@ -815,7 +815,7 @@ class _EmptyHome extends StatelessWidget {
         FilledButton.icon(
           onPressed: onAdd,
           icon: const Icon(Icons.add),
-          label: const Text('Kira Ekle'),
+          label: const Text('Kira ekle'),
         ),
         const SizedBox(height: 16),
         Text(

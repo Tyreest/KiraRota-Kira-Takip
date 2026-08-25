@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -237,17 +237,17 @@ void main() {
     await tester.tap(_hesaplaButton());
     await tester.pumpAndSettle();
 
-    await tester.ensureVisible(find.text('PDF Raporu Al'));
-    await tester.tap(find.text('PDF Raporu Al'));
+    await tester.ensureVisible(find.text('PDF raporu al'));
+    await tester.tap(find.text('PDF raporu al'));
     await tester.pumpAndSettle();
 
     expect(find.text('Şimdi Al'), findsOneWidget);
     // Fiyat Play’den gelir; test ortamında katalog yok → fallback
     expect(
-      find.textContaining('Mağazadan alın').evaluate().isNotEmpty ||
+      find.textContaining('Tek seferlik satın alma').evaluate().isNotEmpty ||
           find.textContaining('Fiyat yükleniyor').evaluate().isNotEmpty ||
           find
-              .textContaining('Fiyat şu anda alınamadı')
+              .textContaining('Tek seferlik satın alma')
               .evaluate()
               .isNotEmpty ||
           find.textContaining('₺').evaluate().isNotEmpty,
@@ -279,7 +279,7 @@ void main() {
     expect(find.text('Hesapla'), findsOneWidget);
     expect(find.text('Oranlar'), findsOneWidget);
     expect(find.text('Ayarlar'), findsOneWidget);
-    expect(find.text('Kira Ekle'), findsOneWidget);
+    expect(find.text('Kira ekle'), findsOneWidget);
     expect(find.text('Manuel kira artışı hesapla'), findsOneWidget);
     expect(find.text('Kira Artışı Hesapla'), findsNothing);
     expect(find.text('Kira Asistanı'), findsNothing);
@@ -393,7 +393,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.textContaining('Sınırsız kira takibi'), findsOneWidget);
-    expect(find.textContaining('Ücretsiz: 1 kayıtlı kira'), findsOneWidget);
+    expect(find.textContaining('Ücretsiz plan · 1 kira sınırı'), findsOneWidget);
   });
 
   testWidgets('6. Oranlar listesi + YENİ', (tester) async {

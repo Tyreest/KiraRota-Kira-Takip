@@ -79,8 +79,8 @@ class IapCatalogState {
   String get priceForUi {
     if (hasStorePrice) return localizedPrice!.trim();
     if (loading) return 'Fiyat yükleniyor…';
-    if (!storeAvailable) return 'Mağazadan alın';
-    return 'Fiyat şu anda alınamadı';
+    if (!storeAvailable) return 'Tek seferlik satın alma';
+    return 'Tek seferlik satın alma';
   }
 
   /// Katalog yüklendi ama mağaza fiyatı yok (retry gösterilebilir).

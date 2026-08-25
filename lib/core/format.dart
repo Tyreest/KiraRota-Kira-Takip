@@ -7,10 +7,20 @@ final _tryCurrency = NumberFormat.currency(
 );
 
 final _tryPercent = NumberFormat('#,##0.##', 'tr_TR');
+final _tryDecimal = NumberFormat('#,##0.#', 'tr_TR');
 
 String formatMoney(double value) => _tryCurrency.format(value);
 
 String formatPercent(double value) => '%${_tryPercent.format(value)}';
+
+/// Örn. `+%31,9` / `-%14,3` / `%0`
+String formatSignedPercent(double value) {
+  if (value > 0) return '+%${_tryDecimal.format(value)}';
+  if (value < 0) return '-%${_tryDecimal.format(value.abs())}';
+  return '%${_tryDecimal.format(0)}';
+}
+
+String formatDecimal(double value) => _tryDecimal.format(value);
 
 String formatMonthKey(String yyyyMm) {
   final parts = yyyyMm.split('-');

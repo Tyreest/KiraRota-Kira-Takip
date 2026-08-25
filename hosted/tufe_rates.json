@@ -1,39 +1,168 @@
 {
   "version": 2,
   "updated_at": "2026-08-03",
-  "source_note": "TÜİK tarafından açıklanan TÜFE on iki aylık ortalamalara göre değişim oranları. Bu uygulama resmi TÜİK uygulaması değildir. 11.06.2022–01.07.2024 arası konut yenilemelerinde ayrıca %25 tavanı geçerliydi; bu sürümde o dönem motoru yoktur.",
+  "source_note": "TÜİK tarafından açıklanan TÜFE on iki aylık ortalamalara göre değişim oranları. 11 Haziran 2022 – 1 Temmuz 2024 dönemindeki konut kira yenilemelerinde uygulanan özel artış sınırı, güncel TÜFE oranlarından ayrı değerlendirilmelidir. Geçmiş dönem hesaplamalarında resmi kaynakları kontrol edin.",
   "rates": [
-    { "renewal_month": "2024-01", "rate_percent": 64.77, "tuik_release_date": "2024-01-03" },
-    { "renewal_month": "2024-02", "rate_percent": 65.27, "tuik_release_date": "2024-02-05" },
-    { "renewal_month": "2024-03", "rate_percent": 65.40, "tuik_release_date": "2024-03-04" },
-    { "renewal_month": "2024-04", "rate_percent": 65.69, "tuik_release_date": "2024-04-03" },
-    { "renewal_month": "2024-05", "rate_percent": 65.94, "tuik_release_date": "2024-05-03" },
-    { "renewal_month": "2024-06", "rate_percent": 65.81, "tuik_release_date": "2024-06-03" },
-    { "renewal_month": "2024-07", "rate_percent": 58.51, "tuik_release_date": "2024-07-03" },
-    { "renewal_month": "2024-08", "rate_percent": 52.15, "tuik_release_date": "2024-08-05" },
-    { "renewal_month": "2024-09", "rate_percent": 49.38, "tuik_release_date": "2024-09-03" },
-    { "renewal_month": "2024-10", "rate_percent": 46.62, "tuik_release_date": "2024-10-03" },
-    { "renewal_month": "2024-11", "rate_percent": 43.92, "tuik_release_date": "2024-11-04" },
-    { "renewal_month": "2024-12", "rate_percent": 41.27, "tuik_release_date": "2025-01-03" },
-    { "renewal_month": "2025-01", "rate_percent": 43.51, "tuik_release_date": "2025-01-03" },
-    { "renewal_month": "2025-02", "rate_percent": 42.97, "tuik_release_date": "2025-02-03" },
-    { "renewal_month": "2025-03", "rate_percent": 42.44, "tuik_release_date": "2025-03-03" },
-    { "renewal_month": "2025-04", "rate_percent": 41.86, "tuik_release_date": "2025-04-03" },
-    { "renewal_month": "2025-05", "rate_percent": 41.06, "tuik_release_date": "2025-05-05" },
-    { "renewal_month": "2025-06", "rate_percent": 40.60, "tuik_release_date": "2025-06-03" },
-    { "renewal_month": "2025-07", "rate_percent": 40.09, "tuik_release_date": "2025-07-03" },
-    { "renewal_month": "2025-08", "rate_percent": 39.69, "tuik_release_date": "2025-08-04" },
-    { "renewal_month": "2025-09", "rate_percent": 38.92, "tuik_release_date": "2025-09-03" },
-    { "renewal_month": "2025-10", "rate_percent": 38.36, "tuik_release_date": "2025-10-03" },
-    { "renewal_month": "2025-11", "rate_percent": 37.15, "tuik_release_date": "2025-11-03" },
-    { "renewal_month": "2025-12", "rate_percent": 35.91, "tuik_release_date": "2026-01-05" },
-    { "renewal_month": "2026-01", "rate_percent": 34.88, "tuik_release_date": "2026-01-05" },
-    { "renewal_month": "2026-02", "rate_percent": 33.98, "tuik_release_date": "2026-02-03" },
-    { "renewal_month": "2026-03", "rate_percent": 33.39, "tuik_release_date": "2026-03-03" },
-    { "renewal_month": "2026-04", "rate_percent": 32.82, "tuik_release_date": "2026-04-03" },
-    { "renewal_month": "2026-05", "rate_percent": 32.43, "tuik_release_date": "2026-05-05" },
-    { "renewal_month": "2026-06", "rate_percent": 32.24, "tuik_release_date": "2026-06-03" },
-    { "renewal_month": "2026-07", "rate_percent": 32.03, "tuik_release_date": "2026-07-03" },
-    { "renewal_month": "2026-08", "rate_percent": 31.90, "tuik_release_date": "2026-08-03", "source_url": "https://data.tuik.gov.tr/Bulten/Index?p=Tuketici-Fiyat-Endeksi-Temmuz-2026-58297" }
+    {
+      "renewal_month": "2024-01",
+      "rate_percent": 64.77,
+      "tuik_release_date": "2024-01-03"
+    },
+    {
+      "renewal_month": "2024-02",
+      "rate_percent": 65.27,
+      "tuik_release_date": "2024-02-05"
+    },
+    {
+      "renewal_month": "2024-03",
+      "rate_percent": 65.4,
+      "tuik_release_date": "2024-03-04"
+    },
+    {
+      "renewal_month": "2024-04",
+      "rate_percent": 65.69,
+      "tuik_release_date": "2024-04-03"
+    },
+    {
+      "renewal_month": "2024-05",
+      "rate_percent": 65.94,
+      "tuik_release_date": "2024-05-03"
+    },
+    {
+      "renewal_month": "2024-06",
+      "rate_percent": 65.81,
+      "tuik_release_date": "2024-06-03"
+    },
+    {
+      "renewal_month": "2024-07",
+      "rate_percent": 58.51,
+      "tuik_release_date": "2024-07-03"
+    },
+    {
+      "renewal_month": "2024-08",
+      "rate_percent": 52.15,
+      "tuik_release_date": "2024-08-05"
+    },
+    {
+      "renewal_month": "2024-09",
+      "rate_percent": 49.38,
+      "tuik_release_date": "2024-09-03"
+    },
+    {
+      "renewal_month": "2024-10",
+      "rate_percent": 46.62,
+      "tuik_release_date": "2024-10-03"
+    },
+    {
+      "renewal_month": "2024-11",
+      "rate_percent": 43.92,
+      "tuik_release_date": "2024-11-04"
+    },
+    {
+      "renewal_month": "2024-12",
+      "rate_percent": 41.27,
+      "tuik_release_date": "2025-01-03"
+    },
+    {
+      "renewal_month": "2025-01",
+      "rate_percent": 43.51,
+      "tuik_release_date": "2025-01-03"
+    },
+    {
+      "renewal_month": "2025-02",
+      "rate_percent": 42.97,
+      "tuik_release_date": "2025-02-03"
+    },
+    {
+      "renewal_month": "2025-03",
+      "rate_percent": 42.44,
+      "tuik_release_date": "2025-03-03"
+    },
+    {
+      "renewal_month": "2025-04",
+      "rate_percent": 41.86,
+      "tuik_release_date": "2025-04-03"
+    },
+    {
+      "renewal_month": "2025-05",
+      "rate_percent": 41.06,
+      "tuik_release_date": "2025-05-05"
+    },
+    {
+      "renewal_month": "2025-06",
+      "rate_percent": 40.6,
+      "tuik_release_date": "2025-06-03"
+    },
+    {
+      "renewal_month": "2025-07",
+      "rate_percent": 40.09,
+      "tuik_release_date": "2025-07-03"
+    },
+    {
+      "renewal_month": "2025-08",
+      "rate_percent": 39.69,
+      "tuik_release_date": "2025-08-04"
+    },
+    {
+      "renewal_month": "2025-09",
+      "rate_percent": 38.92,
+      "tuik_release_date": "2025-09-03"
+    },
+    {
+      "renewal_month": "2025-10",
+      "rate_percent": 38.36,
+      "tuik_release_date": "2025-10-03"
+    },
+    {
+      "renewal_month": "2025-11",
+      "rate_percent": 37.15,
+      "tuik_release_date": "2025-11-03"
+    },
+    {
+      "renewal_month": "2025-12",
+      "rate_percent": 35.91,
+      "tuik_release_date": "2026-01-05"
+    },
+    {
+      "renewal_month": "2026-01",
+      "rate_percent": 34.88,
+      "tuik_release_date": "2026-01-05"
+    },
+    {
+      "renewal_month": "2026-02",
+      "rate_percent": 33.98,
+      "tuik_release_date": "2026-02-03"
+    },
+    {
+      "renewal_month": "2026-03",
+      "rate_percent": 33.39,
+      "tuik_release_date": "2026-03-03"
+    },
+    {
+      "renewal_month": "2026-04",
+      "rate_percent": 32.82,
+      "tuik_release_date": "2026-04-03"
+    },
+    {
+      "renewal_month": "2026-05",
+      "rate_percent": 32.43,
+      "tuik_release_date": "2026-05-05"
+    },
+    {
+      "renewal_month": "2026-06",
+      "rate_percent": 32.24,
+      "tuik_release_date": "2026-06-03"
+    },
+    {
+      "renewal_month": "2026-07",
+      "rate_percent": 32.03,
+      "tuik_release_date": "2026-07-03"
+    },
+    {
+      "renewal_month": "2026-08",
+      "rate_percent": 31.9,
+      "tuik_release_date": "2026-08-03",
+      "source_url": "https://data.tuik.gov.tr/Bulten/Index?p=Tuketici-Fiyat-Endeksi-Temmuz-2026-58297"
+    }
   ]
 }

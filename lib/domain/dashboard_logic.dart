@@ -1,3 +1,4 @@
+import '../core/format.dart';
 import 'models/rental.dart';
 import 'models/tufe_rate.dart';
 
@@ -169,15 +170,57 @@ abstract final class DashboardLogic {
   }
 }
 
-/// Talep edilen kira farkı (nötr matematik).
+/// Karşılaştırma yardımcısı — ana hesabı mutate etmez / persist etmez.
 class RequestedRentCompare {
   const RequestedRentCompare({
     required this.calculatedRent,
     required this.requestedRent,
+    required this.currentRent,
+    required this.calculatedIncreaseRatePercent,
   });
 
   final double calculatedRent;
+
+  /// Karşılaştırılacak (konuşulan / teklif edilen) kira.
   final double requestedRent;
+  final double currentRent;
+
+  /// Bu hesapta gerçekten uygulanan artış oranı (%).
+  final double calculatedIncreaseRatePercent;
+
+  double get comparisonRent => requestedRent;
 
   double get difference => requestedRent - calculatedRent;
+
+  /// Mevcut kiraya göre karşılaştırılan tutarın artış yüzdesi.
+  /// [currentRent] <= 0 ise null (UI’ya NaN sızmaz).
+  double? get comparisonIncreasePercent {
+    if (currentRent <= 0 || !currentRent.isFinite) return null;
+    if (!requestedRent.isFinite) return null;
+    final p = ((requestedRent - currentRent) / currentRent) * 100;
+    if (!p.isFinite) return null;
+    return p;
+  }
+
+  /// Karşılaştırılan artış − hesaplanan artış (yüzde puan).
+  double? get percentagePointDifference {
+    final p = comparisonIncreasePercent;
+    if (p == null || !calculatedIncreaseRatePercent.isFinite) return null;
+    final d = p - calculatedIncreaseRatePercent;
+    if (!d.isFinite) return null;
+    return d;
+  }
+
+  /// Kullanıcıya gösterilecek oran farkı metni (TÜFE demez).
+  String get rateInsightLabel {
+    final d = percentagePointDifference;
+    if (d == null) return '';
+    const eps = 0.05; // yuvarlama gürültüsü
+    if (d.abs() < eps) return 'Hesaplanan artış oranıyla aynı';
+    final points = formatDecimal(d.abs());
+    if (d > 0) {
+      return 'Hesaplanan artış oranından $points puan yüksek';
+    }
+    return 'Hesaplanan artış oranından $points puan düşük';
+  }
 }

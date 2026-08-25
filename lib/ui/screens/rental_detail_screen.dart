@@ -287,18 +287,19 @@ class RentalDetailScreen extends ConsumerWidget {
                         style: Theme.of(context).textTheme.labelSmall,
                       ),
                       const SizedBox(height: 4),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                      Wrap(
+                        alignment: WrapAlignment.spaceBetween,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 8,
+                        runSpacing: 6,
                         children: [
-                          Expanded(
-                            child: Text(
-                              formatMoney(active.currentRent),
-                              style: GoogleFonts.inter(
-                                fontSize: 28,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: -0.5,
-                                color: AppColors.primary,
-                              ),
+                          Text(
+                            formatMoney(active.currentRent),
+                            style: GoogleFonts.inter(
+                              fontSize: 28,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: -0.5,
+                              color: AppColors.primary,
                             ),
                           ),
                           Container(
@@ -325,15 +326,21 @@ class RentalDetailScreen extends ConsumerWidget {
                                       : AppColors.primary,
                                 ),
                                 const SizedBox(width: 4),
-                                Text(
-                                  daysLabel,
-                                  style: Theme.of(context).textTheme.labelSmall
-                                      ?.copyWith(
-                                        fontWeight: FontWeight.w700,
-                                        color: status.isWarning
-                                            ? AppColors.error
-                                            : AppColors.primary,
-                                      ),
+                                Flexible(
+                                  child: Text(
+                                    daysLabel,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .labelSmall
+                                        ?.copyWith(
+                                          fontWeight: FontWeight.w700,
+                                          color: status.isWarning
+                                              ? AppColors.error
+                                              : AppColors.primary,
+                                        ),
+                                  ),
                                 ),
                               ],
                             ),

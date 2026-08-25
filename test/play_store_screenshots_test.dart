@@ -224,7 +224,7 @@ void main() {
     for (var i = 0; i < 6; i++) {
       await tester.drag(find.byType(Scrollable).first, const Offset(0, -280));
       await _settle(tester);
-      if (find.text('PDF Raporu Al').evaluate().isNotEmpty &&
+      if (find.text('PDF raporu al').evaluate().isNotEmpty &&
           find.text('Paylaş').evaluate().isNotEmpty) {
         break;
       }

@@ -166,7 +166,7 @@ class _RentalsScreenState extends ConsumerState<RentalsScreen> {
         if (!isPro) ...[
           const SizedBox(height: 2),
           Text(
-            'Ücretsiz: ${AppConstants.freeRentalLimit} kayıtlı kira',
+            'Ücretsiz plan · ${AppConstants.freeRentalLimit} kira sınırı',
             style: Theme.of(context).textTheme.bodySmall,
           ),
         ],
@@ -282,7 +282,7 @@ class _RentalsScreenState extends ConsumerState<RentalsScreen> {
                       visualDensity: VisualDensity.compact,
                     ),
                     onPressed: () => showProPaywall(context, ref),
-                    child: const Text('Pro’ya Geç'),
+                    child: const Text('Pro’ya geç'),
                   ),
                 ),
               ],
@@ -348,7 +348,7 @@ class _AddRentalCta extends StatelessWidget {
       return FilledButton.icon(
         onPressed: onPressed,
         icon: const Icon(Icons.add_home_work_outlined),
-        label: const Text('Kira Ekle'),
+        label: const Text('Kira ekle'),
       );
     }
 
@@ -360,7 +360,7 @@ class _AddRentalCta extends StatelessWidget {
           child: OutlinedButton.icon(
             onPressed: onPressed,
             icon: const Icon(Icons.add_home_work_outlined),
-            label: const Text('Kira Ekle'),
+            label: const Text('Kira ekle'),
           ),
         ),
         const Positioned(right: 10, top: -8, child: ProBadge(compact: true)),
@@ -431,7 +431,7 @@ class _EmptyRentals extends StatelessWidget {
                 FilledButton.icon(
                   onPressed: onAdd,
                   icon: const Icon(Icons.add),
-                  label: const Text('Kira Ekle'),
+                  label: const Text('Kira ekle'),
                 ),
               ],
             ),

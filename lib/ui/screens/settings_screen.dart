@@ -131,8 +131,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   onPressed: () => showProPaywall(context, ref),
                   child: Text(
                     catalog.hasStorePrice
-                        ? 'Pro’ya Geç — $price'
-                        : 'Pro’ya Geç',
+                        ? 'Pro’ya geç — $price'
+                        : 'Pro’ya geç',
                   ),
                 ),
               ],

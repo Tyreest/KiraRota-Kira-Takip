@@ -101,7 +101,7 @@ void main() {
     await tester.drag(find.byType(ListView).first, const Offset(0, -600));
     await tester.pumpAndSettle();
     expect(find.text('Manuel Hesaplama'), findsOneWidget);
-    expect(find.text('Kira Ekle'), findsOneWidget);
+    expect(find.text('Kira ekle'), findsOneWidget);
     expect(find.text('Yenileme geçti'), findsNothing);
   });
 
@@ -111,7 +111,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Kiranı takip etmeye başla'), findsOneWidget);
-    expect(find.text('Kira Ekle'), findsOneWidget);
+    expect(find.text('Kira ekle'), findsOneWidget);
     expect(find.text('Manuel kira artışı hesapla'), findsOneWidget);
     expect(find.text('SIRADAKİ YENİLEME'), findsNothing);
   });

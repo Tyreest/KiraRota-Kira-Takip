@@ -490,7 +490,7 @@ class _ResultViewState extends ConsumerState<_ResultView> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text(
-                        'Kiralarıma Kaydet',
+                        'Kiralarıma kaydet',
                         style: Theme.of(ctx).textTheme.headlineSmall,
                       ),
                       const SizedBox(height: 12),
@@ -623,6 +623,8 @@ class _ResultViewState extends ConsumerState<_ResultView> {
         : RequestedRentCompare(
             calculatedRent: result.calculatedRent,
             requestedRent: requested,
+            currentRent: result.input.currentRent,
+            calculatedIncreaseRatePercent: result.applicableRatePercent,
           );
 
     return ListView(
@@ -788,14 +790,14 @@ class _ResultViewState extends ConsumerState<_ResultView> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      'Talep edilen kira ile karşılaştır',
+                      'Başka bir kira tutarıyla karşılaştır',
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 12),
-              FieldLabel('Talep edilen kira'),
+              const FieldLabel('Karşılaştırılacak kira'),
               TextField(
                 controller: _requestedCtrl,
                 keyboardType: const TextInputType.numberWithOptions(
@@ -806,30 +808,55 @@ class _ResultViewState extends ConsumerState<_ResultView> {
                 ],
                 decoration: const InputDecoration(
                   prefixText: '₺ ',
-                  hintText: 'Örn: 55000',
+                  hintText: 'Örn: 59000',
                 ),
                 onChanged: (_) => setState(() {}),
               ),
+              const SizedBox(height: 6),
+              Text(
+                'Konuşulan veya teklif edilen tutarı gir.',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                ),
+              ),
               if (compare != null) ...[
                 const SizedBox(height: 14),
+                const Divider(height: 1),
+                const SizedBox(height: 12),
                 _CompareRow(
                   label: 'Hesaplanan',
                   value: formatMoney(compare.calculatedRent),
+                  secondary: formatSignedPercent(
+                    compare.calculatedIncreaseRatePercent,
+                  ),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 8),
                 _CompareRow(
-                  label: 'Talep edilen',
-                  value: formatMoney(compare.requestedRent),
+                  label: 'Karşılaştırılan',
+                  value: formatMoney(compare.comparisonRent),
+                  secondary: compare.comparisonIncreasePercent == null
+                      ? null
+                      : formatSignedPercent(compare.comparisonIncreasePercent!),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 8),
                 _CompareRow(
                   label: 'Fark',
                   value: _formatSignedMoney(compare.difference),
                   emphasize: true,
                 ),
-                const SizedBox(height: 8),
+                if (compare.rateInsightLabel.isNotEmpty) ...[
+                  const SizedBox(height: 10),
+                  Text(
+                    compare.rateInsightLabel,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColors.primaryDeep,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 10),
                 Text(
-                  'Fark = talep edilen − hesaplanan. Yalnızca karşılaştırma amaçlıdır; kaydedilmez.',
+                  'Bu alan yalnızca karşılaştırma içindir; hesaplamayı değiştirmez ve kaydedilmez.',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: AppColors.onSurfaceVariant,
                   ),
@@ -850,7 +877,7 @@ class _ResultViewState extends ConsumerState<_ResultView> {
           FilledButton.tonalIcon(
             onPressed: () => _saveToRentals(context, ref),
             icon: const Icon(Icons.home_work_outlined),
-            label: const Text('Kiralarıma Kaydet'),
+            label: const Text('Kiralarıma kaydet'),
           ),
           const SizedBox(height: 8),
         ],
@@ -945,7 +972,7 @@ class _ResultViewState extends ConsumerState<_ResultView> {
                 );
               },
               icon: const Icon(Icons.picture_as_pdf_outlined),
-              label: const Text('PDF Raporu Al'),
+              label: const Text('PDF raporu al'),
             ),
             if (!isPro)
               const Positioned(
@@ -1016,16 +1043,19 @@ class _CompareRow extends StatelessWidget {
   const _CompareRow({
     required this.label,
     required this.value,
+    this.secondary,
     this.emphasize = false,
   });
 
   final String label;
   final String value;
+  final String? secondary;
   final bool emphasize;
 
   @override
   Widget build(BuildContext context) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
           child: Text(
@@ -1035,15 +1065,30 @@ class _CompareRow extends StatelessWidget {
             ).textTheme.bodyMedium?.copyWith(color: AppColors.onSurfaceVariant),
           ),
         ),
-        Text(
-          value,
-          style: emphasize
-              ? GoogleFonts.montserrat(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 16,
-                  color: AppColors.primaryDeep,
-                )
-              : Theme.of(context).textTheme.titleMedium,
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(
+              value,
+              style: emphasize
+                  ? GoogleFonts.montserrat(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 16,
+                      color: AppColors.primaryDeep,
+                    )
+                  : Theme.of(context).textTheme.titleMedium,
+            ),
+            if (secondary != null) ...[
+              const SizedBox(height: 2),
+              Text(
+                secondary!,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: AppColors.onSurfaceVariant,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ],
         ),
       ],
     );

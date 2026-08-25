@@ -272,9 +272,16 @@ void main() {
       await tester.tap(_filled('Hesapla'));
       await tester.pumpAndSettle();
 
-      await tester.ensureVisible(find.text('PDF Raporu Al'));
+      // Scroll result list so PDF CTA enters the layout pipeline.
+      final list = find.byType(ListView);
+      if (list.evaluate().isNotEmpty) {
+        await tester.drag(list.first, const Offset(0, -800));
+        await tester.pumpAndSettle();
+      }
+      expect(find.textContaining('PDF'), findsWidgets);
+      await tester.ensureVisible(find.text('PDF raporu al'));
       await tester.pumpAndSettle();
-      _expectAboveSystemNav(tester, find.text('PDF Raporu Al'));
+      _expectAboveSystemNav(tester, find.text('PDF raporu al'));
       await tester.ensureVisible(find.text('Yeni kirayı kaydet'));
       await tester.pumpAndSettle();
       _expectAboveSystemNav(tester, find.text('Yeni kirayı kaydet'));
@@ -453,7 +460,7 @@ void main() {
       );
     });
 
-    testWidgets('Kiralarıma Kaydet sheet: klavye açıkken Kaydet görünür', (
+    testWidgets('Kiralarıma kaydet sheet: klavye açıkken Kaydet görünür', (
       tester,
     ) async {
       _applyInsets(tester);
@@ -473,9 +480,9 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(_filled('Hesapla'));
       await tester.pumpAndSettle();
-      await tester.ensureVisible(find.text('Kiralarıma Kaydet'));
+      await tester.ensureVisible(find.text('Kiralarıma kaydet'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Kiralarıma Kaydet'));
+      await tester.tap(find.text('Kiralarıma kaydet'));
       await tester.pumpAndSettle();
 
       // Sheet açık; klavyeyi simüle et

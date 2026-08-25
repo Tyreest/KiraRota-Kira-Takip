@@ -187,8 +187,8 @@ void main() {
     await tester.tap(_hesaplaButton());
     await tester.pumpAndSettle();
 
-    await tester.ensureVisible(find.text('PDF Raporu Al'));
-    await tester.tap(find.text('PDF Raporu Al'));
+    await tester.ensureVisible(find.text('PDF raporu al'));
+    await tester.tap(find.text('PDF raporu al'));
     await tester.pumpAndSettle();
 
     expect(find.text('Cihaza Kaydet'), findsOneWidget);
@@ -241,8 +241,8 @@ void main() {
     await tester.tap(_hesaplaButton());
     await tester.pumpAndSettle();
 
-    await tester.ensureVisible(find.text('PDF Raporu Al'));
-    await tester.tap(find.text('PDF Raporu Al'));
+    await tester.ensureVisible(find.text('PDF raporu al'));
+    await tester.tap(find.text('PDF raporu al'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Cihaza Kaydet'));
     await tester.pumpAndSettle();
