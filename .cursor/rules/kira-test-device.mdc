@@ -1,14 +1,16 @@
 ---
-description: Varsayılan Android test AVD — yalnızca Kira_Test_Pixel8
+description: Varsayılan Android test AVD — yalnızca KiraRota_Test_Pixel8
 alwaysApply: true
 ---
 
-# Kira Artışı Hesaplama test cihazı
+# KiraRota test cihazı
 
-Bu proje için varsayılan Android test AVD'si:
+KiraRota Android runtime, smoke, screenshot, regression ve release QA çalışmaları için resmi AVD:
 
-- **AVD name:** `Kira_Test_Pixel8`
-- **Expected device:** Android 16 / API 36
+- **AVD name:** `KiraRota_Test_Pixel8`
+- **Expected device:** Pixel 8 · Android 16 / API 36
+
+`emulator-5554`, `emulator-5556` gibi ADB serial/port değerleri sabit kabul edilmez. Her çalışmada AVD adı üzerinden doğrulama yapılır.
 
 Her canlı/emülatör testinde önce:
 
@@ -18,12 +20,14 @@ Her canlı/emülatör testinde önce:
 
 ile doğru AVD'yi doğrula.
 
-`Kira_Test_Pixel8` olmayan emulator veya fiziksel cihaza:
+`KiraRota_Test_Pixel8` olmayan emulator veya fiziksel cihaza:
 
 - uygulama kurma
 - package silme
 - app data temizleme
 - adb komutu gönderme
+
+Başka Tyreest projelerine ait AVD'ler (ör. Koruvo, Aneryo, GiderRota) KiraRota QA için kullanılmaz.
 
 Mevcut device ID kalıcı kabul edilmemeli. Örneğin `emulator-5556` bugün doğru olabilir fakat sonraki boot'ta değişebilir.
 

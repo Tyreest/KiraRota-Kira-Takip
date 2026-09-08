@@ -224,16 +224,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Kira kayıtlarının cihazında saklayabileceğin bir yedeğini oluştur.',
+                'Verilerini cihazında yedekle ve geri yükle.',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Android Auto Backup açıksa cihaz değişiminde de geri '
-                'yüklenebilir. Ayrı bir bulut yedekleme hesabı yoktur.',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: AppColors.onSurfaceVariant,
                 ),
               ),
@@ -400,7 +392,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         );
         return;
       }
-      final decoded = service.decodeBackupBytes(picked.bytes!);
+      final decoded = service.decodeBackupBytes(
+        picked.bytes!,
+        isPro: ref.read(hasProFeaturesProvider),
+      );
       if (!decoded.isValid) {
         if (!context.mounted) return;
         messenger.showSnackBar(

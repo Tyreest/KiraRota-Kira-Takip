@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -8,11 +9,14 @@ import 'core/theme.dart';
 import 'data/screenshot_seed.dart';
 import 'providers/app_providers.dart';
 import 'services/ads_service.dart';
+import 'services/review_access.dart';
 import 'services/ump_consent_service.dart';
 import 'ui/home_shell.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Offline ilk açılış: runtime font fetch yok; sistem/fallback tipografi.
+  GoogleFonts.config.allowRuntimeFetching = false;
   await initializeDateFormatting('tr_TR');
   final prefs = await SharedPreferences.getInstance();
   await applyScreenshotSeedIfNeeded(prefs);
@@ -68,7 +72,12 @@ class _KiraAppState extends ConsumerState<KiraApp> with WidgetsBindingObserver {
       },
     );
     ref.read(isProProvider.notifier).syncFromRepo();
-    ref.read(reviewAccessEnabledProvider.notifier).syncFromRepo();
+    // Production’da hash yoksa review access bayrağı Auto Backup ile taşınsa bile Pro vermez.
+    if (!ReviewAccessVerifier.isConfigured) {
+      await ref.read(reviewAccessEnabledProvider.notifier).disable();
+    } else {
+      ref.read(reviewAccessEnabledProvider.notifier).syncFromRepo();
+    }
     final features = ref.read(hasProFeaturesProvider);
     AdsService.setAdsEnabled(!features);
 

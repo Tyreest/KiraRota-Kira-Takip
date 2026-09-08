@@ -9,6 +9,10 @@ abstract final class TuikUrls {
   static const String bulletinTemmuz2026 =
       'https://data.tuik.gov.tr/Bulten/Index?p=Tuketici-Fiyat-Endeksi-Temmuz-2026-58297';
 
+  /// Ağustos 2026 TÜFE bülteni (Eylül 2026 uygulama dönemi).
+  static const String bulletinAgustos2026 =
+      'https://data.tuik.gov.tr/Bulten/Index?p=Tuketici-Fiyat-Endeksi-Agustos-2026';
+
   /// [sourceUrl] doluysa onu, değilse [dataPortal] döner.
   static String resolve([String? sourceUrl]) {
     final u = sourceUrl?.trim();

@@ -142,7 +142,7 @@ class OnboardingScreen extends StatelessWidget {
                     ),
                     child: Text('Gizlilik Politikası', style: linkStyle),
                   ),
-                  Text('nı kabul etmiş olursunuz.', style: bodyStyle),
+                  Text('\u2019nı kabul etmiş olursunuz.', style: bodyStyle),
                 ],
               ),
             ],

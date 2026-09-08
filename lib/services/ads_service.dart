@@ -51,12 +51,27 @@ class AdsService {
   static InterstitialAd? _preloaded;
   static bool _loadingInterstitial = false;
 
+  /// Stale async callback / show iptali için monoton sayaç.
+  static int _requestGeneration = 0;
+
+  /// Consent / Pro / adsEnabled değişince banner yeniden denesin.
+  static final ValueNotifier<int> eligibilityEpoch = ValueNotifier<int>(0);
+
   /// Widget/unit testlerde gerçek AdMob SDK çağrısını atla.
   @visibleForTesting
   static bool skipSdk = false;
 
   static const _successCountKey = 'ads_success_calc_count';
   static const _lastInterstitialMsKey = 'ads_last_interstitial_ms';
+
+  static void _bumpEligibility() {
+    eligibilityEpoch.value++;
+  }
+
+  static void invalidatePendingAdRequests() {
+    _requestGeneration++;
+    discardPreloadedInterstitial();
+  }
 
   /// UMP [canRequestAds] sonucu (veya skipSdk).
   static bool get consentAllowsAds => skipSdk || _consentAllowsAds;
@@ -70,10 +85,14 @@ class AdsService {
   @visibleForTesting
   static bool get isSdkInitialized => _initialized;
 
+  @visibleForTesting
+  static int get requestGeneration => _requestGeneration;
+
   /// UMP coordinator sonucu.
   static void applyConsentCanRequestAds(bool value) {
     _consentAllowsAds = value;
     _log('consent canRequestAds=$value');
+    _bumpEligibility();
   }
 
   static void setPrivacyOptionsRequired(bool value) {
@@ -87,7 +106,10 @@ class AdsService {
     _privacyOptionsRequired = false;
     _initInvocationCount = 0;
     _loadingInterstitial = false;
+    _adsEnabled = true;
+    _requestGeneration++;
     discardPreloadedInterstitial();
+    _bumpEligibility();
   }
 
   /// Yalnızca debug — release kullanıcıya log göstermez.
@@ -145,8 +167,9 @@ class AdsService {
     }
     _adsEnabled = enabled;
     if (!enabled) {
-      discardPreloadedInterstitial();
+      invalidatePendingAdRequests();
     }
+    _bumpEligibility();
   }
 
   static bool get adsEnabled => _adsEnabled && AdMobIds.adsConfigured;
@@ -263,16 +286,21 @@ class AdsService {
       if (!consentAllowsAds) _log('interstitial skipped: canRequestAds=false');
       return false;
     }
+    final generation = _requestGeneration;
     try {
       await init();
-      if (!adsEnabled || !consentAllowsAds || !_initialized) return false;
+      if (!_isShowStillValid(generation)) return false;
 
       final gate = createPresentationGate();
 
       Future<void> present(InterstitialAd ad) async {
+        if (!_isShowStillValid(generation)) {
+          ad.dispose();
+          gate.markLoadFailed();
+          return;
+        }
         ad.fullScreenContentCallback = FullScreenContentCallback(
           onAdShowedFullScreenContent: (ad) async {
-            // Cooldown yalnızca gate success kabul ederse (timeout kazanmadıysa).
             if (gate.markShowed()) {
               _log('interstitial showed (fullscreen)');
               await prefs.setInt(
@@ -286,8 +314,6 @@ class AdsService {
           onAdDismissedFullScreenContent: (ad) {
             ad.dispose();
             _log('interstitial dismissed');
-            // Show zaten başarılıysa gate’e dokunma; yalnızca cleanup.
-            // Show callback gelmeden dismiss (edge) → başarısız say.
             gate.markDismissedWithoutShow();
           },
           onAdFailedToShowFullScreenContent: (ad, error) {
@@ -299,6 +325,11 @@ class AdsService {
             gate.markFailedToShow();
           },
         );
+        if (!_isShowStillValid(generation)) {
+          ad.dispose();
+          gate.markLoadFailed();
+          return;
+        }
         _log('interstitial show()');
         await ad.show();
       }
@@ -330,6 +361,11 @@ class AdsService {
           onAdLoaded: (ad) async {
             _loadingInterstitial = false;
             _log('interstitial load success');
+            if (!_isShowStillValid(generation)) {
+              ad.dispose();
+              gate.markLoadFailed();
+              return;
+            }
             await present(ad);
           },
           onAdFailedToLoad: (error) {
@@ -349,6 +385,18 @@ class AdsService {
       _log('interstitial skipped exception: $e');
       return false;
     }
+  }
+
+  static bool _isShowStillValid(int generation) {
+    if (generation != _requestGeneration) {
+      _log('interstitial aborted: stale generation');
+      return false;
+    }
+    if (!adsEnabled || !consentAllowsAds || !_initialized) {
+      _log('interstitial aborted: eligibility changed');
+      return false;
+    }
+    return true;
   }
 
   /// İsteğe bağlı preload (sonuç göstermeyi bloklamaz).
@@ -476,9 +524,25 @@ class _AdBannerState extends State<AdBanner> {
   @override
   void initState() {
     super.initState();
+    AdsService.eligibilityEpoch.addListener(_onEligibilityChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) _loadAdaptive();
     });
+  }
+
+  void _onEligibilityChanged() {
+    if (!mounted) return;
+    if (!AdsService.mayRequestAds) {
+      _ad?.dispose();
+      setState(() {
+        _ad = null;
+        _loaded = false;
+      });
+      return;
+    }
+    if (!_loaded) {
+      _loadAdaptive();
+    }
   }
 
   Future<void> _loadAdaptive() async {
@@ -503,7 +567,8 @@ class _AdBannerState extends State<AdBanner> {
       }
 
       final width = MediaQuery.sizeOf(context).width.truncate();
-      final size = await AdSize.getLargeAnchoredAdaptiveBannerAdSize(width);
+      // ignore: deprecated_member_use
+      final size = await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(width);
       if (size == null) {
         AdsService._log('banner adaptive size null width=$width');
         return;
@@ -558,6 +623,7 @@ class _AdBannerState extends State<AdBanner> {
 
   @override
   void dispose() {
+    AdsService.eligibilityEpoch.removeListener(_onEligibilityChanged);
     _loadToken++;
     _ad?.dispose();
     super.dispose();

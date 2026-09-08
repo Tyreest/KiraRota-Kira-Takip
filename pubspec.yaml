@@ -1,7 +1,7 @@
 name: kira_artisi_hesapla
 description: "KiraRota — kira takibi ve TÜFE esaslı kira artışı hesaplama."
 publish_to: "none"
-version: 1.1.1+14
+version: 1.1.1+20
 
 environment:
   sdk: ^3.12.2

@@ -95,40 +95,62 @@ Future<void> showProPaywall(BuildContext context, WidgetRef ref) {
                     ),
                     const _PayFeature(
                       icon: Icons.home_work_outlined,
-                      title: 'Sınırsız kira takibi',
+                      title: 'Sınırsız Kira Takibi',
                       body:
                           'Birden fazla kira kaydı tutun; artış dönemlerini tek yerden yönetin.',
                     ),
                     const _PayFeature(
                       icon: Icons.history,
-                      title: 'Sınırsız Geçmiş',
+                      title: 'Sınırsız Hesap Geçmişi',
                       body:
                           'Her kira için tüm önceki hesaplamalarınızı arşivleyin.',
                     ),
                     const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
                       children: [
-                        Text(
-                          catalog.priceForUi,
-                          style: GoogleFonts.montserrat(
-                            fontSize: catalog.hasStorePrice ? 36 : 22,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.primaryDeep,
+                        Flexible(
+                          child: Text(
+                            catalog.priceForUi,
+                            style: GoogleFonts.montserrat(
+                              fontSize: catalog.hasStorePrice ? 34 : 22,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.primaryDeep,
+                            ),
                           ),
                         ),
                         if (catalog.hasStorePrice) ...[
                           const SizedBox(width: 6),
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 8),
-                            child: Text(
-                              '/ tek seferlik',
-                              style: Theme.of(ctx).textTheme.bodyMedium,
-                            ),
+                          Text(
+                            '/ tek seferlik',
+                            style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(
+                                  color: AppColors.onSurfaceVariant,
+                                ),
                           ),
                         ],
                       ],
+                    ),
+                    const SizedBox(height: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.sageSoft,
+                        borderRadius: BorderRadius.circular(99),
+                        border: Border.all(color: AppColors.outlineVariant),
+                      ),
+                      child: Text(
+                        'Tek seferlik ödeme · Abonelik değil',
+                        style: Theme.of(ctx).textTheme.labelSmall?.copyWith(
+                              color: AppColors.primaryDeep,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.2,
+                            ),
+                      ),
                     ),
                     if (catalog.purchasePending) ...[
                       const SizedBox(height: 8),

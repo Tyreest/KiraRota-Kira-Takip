@@ -1,0 +1,193 @@
+{
+  "generated_at": "2026-09-08T16:54:26",
+  "serial": "emulator-5556",
+  "avd": "KiraRota_Test_Pixel8",
+  "package": "com.tyreest.kiraartisi",
+  "checks": [
+    {
+      "name": "AVD",
+      "status": "PASS",
+      "detail": "KiraRota_Test_Pixel8 / emulator-5556"
+    },
+    {
+      "name": "fresh_launch",
+      "status": "PASS",
+      "detail": "onboarding/splash"
+    },
+    {
+      "name": "onboarding_complete",
+      "status": "PASS",
+      "detail": "step=1"
+    },
+    {
+      "name": "tab_Özet",
+      "status": "PARTIAL",
+      "detail": "tap miss"
+    },
+    {
+      "name": "nav_Özet",
+      "status": "PASS",
+      "detail": "20_tab_ozet.png"
+    },
+    {
+      "name": "tab_Kiralarım",
+      "status": "PARTIAL",
+      "detail": "tap miss"
+    },
+    {
+      "name": "nav_Kiralarım",
+      "status": "PASS",
+      "detail": "21_tab_kiralarim.png"
+    },
+    {
+      "name": "tab_Hesapla",
+      "status": "PASS",
+      "detail": "opened"
+    },
+    {
+      "name": "nav_Hesapla",
+      "status": "PASS",
+      "detail": "22_tab_hesapla.png"
+    },
+    {
+      "name": "tab_Oranlar",
+      "status": "PARTIAL",
+      "detail": "tap miss"
+    },
+    {
+      "name": "nav_Oranlar",
+      "status": "PASS",
+      "detail": "23_tab_oranlar.png"
+    },
+    {
+      "name": "tab_Ayarlar",
+      "status": "PARTIAL",
+      "detail": "tap miss"
+    },
+    {
+      "name": "nav_Ayarlar",
+      "status": "PASS",
+      "detail": "24_tab_ayarlar.png"
+    },
+    {
+      "name": "tab_Kiralarım",
+      "status": "PARTIAL",
+      "detail": "tap miss"
+    },
+    {
+      "name": "rental_add_name",
+      "status": "PARTIAL",
+      "detail": "no EditText"
+    },
+    {
+      "name": "rental_create_minimal",
+      "status": "FAIL",
+      "detail": "save not tapped"
+    },
+    {
+      "name": "tab_Özet",
+      "status": "PARTIAL",
+      "detail": "tap miss"
+    },
+    {
+      "name": "tab_Hesapla",
+      "status": "PASS",
+      "detail": "opened"
+    },
+    {
+      "name": "calculate_official",
+      "status": "PASS",
+      "detail": "result visible"
+    },
+    {
+      "name": "tab_Ayarlar",
+      "status": "PARTIAL",
+      "detail": "tap miss"
+    },
+    {
+      "name": "paywall_open",
+      "status": "PARTIAL",
+      "detail": "entry not found"
+    },
+    {
+      "name": "back_from_paywall",
+      "status": "FAIL",
+      "detail": "unexpected UI"
+    },
+    {
+      "name": "tab_Kiralarım",
+      "status": "PARTIAL",
+      "detail": "tap miss"
+    },
+    {
+      "name": "free_rental_limit_gate",
+      "status": "PARTIAL",
+      "detail": "unclear"
+    },
+    {
+      "name": "tab_Hesapla",
+      "status": "PASS",
+      "detail": "opened"
+    },
+    {
+      "name": "keyboard_open",
+      "status": "PARTIAL",
+      "detail": "no EditText"
+    },
+    {
+      "name": "persistence_after_force_stop",
+      "status": "FAIL",
+      "detail": "unexpected empty/crash"
+    },
+    {
+      "name": "background_foreground",
+      "status": "PASS",
+      "detail": "restored"
+    },
+    {
+      "name": "rapid_nav_stress",
+      "status": "PASS",
+      "detail": "stable"
+    },
+    {
+      "name": "offline_startup",
+      "status": "PASS",
+      "detail": "app usable"
+    },
+    {
+      "name": "tab_Oranlar",
+      "status": "PARTIAL",
+      "detail": "tap miss"
+    },
+    {
+      "name": "offline_rates_fallback",
+      "status": "PASS",
+      "detail": "rates visible"
+    },
+    {
+      "name": "tab_Hesapla",
+      "status": "PASS",
+      "detail": "opened"
+    },
+    {
+      "name": "tab_Özet",
+      "status": "PARTIAL",
+      "detail": "tap miss"
+    },
+    {
+      "name": "font_scale_150",
+      "status": "PASS",
+      "detail": "screenshots captured"
+    },
+    {
+      "name": "logcat_fatal_anr",
+      "status": "PASS",
+      "detail": "0 FATAL / 0 ANR"
+    },
+    {
+      "name": "logcat_app_exceptions",
+      "status": "PARTIAL",
+      "detail": "2 lines (see logcat_audit.json)"
+    }
+  ]
+}

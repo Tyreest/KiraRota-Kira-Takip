@@ -111,7 +111,7 @@ void main() {
       expect(utf8.decode(encoded), contains('"rentals"'));
       expect(utf8.decode(encoded), isNot(contains('Sharing text')));
 
-      final decoded = service.decodeBackupBytes(encoded);
+      final decoded = service.decodeBackupBytes(encoded, isPro: true);
       expect(decoded.isValid, isTrue);
       expect(decoded.rentals, hasLength(1));
       final r = decoded.rentals!.single;
@@ -129,14 +129,20 @@ void main() {
 
     test('geçersiz yedek graceful hata', () {
       final service = RentalBackupService();
-      expect(service.decodeBackup('not-json').isValid, isFalse);
-      expect(service.decodeBackup('[]').isValid, isFalse);
-      expect(service.decodeBackup('{"app":"X"}').isValid, isFalse);
-      expect(service.decodeBackup('{"rentals":[{"id":1}]}').isValid, isFalse);
-      expect(service.decodeBackup('{"rentals":[]}').isValid, isTrue);
-      expect(service.decodeBackup('{"rentals":[]}').errorMessage, isNull);
+      expect(service.decodeBackup('not-json', isPro: true).isValid, isFalse);
+      expect(service.decodeBackup('[]', isPro: true).isValid, isFalse);
+      expect(service.decodeBackup('{"app":"X"}', isPro: true).isValid, isFalse);
       expect(
-        service.decodeBackup('nope').errorMessage,
+        service.decodeBackup('{"rentals":[{"id":1}]}', isPro: true).isValid,
+        isFalse,
+      );
+      expect(service.decodeBackup('{"rentals":[]}', isPro: true).isValid, isTrue);
+      expect(
+        service.decodeBackup('{"rentals":[]}', isPro: true).errorMessage,
+        isNull,
+      );
+      expect(
+        service.decodeBackup('nope', isPro: true).errorMessage,
         RentalBackupService.invalidBackupMessage,
       );
     });
@@ -155,7 +161,7 @@ void main() {
       expect(prepared.fileName, 'KiraRota-Yedek-2026-08-13.json');
       expect(await prepared.tempFile.exists(), isTrue);
       expect(prepared.bytes, isNotEmpty);
-      final roundTrip = service.decodeBackupBytes(prepared.bytes);
+      final roundTrip = service.decodeBackupBytes(prepared.bytes, isPro: true);
       expect(roundTrip.isValid, isTrue);
       await prepared.dispose();
       expect(await prepared.tempFile.exists(), isFalse);
@@ -218,7 +224,10 @@ void main() {
       final payload = service.buildPayload([
         _sampleRental(id: 'new', name: 'Yeni', rent: 15000),
       ]);
-      final decoded = service.decodeBackupBytes(service.encodePayload(payload));
+      final decoded = service.decodeBackupBytes(
+        service.encodePayload(payload),
+        isPro: true,
+      );
       await repo.replaceAll(decoded.rentals!);
       final loaded = repo.loadAll();
       expect(loaded, hasLength(1));
@@ -271,7 +280,7 @@ void main() {
       expect(find.text('Yedeği geri yükle'), findsOneWidget);
       expect(
         find.text(
-          'Kira kayıtlarının cihazında saklayabileceğin bir yedeğini oluştur.',
+          'Verilerini cihazında yedekle ve geri yükle.',
         ),
         findsOneWidget,
       );

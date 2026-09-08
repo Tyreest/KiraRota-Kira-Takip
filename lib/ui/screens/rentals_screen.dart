@@ -171,33 +171,41 @@ class _RentalsScreenState extends ConsumerState<RentalsScreen> {
           ),
         ],
         const SizedBox(height: AppSpace.md),
-        TextField(
-          controller: _searchCtrl,
-          onChanged: (_) => setState(() {}),
-          textInputAction: TextInputAction.search,
-          decoration: InputDecoration(
-            hintText: 'Taşınmaz, kiracı veya adres ara…',
-            prefixIcon: const Icon(Icons.search, color: AppColors.outline),
-            filled: true,
-            fillColor: AppColors.surfaceLow,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppRadii.lg),
-              borderSide: BorderSide.none,
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppRadii.lg),
-              borderSide: BorderSide.none,
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppRadii.lg),
-              borderSide: const BorderSide(
-                color: AppColors.primary,
-                width: 1.5,
+        if (activeCount > 1 || _searchCtrl.text.isNotEmpty) ...[
+          TextField(
+            controller: _searchCtrl,
+            onChanged: (_) => setState(() {}),
+            textInputAction: TextInputAction.search,
+            decoration: InputDecoration(
+              hintText: 'Taşınmaz, kiracı veya adres ara…',
+              prefixIcon: const Icon(Icons.search, color: AppColors.outline),
+              suffixIcon: _searchCtrl.text.isNotEmpty
+                  ? IconButton(
+                      icon: const Icon(Icons.clear, size: 18),
+                      onPressed: () => setState(() => _searchCtrl.clear()),
+                    )
+                  : null,
+              filled: true,
+              fillColor: AppColors.surfaceLow,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppRadii.lg),
+                borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppRadii.lg),
+                borderSide: BorderSide.none,
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppRadii.lg),
+                borderSide: const BorderSide(
+                  color: AppColors.primary,
+                  width: 1.5,
+                ),
               ),
             ),
           ),
-        ),
-        const SizedBox(height: AppSpace.md),
+          const SizedBox(height: AppSpace.md),
+        ],
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
@@ -225,11 +233,28 @@ class _RentalsScreenState extends ConsumerState<RentalsScreen> {
         const SizedBox(height: AppSpace.md),
         if (visible.isEmpty)
           SoftCard(
-            child: Text(
-              'Bu filtreye uyan kira yok.',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppColors.onSurfaceVariant,
-              ),
+            child: Column(
+              children: [
+                const Icon(Icons.filter_alt_off_outlined, size: 32, color: AppColors.outline),
+                const SizedBox(height: 8),
+                Text(
+                  'Bu filtreye uyan kira kaydı bulunamadı.',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      _filter = _RentalFilter.all;
+                      _searchCtrl.clear();
+                    });
+                  },
+                  child: const Text('Filtreleri Temizle'),
+                ),
+              ],
             ),
           )
         else
@@ -510,12 +535,37 @@ class _RentalCard extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              rental.propertyName,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.titleSmall
-                                  ?.copyWith(fontWeight: FontWeight.w600),
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 5,
+                                    vertical: 1.5,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.secondaryContainer.withValues(alpha: 0.8),
+                                    borderRadius: BorderRadius.circular(AppRadii.sm),
+                                  ),
+                                  child: Text(
+                                    rental.role.labelTr,
+                                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.primary,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                Expanded(
+                                  child: Text(
+                                    rental.propertyName,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: Theme.of(context).textTheme.titleSmall
+                                        ?.copyWith(fontWeight: FontWeight.w600),
+                                  ),
+                                ),
+                              ],
                             ),
                             if (_secondary != null) ...[
                               const SizedBox(height: 2),
@@ -573,6 +623,7 @@ class _RentalCard extends StatelessWidget {
                           ),
                         ],
                       ),
+                      const SizedBox(width: 8),
                       const Icon(Icons.chevron_right, color: AppColors.outline),
                     ],
                   ),

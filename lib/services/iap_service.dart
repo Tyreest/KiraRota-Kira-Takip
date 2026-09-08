@@ -139,6 +139,7 @@ class IapService extends ChangeNotifier {
 
   /// Restore ownership probe (null değilse bir sonraki purchaseStream batch’i cevaptır).
   Completer<bool>? _ownershipProbe;
+  Future<OwnershipSyncResult>? _syncInFlight;
 
   IapCatalogState _state = const IapCatalogState();
   IapCatalogState get state => _state;
@@ -255,7 +256,20 @@ class IapService extends ChangeNotifier {
   ///
   /// [OwnershipSyncResult.storeFailed] → local korunur.
   /// [OwnershipSyncResult.notOwned] → local Pro kapatılır.
-  Future<OwnershipSyncResult> syncOwnershipFromStore() async {
+  Future<OwnershipSyncResult> syncOwnershipFromStore() {
+    final existing = _syncInFlight;
+    if (existing != null) return existing;
+    late final Future<OwnershipSyncResult> tracked;
+    tracked = _syncOwnershipImpl().whenComplete(() {
+      if (identical(_syncInFlight, tracked)) {
+        _syncInFlight = null;
+      }
+    });
+    _syncInFlight = tracked;
+    return tracked;
+  }
+
+  Future<OwnershipSyncResult> _syncOwnershipImpl() async {
     if (!_state.storeAvailable) {
       return OwnershipSyncResult.storeFailed;
     }
@@ -273,6 +287,10 @@ class IapService extends ChangeNotifier {
 
     try {
       final owned = await probe.future.timeout(ownershipSyncTimeout);
+      if (!identical(_ownershipProbe, probe)) {
+        // Daha yeni sync başladı — bu probe geçersiz.
+        return OwnershipSyncResult.storeFailed;
+      }
       _ownershipProbe = null;
       if (owned) {
         return OwnershipSyncResult.owned;
@@ -288,8 +306,9 @@ class IapService extends ChangeNotifier {
       }
       return OwnershipSyncResult.notOwned;
     } on TimeoutException {
-      _ownershipProbe = null;
-      // Timeout = güvenli taraf: yerel korunur.
+      if (identical(_ownershipProbe, probe)) {
+        _ownershipProbe = null;
+      }
       return OwnershipSyncResult.storeFailed;
     }
   }
@@ -330,11 +349,26 @@ class IapService extends ChangeNotifier {
       return const BuyOutcome(BuyLaunchResult.launched);
     } catch (e) {
       if (_looksAlreadyOwned(e.toString())) {
-        await _grantFromAlreadyOwned();
-        return const BuyOutcome(
-          BuyLaunchResult.alreadyOwned,
-          message: 'Satın alma zaten bu hesapta. Pro geri yüklendi.',
-        );
+        // Doğrudan grant yok — mağaza ownership doğrulanır.
+        final sync = await syncOwnershipFromStore();
+        if (sync == OwnershipSyncResult.owned) {
+          _setState(
+            _state.copyWith(
+              busy: false,
+              purchasePending: false,
+              lastMessage: 'Satın alma zaten bu hesapta. Pro aktif.',
+            ),
+          );
+          return const BuyOutcome(
+            BuyLaunchResult.alreadyOwned,
+            message: 'Satın alma zaten bu hesapta. Pro geri yüklendi.',
+          );
+        }
+        const msg =
+            'Satın alma bu hesapta görünüyor ancak mağaza doğrulaması '
+            'tamamlanamadı. “Geri yükle”yi deneyin.';
+        _setState(_state.copyWith(busy: false, lastMessage: msg));
+        return const BuyOutcome(BuyLaunchResult.failed, message: msg);
       }
       final msg = e.toString();
       _setState(_state.copyWith(busy: false, lastMessage: msg));
@@ -372,31 +406,10 @@ class IapService extends ChangeNotifier {
     return result;
   }
 
-  Future<void> _grantFromAlreadyOwned() async {
-    await _grantPro();
-    // Play tarafını tamamlamak için restore; ownership probe açmadan çağır
-    // (boş liste yerel Pro’yu düşürmesin).
-    try {
-      await _gateway.restorePurchases();
-    } catch (_) {}
-    _setState(
-      _state.copyWith(
-        busy: false,
-        purchasePending: false,
-        lastMessage: 'Satın alma zaten bu hesapta. Pro aktif.',
-      ),
-    );
-  }
-
   void _failOwnershipProbe() {
     final probe = _ownershipProbe;
     if (probe != null && !probe.isCompleted) {
-      // false değil — timeout/fail yolu için completer’ı iptal etmiyoruz;
-      // stream error’da storeFailed olsun diye complete etmeyip timeout’a bırakmak
-      // yavaş. Doğrudan false vermek revoke tetikler — istemeyiz.
-      // Bu yüzden probe’u düşürüp future’ı hata ile bitirmiyoruz; sync tarafı
-      // timeout ile storeFailed alır. Burada probe’u null’a çekmek race yaratır.
-      // En temizi: Completer’ı hiç complete etmeden bırak → timeout → storeFailed.
+      // Completer’ı complete etme → timeout → storeFailed (revoke yok).
     }
   }
 
@@ -421,21 +434,28 @@ class IapService extends ChangeNotifier {
 
         case PurchaseStatus.purchased:
         case PurchaseStatus.restored:
-          if (p.productID == productId) {
-            sawOwned = true;
-            await _grantPro(purchaseId: p.purchaseID);
-            _setState(
-              _state.copyWith(
-                purchasePending: false,
-                busy: false,
-                lastMessage: p.status == PurchaseStatus.restored
-                    ? 'Satın alımlar geri yüklendi.'
-                    : 'Pro aktif.',
-              ),
-            );
-          }
-          if (p.pendingCompletePurchase) {
-            await _gateway.completePurchase(p);
+          try {
+            if (p.productID == productId) {
+              sawOwned = true;
+              await _grantPro(purchaseId: p.purchaseID);
+              _setState(
+                _state.copyWith(
+                  purchasePending: false,
+                  busy: false,
+                  lastMessage: p.status == PurchaseStatus.restored
+                      ? 'Satın alımlar geri yüklendi.'
+                      : 'Pro aktif.',
+                ),
+              );
+            }
+          } finally {
+            if (p.pendingCompletePurchase) {
+              try {
+                await _gateway.completePurchase(p);
+              } catch (e) {
+                debugPrint('completePurchase failed: $e');
+              }
+            }
           }
           break;
 
@@ -448,17 +468,14 @@ class IapService extends ChangeNotifier {
             ),
           );
           if (p.pendingCompletePurchase) {
-            await _gateway.completePurchase(p);
+            try {
+              await _gateway.completePurchase(p);
+            } catch (_) {}
           }
           break;
 
         case PurchaseStatus.error:
           await _handlePurchaseError(p);
-          if (_looksAlreadyOwned(
-            '${p.error?.code ?? ''} ${p.error?.message ?? ''} ${p.error?.details ?? ''}',
-          )) {
-            sawOwned = true;
-          }
           break;
       }
     }
@@ -474,23 +491,34 @@ class IapService extends ChangeNotifier {
     final blob =
         '${err?.code ?? ''} ${err?.message ?? ''} ${err?.details ?? ''}';
 
-    if (_looksAlreadyOwned(blob)) {
-      await _grantFromAlreadyOwned();
-      if (p.pendingCompletePurchase) {
-        await _gateway.completePurchase(p);
+    try {
+      if (_looksAlreadyOwned(blob)) {
+        // Stream handler içinde syncOwnership çağırma (probe deadlock).
+        // Grant yalnızca purchased/restored ile; kullanıcı restore deneyebilir.
+        _setState(
+          _state.copyWith(
+            purchasePending: false,
+            busy: false,
+            lastMessage:
+                'Satın alma bu hesapta görünüyor. “Geri yükle” ile doğrulayın.',
+          ),
+        );
+        return;
       }
-      return;
-    }
 
-    _setState(
-      _state.copyWith(
-        purchasePending: false,
-        busy: false,
-        lastMessage: err?.message ?? 'Satın alma hatası',
-      ),
-    );
-    if (p.pendingCompletePurchase) {
-      await _gateway.completePurchase(p);
+      _setState(
+        _state.copyWith(
+          purchasePending: false,
+          busy: false,
+          lastMessage: err?.message ?? 'Satın alma hatası',
+        ),
+      );
+    } finally {
+      if (p.pendingCompletePurchase) {
+        try {
+          await _gateway.completePurchase(p);
+        } catch (_) {}
+      }
     }
   }
 

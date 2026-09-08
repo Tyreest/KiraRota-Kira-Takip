@@ -33,13 +33,18 @@ LoadedRates _rates() {
   return LoadedRates(
     bundle: TufeRateBundle(
       version: 1,
-      updatedAt: DateTime(2026, 8, 3),
+      updatedAt: DateTime(2026, 9, 3),
       sourceNote: 'test',
       rates: [
         TufeRate(
           renewalMonth: '2026-08',
           ratePercent: 31.90,
           tuikReleaseDate: DateTime(2026, 8, 3),
+        ),
+        TufeRate(
+          renewalMonth: '2026-09',
+          ratePercent: 31.79,
+          tuikReleaseDate: DateTime(2026, 9, 3),
         ),
       ],
     ),
@@ -278,10 +283,10 @@ void main() {
         await tester.drag(list.first, const Offset(0, -800));
         await tester.pumpAndSettle();
       }
-      expect(find.textContaining('PDF'), findsWidgets);
-      await tester.ensureVisible(find.text('PDF raporu al'));
+      final pdfCta = find.widgetWithText(OutlinedButton, 'PDF');
+      await tester.ensureVisible(pdfCta);
       await tester.pumpAndSettle();
-      _expectAboveSystemNav(tester, find.text('PDF raporu al'));
+      _expectAboveSystemNav(tester, pdfCta);
       await tester.ensureVisible(find.text('Yeni kirayı kaydet'));
       await tester.pumpAndSettle();
       _expectAboveSystemNav(tester, find.text('Yeni kirayı kaydet'));

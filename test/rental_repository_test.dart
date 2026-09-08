@@ -109,7 +109,6 @@ void main() {
       final updated = await repo.applyCalculation(
         rentalId: 'r1',
         result: _result(),
-        isPro: true,
       );
       expect(updated, isNotNull);
       expect(updated!.currentRent, 33060);
@@ -126,7 +125,7 @@ void main() {
     },
   );
 
-  test('free history 5; Pro unlimited history', () async {
+  test('free history UI limit; storage preserves all applies', () async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
     final repo = RentalRepository(prefs);
@@ -139,10 +138,10 @@ void main() {
           oldRent: 10000 + i.toDouble(),
           newRent: 11000 + i.toDouble(),
         ),
-        isPro: false,
       );
     }
-    expect(repo.findById('h')!.history.length, AppConstants.freeHistoryLimit);
+    // Fiziksel truncate yok — Free yalnızca UI’da take(5) görür.
+    expect(repo.findById('h')!.history.length, 6);
 
     SharedPreferences.setMockInitialValues({});
     final prefs2 = await SharedPreferences.getInstance();
@@ -152,7 +151,6 @@ void main() {
       await pro.applyCalculation(
         rentalId: 'p',
         result: _result(oldRent: 1000.0 * i, newRent: 1100.0 * i),
-        isPro: true,
       );
     }
     expect(pro.findById('p')!.history.length, 8);
@@ -180,7 +178,7 @@ void main() {
     );
     expect(first, isNotNull);
     expect(first!.currentRent, 25000);
-    expect(first.history.length, 1);
+    expect(first.history, isEmpty);
 
     final second = await repo.createFromCalculation(
       displayName: 'Dükkan',

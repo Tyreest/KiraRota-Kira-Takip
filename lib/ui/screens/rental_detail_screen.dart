@@ -254,9 +254,36 @@ class RentalDetailScreen extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        active.propertyName,
-                        style: Theme.of(context).textTheme.headlineSmall,
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              active.propertyName,
+                              style: Theme.of(context).textTheme.headlineSmall,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 3,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.secondaryContainer,
+                              borderRadius: BorderRadius.circular(
+                                AppRadii.pill,
+                              ),
+                            ),
+                            child: Text(
+                              active.role.labelTr,
+                              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                       if (active.address != null &&
                           active.address!.trim().isNotEmpty) ...[
@@ -546,6 +573,10 @@ class RentalDetailScreen extends ConsumerWidget {
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: AppSpace.md),
+                _InfoRow(
+                  label: 'Rolünüz',
+                  value: active.role.labelTr,
+                ),
                 _InfoRow(
                   label: 'Sözleşme başlangıcı',
                   value: formatDateTr(active.contractStartDate),

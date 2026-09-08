@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.provider.OpenableColumns
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -59,9 +60,33 @@ class MainActivity : FlutterActivity() {
         try {
             val uri = data.data!!
             val name = queryDisplayName(uri)
+            val size = querySize(uri)
+            if (size != null && size > MAX_BACKUP_BYTES) {
+                reply.error(
+                    "too_large",
+                    "Yedek dosyası çok büyük (en fazla 2 MB).",
+                    null,
+                )
+                return
+            }
             val bytes = contentResolver.openInputStream(uri)?.use { input ->
                 val out = ByteArrayOutputStream()
-                input.copyTo(out)
+                val buf = ByteArray(8192)
+                var total = 0
+                while (true) {
+                    val n = input.read(buf)
+                    if (n < 0) break
+                    total += n
+                    if (total > MAX_BACKUP_BYTES) {
+                        reply.error(
+                            "too_large",
+                            "Yedek dosyası çok büyük (en fazla 2 MB).",
+                            null,
+                        )
+                        return
+                    }
+                    out.write(buf, 0, n)
+                }
                 out.toByteArray()
             }
             if (bytes == null) {
@@ -81,7 +106,7 @@ class MainActivity : FlutterActivity() {
 
     private fun queryDisplayName(uri: Uri): String? {
         contentResolver.query(uri, null, null, null, null)?.use { cursor ->
-            val index = cursor.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME)
+            val index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
             if (index >= 0 && cursor.moveToFirst()) {
                 return cursor.getString(index)
             }
@@ -89,7 +114,18 @@ class MainActivity : FlutterActivity() {
         return uri.lastPathSegment
     }
 
+    private fun querySize(uri: Uri): Long? {
+        contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+            val index = cursor.getColumnIndex(OpenableColumns.SIZE)
+            if (index >= 0 && cursor.moveToFirst() && !cursor.isNull(index)) {
+                return cursor.getLong(index)
+            }
+        }
+        return null
+    }
+
     companion object {
         private const val REQUEST_PICK_BACKUP = 9917
+        private const val MAX_BACKUP_BYTES = 2 * 1024 * 1024
     }
 }

@@ -178,7 +178,7 @@ void main() {
     expect(iap.state.lastMessage, contains('iptal'));
   });
 
-  test('already-owned error → Pro grant', () async {
+  test('already-owned error → completePurchase; grant yalnız restore/purchased ile', () async {
     await setup();
 
     gateway.emit([
@@ -194,8 +194,17 @@ void main() {
     ]);
     await Future<void>.delayed(const Duration(milliseconds: 40));
 
+    // Hata metninden sessiz Pro yok; acknowledgment yine yapılır.
+    expect(proRepo.isPro, isFalse);
+    expect(gateway.completed, isNotEmpty);
+    expect(iap.state.lastMessage, contains('Geri yükle'));
+
+    gateway.restoreEmits = [
+      FakeBillingGateway.purchase(status: PurchaseStatus.restored),
+    ];
+    final sync = await iap.restore();
+    expect(sync, OwnershipSyncResult.owned);
     expect(proRepo.isPro, isTrue);
-    expect(iap.state.lastMessage, contains('Pro'));
   });
 
   test('restore/reinstall: restored → Pro', () async {

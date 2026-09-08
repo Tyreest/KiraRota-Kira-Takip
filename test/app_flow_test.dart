@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -197,7 +197,7 @@ void main() {
     await tester.tap(_hesaplaButton());
     await tester.pumpAndSettle();
 
-    expect(find.text('Artış Oranı Bilgilendirmesi'), findsOneWidget);
+    expect(find.textContaining('Sözleşme oranı: %40'), findsOneWidget);
     expect(find.textContaining('azami orana göre gösterildi'), findsOneWidget);
   });
 
@@ -213,12 +213,35 @@ void main() {
     expect(find.text('5 Yıl Notu'), findsOneWidget);
   });
 
-  testWidgets('2d. Eylül 2026 oran yok → Hesapla disabled', (tester) async {
+  testWidgets('2d. oran yok → tahmin seçenekleri; seçimsiz Tahmini hesapla disabled', (
+    tester,
+  ) async {
     await _pumpApp(tester, home: calculateHome(renewal: DateTime(2026, 9, 15)));
-    await _waitFor(tester, find.textContaining('için oran henüz yok'));
+    await _waitFor(
+      tester,
+      find.textContaining('oranı henüz açıklanmadı'),
+    );
+    expect(find.textContaining('Son açıklanan oranla tahmin et'), findsOneWidget);
+    expect(find.textContaining('Kendi oranımı kullan'), findsOneWidget);
+    expect(find.text('Tahmini hesapla'), findsOneWidget);
 
-    final btn = tester.widget<FilledButton>(_hesaplaButton());
+    final btn = tester.widget<FilledButton>(
+      find.ancestor(
+        of: find.text('Tahmini hesapla'),
+        matching: find.byType(FilledButton),
+      ),
+    );
     expect(btn.onPressed, isNull);
+
+    await tester.tap(find.textContaining('Son açıklanan oranla tahmin et'));
+    await tester.pumpAndSettle();
+    final enabled = tester.widget<FilledButton>(
+      find.ancestor(
+        of: find.text('Tahmini hesapla'),
+        matching: find.byType(FilledButton),
+      ),
+    );
+    expect(enabled.onPressed, isNotNull);
   });
 
   testWidgets('2e. Kopyala / Paylaş butonları sonuçta görünür', (tester) async {
@@ -237,8 +260,8 @@ void main() {
     await tester.tap(_hesaplaButton());
     await tester.pumpAndSettle();
 
-    await tester.ensureVisible(find.text('PDF raporu al'));
-    await tester.tap(find.text('PDF raporu al'));
+    await tester.ensureVisible(find.widgetWithText(OutlinedButton, 'PDF'));
+    await tester.tap(find.widgetWithText(OutlinedButton, 'PDF'));
     await tester.pumpAndSettle();
 
     expect(find.text('Şimdi Al'), findsOneWidget);

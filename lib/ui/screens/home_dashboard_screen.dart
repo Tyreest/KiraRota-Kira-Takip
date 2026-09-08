@@ -33,9 +33,14 @@ import 'rental_edit_screen.dart';
 }
 
 class HomeDashboardScreen extends ConsumerWidget {
-  const HomeDashboardScreen({super.key, this.onOpenCalculate});
+  const HomeDashboardScreen({
+    super.key,
+    this.onOpenCalculate,
+    this.onOpenRentals,
+  });
 
   final VoidCallback? onOpenCalculate;
+  final VoidCallback? onOpenRentals;
 
   void _openManual(BuildContext context) {
     if (onOpenCalculate != null) {
@@ -113,7 +118,7 @@ class HomeDashboardScreen extends ConsumerWidget {
             ),
           ),
         const SizedBox(height: AppSpace.lg),
-        _SummaryStrip(summary: summary),
+        _SummaryStrip(summary: summary, onTap: onOpenRentals),
         const SizedBox(height: AppSpace.lg),
         Text(
           'Son İşlemler',
@@ -238,6 +243,19 @@ class _NextRenewalHero extends StatelessWidget {
               ? 'Hesaplanan yeni kira'
               : 'Tahmini yeni kira');
 
+    final String ctaLabel;
+    final VoidCallback ctaAction;
+    if (status.needsConfirmation) {
+      ctaLabel = 'Tarihi doğrula';
+      ctaAction = onOpen;
+    } else if (status.isOverdue) {
+      ctaLabel = 'Geçmiş dönemi hesapla';
+      ctaAction = onCalculate;
+    } else {
+      ctaLabel = 'Yeni dönemi hesapla';
+      ctaAction = onCalculate;
+    }
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -336,7 +354,9 @@ class _NextRenewalHero extends StatelessWidget {
                                   const SizedBox(width: 4),
                                   Flexible(
                                     child: Text(
-                                      status.shortLabel,
+                                      status.isOverdue && status.daysUntil < 0
+                                          ? '${-status.daysUntil} gün gecikti'
+                                          : status.shortLabel,
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: GoogleFonts.inter(
@@ -364,7 +384,9 @@ class _NextRenewalHero extends StatelessWidget {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              'Sonraki yenileme: ${formatDateTr(rental.nextRenewalDate)}',
+                              status.isOverdue
+                                  ? 'Yenileme tarihi: ${formatDateTr(rental.nextRenewalDate)}'
+                                  : 'Sonraki yenileme: ${formatDateTr(rental.nextRenewalDate)}',
                               style: GoogleFonts.inter(
                                 fontSize: 14,
                                 height: 20 / 14,
@@ -394,25 +416,11 @@ class _NextRenewalHero extends StatelessWidget {
                           ),
                         ],
                       ),
-                      if (estimate != null &&
-                          !estimate!.isOfficialForPeriod) ...[
-                        const SizedBox(height: 8),
-                        Text(
-                          'Son bilinen TÜFE ile tahmini; resmî dönem oranı yayınlanınca değişebilir.',
-                          style: GoogleFonts.inter(
-                            fontSize: 12,
-                            height: 16 / 12,
-                            color: AppColors.onPrimaryContainer.withValues(
-                              alpha: 0.9,
-                            ),
-                          ),
-                        ),
-                      ],
                       const SizedBox(height: 16),
                       SizedBox(
                         width: double.infinity,
                         child: FilledButton(
-                          onPressed: onCalculate,
+                          onPressed: ctaAction,
                           style: FilledButton.styleFrom(
                             backgroundColor: AppColors.surface,
                             foregroundColor: AppColors.primary,
@@ -421,7 +429,7 @@ class _NextRenewalHero extends StatelessWidget {
                             shape: const StadiumBorder(),
                           ),
                           child: Text(
-                            'Yeni dönemi hesapla',
+                            ctaLabel,
                             style: GoogleFonts.inter(
                               fontSize: 14,
                               height: 20 / 14,
@@ -492,59 +500,67 @@ class _HeroMoneyTile extends StatelessWidget {
 }
 
 class _SummaryStrip extends StatelessWidget {
-  const _SummaryStrip({required this.summary});
+  const _SummaryStrip({required this.summary, this.onTap});
 
   final DashboardSummary summary;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.surfaceLowest,
+    return Material(
+      color: AppColors.surfaceLowest,
+      borderRadius: BorderRadius.circular(AppRadii.xl),
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(AppRadii.xl),
-        border: Border.all(
-          color: AppColors.outlineVariant.withValues(alpha: 0.3),
-        ),
-        boxShadow: const [
-          BoxShadow(
-            color: AppColors.cardShadow,
-            blurRadius: 6,
-            offset: Offset(0, 1),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(AppRadii.xl),
+            border: Border.all(
+              color: AppColors.outlineVariant.withValues(alpha: 0.3),
+            ),
+            boxShadow: const [
+              BoxShadow(
+                color: AppColors.cardShadow,
+                blurRadius: 6,
+                offset: Offset(0, 1),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: IntrinsicHeight(
-        child: Row(
-          children: [
-            Expanded(
-              child: _SummaryMetric(
-                label: 'Aktif Kiralar',
-                value: '${summary.activeCount}',
-              ),
+          child: IntrinsicHeight(
+            child: Row(
+              children: [
+                Expanded(
+                  child: _SummaryMetric(
+                    label: 'Aktif Kiralar',
+                    value: '${summary.activeCount}',
+                  ),
+                ),
+                VerticalDivider(
+                  width: 1,
+                  thickness: 1,
+                  color: AppColors.outlineVariant.withValues(alpha: 0.3),
+                ),
+                Expanded(
+                  child: _SummaryMetric(
+                    label: 'Yaklaşan',
+                    value: '${summary.upcomingCount}',
+                  ),
+                ),
+                VerticalDivider(
+                  width: 1,
+                  thickness: 1,
+                  color: AppColors.outlineVariant.withValues(alpha: 0.3),
+                ),
+                Expanded(
+                  child: _SummaryMetric(
+                    label: 'Bu Ay',
+                    value: '${summary.thisMonthCount}',
+                  ),
+                ),
+              ],
             ),
-            VerticalDivider(
-              width: 1,
-              thickness: 1,
-              color: AppColors.outlineVariant.withValues(alpha: 0.3),
-            ),
-            Expanded(
-              child: _SummaryMetric(
-                label: 'Yaklaşan',
-                value: '${summary.upcomingCount}',
-              ),
-            ),
-            VerticalDivider(
-              width: 1,
-              thickness: 1,
-              color: AppColors.outlineVariant.withValues(alpha: 0.3),
-            ),
-            Expanded(
-              child: _SummaryMetric(
-                label: 'Bu Ay',
-                value: '${summary.thisMonthCount}',
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );

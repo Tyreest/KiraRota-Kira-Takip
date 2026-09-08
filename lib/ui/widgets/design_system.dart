@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../core/theme.dart';
+import '../../services/external_link_service.dart';
 
 /// Tam ekran (tab dışı) scroll sayfalarında sistem navigation inset’ini ekler.
 ///
@@ -240,4 +241,85 @@ class DatePickerTile extends StatelessWidget {
       ],
     );
   }
+}
+
+/// Kira artışında kullanılan TÜFE 12 aylık ortalamasının ne olduğunu
+/// kullanıcıya hukuki hüküm dili olmadan, TBK 344 ve TÜİK bağlamında anlatan modal.
+Future<void> showTufeExplanationSheet(BuildContext context) {
+  return showModalBottomSheet<void>(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: AppColors.background,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (ctx) => SafeArea(
+      maintainBottomViewPadding: true,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.outlineVariant,
+                  borderRadius: BorderRadius.circular(99),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                const Icon(Icons.info_outline, color: AppColors.primary),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'TÜFE 12 Aylık Ortalama Nedir?',
+                    style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'Kira artışında yasal tavan olarak kullanılan oran, haberlerde sıkça yer alan '
+              'yıllık enflasyon oranı değildir.\n\n'
+              'Türk Borçlar Kanunu (TBK Madde 344) gereğince yenilenen kira dönemlerinde '
+              'uygulanabilecek azami artış, bir önceki kira yılının '
+              '“TÜFE son 12 aylık ortalamalara göre değişim oranı” ile sınırlandırılmıştır.\n\n'
+              'Bu oran, bir yıl içindeki dönemsel dalgalanmaları dengelemek amacıyla her ay TÜİK '
+              'tarafından resmî bültende yayımlanır.',
+              style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(
+                    height: 1.45,
+                    color: AppColors.onSurfaceVariant,
+                  ),
+            ),
+            const SizedBox(height: 16),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                onPressed: () => openTuikSource(context),
+                icon: const Icon(Icons.open_in_new, size: 18),
+                label: const Text('Resmî TÜİK Kaynağını Aç'),
+              ),
+            ),
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Anladım'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
 }

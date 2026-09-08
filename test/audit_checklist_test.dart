@@ -148,16 +148,33 @@ void main() {
         input: CalculationInput(
           currentRent: 10000,
           renewalYear: 2026,
-          renewalMonth: 9,
-          contractStart: DateTime(2024, 9, 1),
+          renewalMonth: 10,
+          contractStart: DateTime(2024, 10, 1),
         ),
         bundle: assetBundle,
         rateSourceLabel: 't',
       );
       expect(o, isA<CalculationRateMissing>());
       final m = o as CalculationRateMissing;
-      expect(m.requestedMonth, '2026-09');
-      expect(m.latestAvailableMonth, '2026-08');
+      expect(m.requestedMonth, '2026-10');
+      expect(m.latestAvailableMonth, '2026-09');
+    });
+
+    test('Eylül 2026 → %31.79', () {
+      final outcome = engine.calculate(
+        input: CalculationInput(
+          currentRent: 20000,
+          renewalYear: 2026,
+          renewalMonth: 9,
+          renewalDay: 1,
+          contractStart: DateTime(2024, 9, 1),
+        ),
+        bundle: assetBundle,
+        rateSourceLabel: 'test',
+      );
+      final r = (outcome as CalculationSuccess).result;
+      expect(r.tufeMaxRatePercent, 31.79);
+      expect(r.calculatedRent, closeTo(20000 * 1.3179, 0.01));
     });
   });
 
@@ -173,7 +190,7 @@ void main() {
       expect(loaded.bundle.findByRenewalMonth('2026-07')?.ratePercent, 32.03);
     });
 
-    test('daha yeni remote seçilir', () async {
+    test('eksik aylı yeni remote reddedilir → asset (last-known-good)', () async {
       final remoteJson = jsonEncode({
         'version': 99,
         'updated_at': '2099-01-01',
@@ -192,8 +209,42 @@ void main() {
         remoteUrl: 'https://example.com/rates.json',
       );
       final loaded = await repo.load();
+      expect(loaded.source, RateSource.asset);
+      expect(loaded.bundle.findByRenewalMonth('2026-07')?.ratePercent, 32.03);
+    });
+
+    test('asset aylarını kapsayan yeni remote seçilir', () async {
+      final asset = (await RateRepository(remoteUrl: '').load()).bundle;
+      final rates = [
+        for (final r in asset.rates)
+          {
+            'renewal_month': r.renewalMonth,
+            'rate_percent': r.ratePercent,
+            'tuik_release_date': r.tuikReleaseDate
+                .toIso8601String()
+                .split('T')
+                .first,
+          },
+        {
+          'renewal_month': '2099-01',
+          'rate_percent': 1.0,
+          'tuik_release_date': '2099-01-03',
+        },
+      ];
+      final remoteJson = jsonEncode({
+        'version': asset.version + 1,
+        'updated_at': '2099-01-01',
+        'source_note': 'remote',
+        'rates': rates,
+      });
+      final client = MockClient((_) async => http.Response(remoteJson, 200));
+      final repo = RateRepository(
+        client: client,
+        remoteUrl: 'https://example.com/rates.json',
+      );
+      final loaded = await repo.load();
       expect(loaded.source, RateSource.remote);
-      expect(loaded.bundle.findByRenewalMonth('2026-07')?.ratePercent, 99.99);
+      expect(loaded.bundle.findByRenewalMonth('2099-01')?.ratePercent, 1.0);
     });
 
     test('eski remote reddedilir → asset', () async {

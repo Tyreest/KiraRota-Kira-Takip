@@ -1,4 +1,4 @@
-import 'dart:convert';
+﻿import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kira_artisi_hesapla/data/rental_repository.dart';
@@ -210,7 +210,6 @@ void main() {
       final updated = await repo.applyCalculation(
         rentalId: 'p',
         result: result,
-        isPro: true,
       );
       expect(updated, isNotNull);
       expect(dateOnly(updated!.lastRenewalDate!), DateTime(2026, 8, 1));
@@ -229,7 +228,7 @@ void main() {
         resolved: true,
       );
       final bytes = service.encodePayload(service.buildPayload([rental]));
-      final decoded = service.decodeBackupBytes(bytes);
+      final decoded = service.decodeBackupBytes(bytes, isPro: true);
       expect(decoded.isValid, isTrue);
       final r = decoded.rentals!.single;
       expect(dateOnly(r.lastRenewalDate!), DateTime(2026, 7, 1));

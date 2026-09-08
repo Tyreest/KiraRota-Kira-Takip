@@ -2,7 +2,10 @@
 # Usage: powershell -File tool/build_release_aab.ps1
 
 $ErrorActionPreference = 'Stop'
-$root = Split-Path -Parent $PSScriptRoot
+$root = (Get-Location).Path
+if (-not (Test-Path (Join-Path $root 'pubspec.yaml'))) {
+    $root = Split-Path -Parent $PSScriptRoot
+}
 Set-Location $root
 
 function Read-Props([string]$path) {
@@ -83,7 +86,7 @@ if (-not (Test-Path $aab)) {
 
 Write-Host ''
 Write-Host 'Verifying AdMob IDs inside AAB...'
-& (Join-Path $PSScriptRoot 'verify_aab_admob.ps1') -AabPath $aab -ExpectAppId $appId -ExpectBannerId $bannerId -ExpectInterstitialId $interstitialId
+& (Join-Path $root 'tool\verify_aab_admob.ps1') -AabPath $aab -ExpectAppId $appId -ExpectBannerId $bannerId -ExpectInterstitialId $interstitialId
 
 # Review plaintext must never appear in AAB
 $plainPath = Join-Path $root 'store\secrets\REVIEW_ACCESS_CODE.txt'

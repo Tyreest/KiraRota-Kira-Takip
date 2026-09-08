@@ -1,7 +1,7 @@
 {
-  "version": 2,
-  "updated_at": "2026-08-03",
-  "source_note": "TÜİK tarafından açıklanan TÜFE on iki aylık ortalamalara göre değişim oranları. 11 Haziran 2022 – 1 Temmuz 2024 dönemindeki konut kira yenilemelerinde uygulanan özel artış sınırı, güncel TÜFE oranlarından ayrı değerlendirilmelidir. Geçmiş dönem hesaplamalarında resmi kaynakları kontrol edin.",
+  "version": 3,
+  "updated_at": "2026-09-03",
+  "source_note": "TÜİK tarafından açıklanan TÜFE on iki aylık ortalamalara göre değişim oranları. renewal_month: uygulamanın yenileme ayı (YYYY-MM); oran bir önceki ayın TÜİK bültenindeki 12 aylık ortalamadır. 11 Haziran 2022 – 30 Haziran 2024 konut yenilemelerinde geçici yasal artış sınırı uygulanmıştır; bu uygulama o dönem için konut TÜFE hesabı üretmez. Resmî TÜİK uygulaması değildir.",
   "rates": [
     {
       "renewal_month": "2024-01",
@@ -163,6 +163,12 @@
       "rate_percent": 31.9,
       "tuik_release_date": "2026-08-03",
       "source_url": "https://data.tuik.gov.tr/Bulten/Index?p=Tuketici-Fiyat-Endeksi-Temmuz-2026-58297"
+    },
+    {
+      "renewal_month": "2026-09",
+      "rate_percent": 31.79,
+      "tuik_release_date": "2026-09-03",
+      "source_url": "https://data.tuik.gov.tr/Bulten/Index?p=Tuketici-Fiyat-Endeksi-Agustos-2026"
     }
   ]
 }

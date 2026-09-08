@@ -206,6 +206,12 @@ void main() {
       );
       await tester.pumpAndSettle();
       expect(
+        find.text('Hesaplama bilgileri ve TÜİK kaynağı'),
+        findsOneWidget,
+      );
+      await tester.tap(find.text('Hesaplama bilgileri ve TÜİK kaynağı'));
+      await tester.pumpAndSettle();
+      expect(
         find.text('Kaynak: TÜİK — Resmî kaynağı görüntüle'),
         findsOneWidget,
       );

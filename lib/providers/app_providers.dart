@@ -172,7 +172,6 @@ class RentalsNotifier extends StateNotifier<List<Rental>> {
     final updated = await _repo.applyCalculation(
       rentalId: rentalId,
       result: result,
-      isPro: _hasProFeatures(),
     );
     if (updated != null) {
       state = _repo.loadAll();

@@ -1,0 +1,102 @@
+﻿[
+    {
+        "name":  "fresh_onboarding",
+        "status":  "PASS",
+        "detail":  "Başla visible"
+    },
+    {
+        "name":  "onboarding_complete",
+        "status":  "PARTIAL",
+        "detail":  "unknown post-basla"
+    },
+    {
+        "name":  "tab_Özet",
+        "status":  "PASS",
+        "detail":  "10_tab_ozet.png"
+    },
+    {
+        "name":  "tab_Kiralarım",
+        "status":  "PASS",
+        "detail":  "11_tab_kiralarim.png"
+    },
+    {
+        "name":  "tab_Hesapla",
+        "status":  "PASS",
+        "detail":  "12_tab_hesapla.png"
+    },
+    {
+        "name":  "tab_Oranlar",
+        "status":  "PASS",
+        "detail":  "13_tab_oranlar.png"
+    },
+    {
+        "name":  "tab_Ayarlar",
+        "status":  "PASS",
+        "detail":  "14_tab_ayarlar.png"
+    },
+    {
+        "name":  "rental_create",
+        "status":  "PASS",
+        "detail":  "saved"
+    },
+    {
+        "name":  "calculate",
+        "status":  "PASS",
+        "detail":  "result"
+    },
+    {
+        "name":  "paywall",
+        "status":  "PASS",
+        "detail":  "opened/visible"
+    },
+    {
+        "name":  "back_paywall",
+        "status":  "FAIL",
+        "detail":  "left app?"
+    },
+    {
+        "name":  "free_limit",
+        "status":  "PARTIAL",
+        "detail":  "unclear"
+    },
+    {
+        "name":  "persist_kill",
+        "status":  "PASS",
+        "detail":  "data ok"
+    },
+    {
+        "name":  "bg_fg",
+        "status":  "PASS",
+        "detail":  "reopened"
+    },
+    {
+        "name":  "offline",
+        "status":  "PASS",
+        "detail":  "usable"
+    },
+    {
+        "name":  "font150",
+        "status":  "PASS",
+        "detail":  "shots"
+    },
+    {
+        "name":  "rapid_nav",
+        "status":  "PASS",
+        "detail":  "done"
+    },
+    {
+        "name":  "reboot_avd",
+        "status":  "PASS",
+        "detail":  "emulator-5556"
+    },
+    {
+        "name":  "persist_reboot",
+        "status":  "PASS",
+        "detail":  "app+data"
+    },
+    {
+        "name":  "logcat_fatal_anr",
+        "status":  "PASS",
+        "detail":  "0/0"
+    }
+]

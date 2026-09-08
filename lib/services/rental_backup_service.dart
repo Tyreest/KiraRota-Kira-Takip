@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../core/constants.dart';
+import '../core/money.dart';
 import '../domain/models/rental.dart';
 
 /// Yedek kaydetme sonucu (SAF).
@@ -96,6 +97,9 @@ class RentalBackupService {
   static const invalidBackupMessage =
       'Bu dosya geçerli bir KiraRota yedeği değil.';
 
+  /// Yaklaşık 2 MB — main-thread okuma DoS koruması.
+  static const int maxBackupBytes = 2 * 1024 * 1024;
+
   /// `KiraRota-Yedek-YYYY-MM-DD.json`
   static String backupFileName({DateTime? now}) {
     final d = now ?? DateTime.now();
@@ -128,7 +132,10 @@ class RentalBackupService {
     return Uint8List.fromList(utf8.encode(text));
   }
 
-  BackupDecodeResult decodeBackup(String raw) {
+  BackupDecodeResult decodeBackup(
+    String raw, {
+    required bool isPro,
+  }) {
     try {
       final decoded = jsonDecode(raw);
       if (decoded is! Map) {
@@ -139,12 +146,54 @@ class RentalBackupService {
       if (rentalsRaw is! List) {
         return const BackupDecodeResult.invalid();
       }
+      if (rentalsRaw.length > 500) {
+        return const BackupDecodeResult.invalid(
+          'Yedekteki kira sayısı çok fazla.',
+        );
+      }
       final rentals = <Rental>[];
+      final seenIds = <String>{};
       for (final item in rentalsRaw) {
         if (item is! Map) {
           return const BackupDecodeResult.invalid();
         }
-        rentals.add(Rental.fromJson(Map<String, dynamic>.from(item)));
+        Rental rental;
+        try {
+          rental = Rental.fromJson(Map<String, dynamic>.from(item));
+        } catch (_) {
+          return const BackupDecodeResult.invalid(
+            'Yedekte bozuk kira kaydı var.',
+          );
+        }
+        if (rental.id.trim().isEmpty || !seenIds.add(rental.id)) {
+          return const BackupDecodeResult.invalid(
+            'Yedekte yinelenen veya boş kira kimliği var.',
+          );
+        }
+        if (!rental.currentRent.isFinite ||
+            rental.currentRent < 0 ||
+            rental.currentRent > moneyMaxAbs) {
+          return const BackupDecodeResult.invalid(
+            'Yedekte geçersiz kira tutarı var.',
+          );
+        }
+        for (final h in rental.history) {
+          if (!h.oldRent.isFinite ||
+              !h.calculatedRent.isFinite ||
+              h.oldRent < 0 ||
+              h.calculatedRent < 0) {
+            return const BackupDecodeResult.invalid(
+              'Yedekte geçersiz hesaplama geçmişi var.',
+            );
+          }
+        }
+        rentals.add(rental);
+      }
+      if (!isPro && rentals.length > AppConstants.freeRentalLimit) {
+        return BackupDecodeResult.invalid(
+          'Ücretsiz planda en fazla ${AppConstants.freeRentalLimit} kira '
+          'içe aktarılabilir. Pro ile tüm yedeği geri yükleyebilirsiniz.',
+        );
       }
       return BackupDecodeResult.ok(rentals);
     } catch (_) {
@@ -152,9 +201,17 @@ class RentalBackupService {
     }
   }
 
-  BackupDecodeResult decodeBackupBytes(Uint8List bytes) {
+  BackupDecodeResult decodeBackupBytes(
+    Uint8List bytes, {
+    required bool isPro,
+  }) {
+    if (bytes.length > maxBackupBytes) {
+      return const BackupDecodeResult.invalid(
+        'Yedek dosyası çok büyük (en fazla 2 MB).',
+      );
+    }
     try {
-      return decodeBackup(utf8.decode(bytes));
+      return decodeBackup(utf8.decode(bytes), isPro: isPro);
     } catch (_) {
       return const BackupDecodeResult.invalid();
     }

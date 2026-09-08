@@ -154,6 +154,8 @@ class ReminderService {
     await init();
     await cancelForRental(rental.id);
     if (!rental.reminder.enabled) return true;
+    // Belirsiz legacy / doğrulanmamış geçmiş tarih için alarm kurma.
+    if (rental.renewalResolved == false) return false;
     if (!enableNotifications) return true;
 
     final phase = await permissionPhase();
@@ -242,87 +244,116 @@ class ReminderService {
     final ids = RentalNotificationIds.forRental(rental.id);
     final name = rental.displayName;
     final next = rental.nextRenewalDate;
-    final renewal = DateTime(next.year, next.month, next.day, 9);
     final prefs = rental.reminder;
+    var scheduled = 0;
 
     try {
       if (prefs.notify30) {
-        await _scheduleOne(
+        if (await _scheduleOne(
           id: ids.day30,
-          when: renewal.subtract(const Duration(days: 30)),
+          whenLocalDate: DateTime(next.year, next.month, next.day),
+          daysBefore: 30,
           title: 'Kira yenilemesine 30 gün',
           body: '"$name" için yenileme yaklaşıyor. TÜFE oranını kontrol edin.',
-        );
+        )) {
+          scheduled++;
+        }
       }
       if (prefs.notify7) {
-        await _scheduleOne(
+        if (await _scheduleOne(
           id: ids.day7,
-          when: renewal.subtract(const Duration(days: 7)),
+          whenLocalDate: DateTime(next.year, next.month, next.day),
+          daysBefore: 7,
           title: 'Kira yenilemesine 7 gün',
           body: '"$name" için bir hafta kaldı. Oranınızı gözden geçirin.',
-        );
+        )) {
+          scheduled++;
+        }
       }
       if (prefs.notify0) {
-        await _scheduleOne(
+        if (await _scheduleOne(
           id: ids.day0,
-          when: renewal,
+          whenLocalDate: DateTime(next.year, next.month, next.day),
+          daysBefore: 0,
           title: 'Kira yenileme günü',
           body: '"$name" için bugün yenileme dönemi. Azami oranı hesaplayın.',
-        );
+        )) {
+          scheduled++;
+        }
       }
-      return true;
+      return scheduled > 0;
     } catch (_) {
       return false;
     }
   }
 
   Future<bool> _scheduleLegacy(ReminderConfig config) async {
-    final renewal = DateTime(
+    final day = DateTime(
       config.renewalDate.year,
       config.renewalDate.month,
       config.renewalDate.day,
-      9,
     );
+    var scheduled = 0;
     try {
       if (config.notify30) {
-        await _scheduleOne(
+        if (await _scheduleOne(
           id: 301,
-          when: renewal.subtract(const Duration(days: 30)),
+          whenLocalDate: day,
+          daysBefore: 30,
           title: 'Kira yenilemesine 30 gün',
           body:
               'Yenileme tarihi yaklaşıyor. TÜFE esaslı azami oranı kontrol edin.',
-        );
+        )) {
+          scheduled++;
+        }
       }
       if (config.notify7) {
-        await _scheduleOne(
+        if (await _scheduleOne(
           id: 307,
-          when: renewal.subtract(const Duration(days: 7)),
+          whenLocalDate: day,
+          daysBefore: 7,
           title: 'Kira yenilemesine 7 gün',
           body: 'Bir hafta kaldı. KiraRota ile oranınızı gözden geçirin.',
-        );
+        )) {
+          scheduled++;
+        }
       }
       if (config.notify0) {
-        await _scheduleOne(
+        if (await _scheduleOne(
           id: 300,
-          when: renewal,
+          whenLocalDate: day,
+          daysBefore: 0,
           title: 'Kira yenileme günü',
           body:
               'Bugün yenileme döneminiz. Azami artış oranını hesaplayabilirsiniz.',
-        );
+        )) {
+          scheduled++;
+        }
       }
-      return true;
+      return scheduled > 0;
     } catch (_) {
       return false;
     }
   }
 
-  Future<void> _scheduleOne({
+  /// Europe/Istanbul’da 09:00; geçmiş tarihleri planlamaz.
+  Future<bool> _scheduleOne({
     required int id,
-    required DateTime when,
+    required DateTime whenLocalDate,
+    required int daysBefore,
     required String title,
     required String body,
   }) async {
-    if (!when.isAfter(DateTime.now())) return;
+    final targetDay = whenLocalDate.subtract(Duration(days: daysBefore));
+    final scheduledDate = tz.TZDateTime(
+      tz.local,
+      targetDay.year,
+      targetDay.month,
+      targetDay.day,
+      9,
+    );
+    final now = tz.TZDateTime.now(tz.local);
+    if (!scheduledDate.isAfter(now)) return false;
 
     final details = NotificationDetails(
       android: AndroidNotificationDetails(
@@ -338,9 +369,10 @@ class ReminderService {
       id: id,
       title: title,
       body: body,
-      scheduledDate: tz.TZDateTime.from(when, tz.local),
+      scheduledDate: scheduledDate,
       notificationDetails: details,
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
     );
+    return true;
   }
 }

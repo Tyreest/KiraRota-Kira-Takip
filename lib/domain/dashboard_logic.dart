@@ -1,4 +1,6 @@
 import '../core/format.dart';
+import 'calculation_engine.dart';
+import 'models/calculation.dart';
 import 'models/rental.dart';
 import 'models/tufe_rate.dart';
 
@@ -104,26 +106,56 @@ abstract final class DashboardLogic {
         .toList();
   }
 
-  /// Tahmini yeni kira — history’ye yazılmaz.
+  /// Tahmini yeni kira — history’ye yazılmaz; CalculationEngine ile aynı politika.
   static EstimatedRenewalRent? estimateNewRent({
     required Rental rental,
     required TufeRateBundle bundle,
   }) {
-    final key =
-        '${rental.nextRenewalDate.year}-${rental.nextRenewalDate.month.toString().padLeft(2, '0')}';
-    final official = bundle.findByRenewalMonth(key);
-    final rate = official ?? bundle.latest;
-    if (rate == null) return null;
-    final amount =
-        (rental.currentRent * (1 + rate.ratePercent / 100) * 100)
-            .roundToDouble() /
-        100;
-    return EstimatedRenewalRent(
-      amount: amount,
-      ratePercent: rate.ratePercent,
-      isOfficialForPeriod: official != null,
-      rateMonthKey: rate.renewalMonth,
+    final next = rental.nextRenewalDate;
+    final input = CalculationInput(
+      currentRent: rental.currentRent,
+      renewalYear: next.year,
+      renewalMonth: next.month,
+      renewalDay: next.day,
+      contractStart: rental.contractStartDate,
+      contractIncreasePercent: rental.contractIncreaseRate,
+      // Rol/property tipi rental modelinde yok → konut varsayılanı;
+      // dashboard yalnızca desteklenen dönemlerde rakam gösterir.
+      propertyType: PropertyType.residential,
     );
+    const engine = CalculationEngine();
+    final outcome = engine.calculate(
+      input: input,
+      bundle: bundle,
+      rateSourceLabel: 'estimate',
+    );
+    if (outcome is CalculationSuccess) {
+      final r = outcome.result;
+      return EstimatedRenewalRent(
+        amount: r.calculatedRent,
+        ratePercent: r.applicableRatePercent,
+        isOfficialForPeriod: true,
+        rateMonthKey: r.input.renewalMonthKey,
+      );
+    }
+    if (outcome is CalculationRateMissing) {
+      final forecast = engine.calculate(
+        input: input,
+        bundle: bundle,
+        rateSourceLabel: 'estimate',
+        forecastBasis: RateBasisKind.estimatedLatestOfficial,
+      );
+      if (forecast is! CalculationSuccess) return null;
+      final r = forecast.result;
+      return EstimatedRenewalRent(
+        amount: r.calculatedRent,
+        ratePercent: r.applicableRatePercent,
+        isOfficialForPeriod: false,
+        rateMonthKey: r.estimateSourceMonthKey ?? bundle.latest!.renewalMonth,
+      );
+    }
+    // Unsupported / invalid → tahmin gösterme
+    return null;
   }
 
   static List<DashboardActivity> recentActivities(

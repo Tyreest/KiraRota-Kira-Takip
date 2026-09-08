@@ -1,5 +1,9 @@
 import 'package:intl/intl.dart';
 
+import 'money.dart';
+
+export 'money.dart';
+
 final _tryCurrency = NumberFormat.currency(
   locale: 'tr_TR',
   symbol: '₺',
@@ -9,7 +13,8 @@ final _tryCurrency = NumberFormat.currency(
 final _tryPercent = NumberFormat('#,##0.##', 'tr_TR');
 final _tryDecimal = NumberFormat('#,##0.#', 'tr_TR');
 
-String formatMoney(double value) => _tryCurrency.format(value);
+String formatMoney(double value) =>
+    _tryCurrency.format(value.isFinite ? roundMoney(value) : value);
 
 String formatPercent(double value) => '%${_tryPercent.format(value)}';
 

@@ -28,11 +28,11 @@ class _RentalEditScreenState extends ConsumerState<RentalEditScreen> {
   final _addressCtrl = TextEditingController();
   final _notesCtrl = TextEditingController();
 
-  /// Şema uyumluluğu için varsayılan; UI’da birincil kimlik değil.
   RentalRole _role = RentalRole.tenant;
   late DateTime _renewal;
   late DateTime _contractStart;
   bool _hydrated = false;
+  bool _optionalExpanded = false;
 
   @override
   void initState() {
@@ -56,17 +56,20 @@ class _RentalEditScreenState extends ConsumerState<RentalEditScreen> {
       return;
     }
     _nameCtrl.text = rental.propertyName;
-    _rentCtrl.text = rental.currentRent.toStringAsFixed(
-      rental.currentRent.truncateToDouble() == rental.currentRent ? 0 : 2,
-    );
+    _rentCtrl.text = formatMoneyForEdit(rental.currentRent);
     _tenantCtrl.text = rental.tenantName ?? '';
     _ownerCtrl.text = rental.ownerName ?? '';
     _addressCtrl.text = rental.address ?? '';
     _notesCtrl.text = rental.notes ?? '';
+    final hasOptional = _tenantCtrl.text.isNotEmpty ||
+        _ownerCtrl.text.isNotEmpty ||
+        _addressCtrl.text.isNotEmpty ||
+        _notesCtrl.text.isNotEmpty;
     setState(() {
       _role = rental.role;
       _renewal = rental.nextRenewalDate;
       _contractStart = rental.contractStartDate;
+      _optionalExpanded = hasOptional;
       _hydrated = true;
     });
   }
@@ -121,12 +124,12 @@ class _RentalEditScreenState extends ConsumerState<RentalEditScreen> {
       return;
     }
 
-    final rentRaw = _rentCtrl.text.replaceAll('.', '').replaceAll(',', '.');
-    final rent = double.tryParse(rentRaw);
-    if (rent == null || rent <= 0) {
-      _snack('Geçerli bir aylık kira tutarı girin');
+    final parsed = parseMoneyInput(_rentCtrl.text);
+    if (!parsed.isOk || parsed.value == null || parsed.value! <= 0) {
+      _snack(parsed.message ?? 'Geçerli bir aylık kira tutarı girin');
       return;
     }
+    final rent = parsed.value!;
 
     final tenant = _tenantCtrl.text.trim();
     final owner = _ownerCtrl.text.trim();
@@ -243,6 +246,27 @@ class _RentalEditScreenState extends ConsumerState<RentalEditScreen> {
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: AppSpace.md),
+                FieldLabel('Rolünüz'),
+                SizedBox(
+                  width: double.infinity,
+                  child: SegmentedButton<RentalRole>(
+                    segments: const [
+                      ButtonSegment(
+                        value: RentalRole.tenant,
+                        label: Text('Kiracıyım'),
+                        icon: Icon(Icons.person_outline),
+                      ),
+                      ButtonSegment(
+                        value: RentalRole.landlord,
+                        label: Text('Ev Sahibiyim'),
+                        icon: Icon(Icons.real_estate_agent_outlined),
+                      ),
+                    ],
+                    selected: {_role},
+                    onSelectionChanged: (s) => setState(() => _role = s.first),
+                  ),
+                ),
+                const SizedBox(height: 14),
                 FieldLabel('Taşınmaz adı'),
                 TextField(
                   controller: _nameCtrl,
@@ -269,17 +293,13 @@ class _RentalEditScreenState extends ConsumerState<RentalEditScreen> {
                 const SizedBox(height: 14),
                 DatePickerTile(
                   label: 'Sözleşme başlangıcı',
-                  helperText:
-                      'Kiracılığın ilk başladığı tarih. 5 yıl ve üzeri değerlendirmelerde kullanılır.',
+                  helperText: '5 yılı aşan sözleşmeler için gereklidir.',
                   valueText: formatDateTr(_contractStart),
                   onTap: _pickStart,
                 ),
                 const SizedBox(height: 14),
                 DatePickerTile(
                   label: 'Yenileme tarihi',
-                  helperText:
-                      'Bir sonraki yenileme tarihini gir. Son yenileme '
-                      'geçmişteyse kaydederken sana soracağız.',
                   valueText: formatDateTr(_renewal),
                   onTap: _pickRenewal,
                 ),
@@ -291,42 +311,76 @@ class _RentalEditScreenState extends ConsumerState<RentalEditScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'İsteğe bağlı bilgiler',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: AppColors.onSurfaceVariant,
+                InkWell(
+                  onTap: () => setState(() => _optionalExpanded = !_optionalExpanded),
+                  borderRadius: BorderRadius.circular(8),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'İsteğe bağlı bilgiler',
+                                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                  color: AppColors.onSurfaceVariant,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              if (!_optionalExpanded)
+                                Text(
+                                  'Kiracı, ev sahibi, adres veya not ekle',
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: AppColors.onSurfaceVariant.withValues(alpha: 0.7),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                        Icon(
+                          _optionalExpanded
+                              ? Icons.keyboard_arrow_up
+                              : Icons.keyboard_arrow_down,
+                          color: AppColors.onSurfaceVariant,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                const SizedBox(height: AppSpace.md),
-                FieldLabel('Kiracı adı'),
-                TextField(
-                  controller: _tenantCtrl,
-                  textCapitalization: TextCapitalization.words,
-                  decoration: const InputDecoration(hintText: 'İsteğe bağlı'),
-                ),
-                const SizedBox(height: 14),
-                FieldLabel('Ev sahibi adı'),
-                TextField(
-                  controller: _ownerCtrl,
-                  textCapitalization: TextCapitalization.words,
-                  decoration: const InputDecoration(hintText: 'İsteğe bağlı'),
-                ),
-                const SizedBox(height: 14),
-                FieldLabel('Adres'),
-                TextField(
-                  controller: _addressCtrl,
-                  textCapitalization: TextCapitalization.sentences,
-                  maxLines: 2,
-                  decoration: const InputDecoration(hintText: 'İsteğe bağlı'),
-                ),
-                const SizedBox(height: 14),
-                FieldLabel('Notlar'),
-                TextField(
-                  controller: _notesCtrl,
-                  textCapitalization: TextCapitalization.sentences,
-                  maxLines: 3,
-                  decoration: const InputDecoration(hintText: 'İsteğe bağlı'),
-                ),
+                if (_optionalExpanded) ...[
+                  const SizedBox(height: AppSpace.sm),
+                  FieldLabel('Kiracı adı'),
+                  TextField(
+                    controller: _tenantCtrl,
+                    textCapitalization: TextCapitalization.words,
+                    decoration: const InputDecoration(hintText: 'İsteğe bağlı'),
+                  ),
+                  const SizedBox(height: 12),
+                  FieldLabel('Ev sahibi adı'),
+                  TextField(
+                    controller: _ownerCtrl,
+                    textCapitalization: TextCapitalization.words,
+                    decoration: const InputDecoration(hintText: 'İsteğe bağlı'),
+                  ),
+                  const SizedBox(height: 12),
+                  FieldLabel('Adres'),
+                  TextField(
+                    controller: _addressCtrl,
+                    textCapitalization: TextCapitalization.sentences,
+                    maxLines: 2,
+                    decoration: const InputDecoration(hintText: 'İsteğe bağlı'),
+                  ),
+                  const SizedBox(height: 12),
+                  FieldLabel('Notlar'),
+                  TextField(
+                    controller: _notesCtrl,
+                    textCapitalization: TextCapitalization.sentences,
+                    maxLines: 2,
+                    decoration: const InputDecoration(hintText: 'İsteğe bağlı'),
+                  ),
+                ],
               ],
             ),
           ),
