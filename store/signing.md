@@ -7,7 +7,7 @@ Release AAB **debug imza ile üretilmez**. `android/key.properties` yoksa Gradle
 Şifreleri password manager’da sakla. Keystore kaybolursa aynı uygulama kimliğiyle güncelleme imzalayamazsın.
 
 ```powershell
-cd C:\Users\yigit\Desktop\Projeler\kira-artisi-hesapla
+cd C:\Users\yigit\Desktop\Projeler\KiraRota–KiraTakip
 powershell -ExecutionPolicy Bypass -File tool\create_upload_keystore.ps1
 ```
 
