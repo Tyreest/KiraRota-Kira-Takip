@@ -3,7 +3,7 @@
 ## Otomatik (CI / lokal)
 
 ```powershell
-cd C:\Users\yigit\Desktop\Projeler\kira-artisi-hesapla
+cd C:\Users\yigit\Desktop\Projeler\KiraRota–KiraTakip
 flutter test test/iap_billing_test.dart
 flutter test
 ```

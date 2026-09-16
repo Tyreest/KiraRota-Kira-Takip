@@ -24,7 +24,7 @@ Beyan:
 - [ ] Çocuklara yönelik değil
 
 ## C) Mağaza varlığı
-- [x] Gizlilik politikası **HTTPS URL** — https://tyreest.github.io/kira-artisi-hesapla/privacy-policy.html (`store/PRIVACY_POLICY_SETUP.md`)
+- [x] Gizlilik politikası **HTTPS URL** — https://tyreest.github.io/KiraRota-Kira-Takip/privacy-policy.html (`store/PRIVACY_POLICY_SETUP.md`)
 - [ ] listing_tr.md metinleri yapıştırıldı
 - [ ] İkon 512 + feature graphic 1024x500
 - [ ] En az 2–4 telefon ekran görüntüsü

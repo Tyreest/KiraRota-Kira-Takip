@@ -44,7 +44,7 @@ Uygulamayı tam restart ile aç: `flutter run`
 - [ ] Gerçek Play IAP — **Internal/Closed track zorunlu** → `store/BILLING_TEST.md`
 - [ ] AAB closed track — `store/signing.md`
 
-Gizlilik: https://tyreest.github.io/kira-artisi-hesapla/privacy-policy.html  
+Gizlilik: https://tyreest.github.io/KiraRota-Kira-Takip/privacy-policy.html  
 Kurulum: `store/PRIVACY_POLICY_SETUP.md` · `store/iap_setup.md`
 
 ### Emulator’da Pro

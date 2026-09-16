@@ -39,6 +39,6 @@ PDF, ağ yokken Google Fonts indiremezse Helvetica’ya düşüp **ı/ş/ğ/₺*
 
 ## Nasıl tekrar koşulur
 ```powershell
-cd C:\Users\yigit\Desktop\Projeler\kira-artisi-hesapla
+cd C:\Users\yigit\Desktop\Projeler\KiraRota–KiraTakip
 flutter test
 ```

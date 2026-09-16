@@ -56,12 +56,12 @@ class AppConstants {
 
   /// Uzaktan oran JSON (GitHub raw). Başarısızsa asset fallback.
   static const String remoteRatesUrl =
-      'https://raw.githubusercontent.com/Tyreest/kira-artisi-hesapla/main/hosted/tufe_rates.json';
+      'https://raw.githubusercontent.com/Tyreest/KiraRota-Kira-Takip/main/hosted/tufe_rates.json';
 
   static const String privacyUrl =
-      'https://tyreest.github.io/kira-artisi-hesapla/privacy-policy.html';
+      'https://tyreest.github.io/KiraRota-Kira-Takip/privacy-policy.html';
   static const String termsUrl =
-      'https://tyreest.github.io/kira-artisi-hesapla/terms.html';
+      'https://tyreest.github.io/KiraRota-Kira-Takip/terms.html';
 
   static const String disclaimerShort =
       'Hesaplamalar tahmindir; hukuki tavsiye değildir. Resmî TÜİK uygulaması değildir.';

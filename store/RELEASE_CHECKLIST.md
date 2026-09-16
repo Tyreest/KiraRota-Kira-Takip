@@ -27,7 +27,7 @@ Kod davranışını değiştirmez; insan doğrulama listesidir. Secret / PIN / p
 
 Doğrulanmış URL (`AppConstants.remoteRatesUrl`):
 
-`https://raw.githubusercontent.com/Tyreest/kira-artisi-hesapla/main/hosted/tufe_rates.json`
+`https://raw.githubusercontent.com/Tyreest/KiraRota-Kira-Takip/main/hosted/tufe_rates.json`
 
 - [ ] Remote endpoint erişilebilir (HTTP 200, geçer JSON)
 - [ ] `hosted/tufe_rates.json` güncel

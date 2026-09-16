@@ -10,33 +10,37 @@ Play Console **App content → Privacy policy** alanı HTTPS URL ister.
 | `docs/yasal.html` | Yasal uyarı |
 
 Uygulama sabiti: `AppConstants.privacyUrl` →  
-`https://tyreest.github.io/kira-artisi-hesapla/privacy-policy.html`
+`https://tyreest.github.io/KiraRota-Kira-Takip/privacy-policy.html`
+
+> Not: Repo eski adı `kira-artisi-hesapla` idi. GitHub Pages yolu repo adını kullandığı
+> için eski `…/kira-artisi-hesapla/…` URL’leri **404** verir. Büyük/küçük harf
+> duyarlıdır (`kirarota-kira-takip` de 404).
 
 ## 1) Değişiklikleri main’e gönder
 
 ```powershell
-cd C:\Users\yigit\Desktop\Projeler\kira-artisi-hesapla
+cd C:\Users\yigit\Desktop\Projeler\KiraRota–KiraTakip
 git status
 git add docs/privacy-policy.html docs/index.html store/PRIVACY_POLICY_SETUP.md
 # İlgili sabit güncellendiyse:
 git add lib/core/constants.dart
-git commit -m "Add production privacy policy for Play Store hosting"
+git commit -m "fix: repair privacy policy and production URLs"
 git push origin main
 ```
 
-Repo: `https://github.com/Tyreest/kira-artisi-hesapla` (public olmalı; Pages için gerekli).
+Repo: `https://github.com/Tyreest/KiraRota-Kira-Takip` (public olmalı; Pages için gerekli).
 
 ## 2) GitHub Pages’i aç / doğrula
 
-1. GitHub → **Tyreest/kira-artisi-hesapla** → **Settings** → **Pages**
+1. GitHub → **Tyreest/KiraRota-Kira-Takip** → **Settings** → **Pages**
 2. **Build and deployment**
    - Source: **Deploy from a branch**
    - Branch: **main**
    - Folder: **/docs**
 3. **Save**
 4. Birkaç dakika sonra site adresi:
-   - Kök: `https://tyreest.github.io/kira-artisi-hesapla/`
-   - Politika: `https://tyreest.github.io/kira-artisi-hesapla/privacy-policy.html`
+   - Kök: `https://tyreest.github.io/KiraRota-Kira-Takip/`
+   - Politika: `https://tyreest.github.io/KiraRota-Kira-Takip/privacy-policy.html`
 
 ## 3) Tarayıcı kontrolü
 
@@ -52,7 +56,7 @@ Repo: `https://github.com/Tyreest/kira-artisi-hesapla` (public olmalı; Pages i�
 2. **Policy → App content → Privacy policy**
 3. URL yapıştır:
    ```
-   https://tyreest.github.io/kira-artisi-hesapla/privacy-policy.html
+   https://tyreest.github.io/KiraRota-Kira-Takip/privacy-policy.html
    ```
 4. Kaydet
 

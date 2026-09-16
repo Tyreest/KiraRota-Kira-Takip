@@ -11,4 +11,4 @@ Adımlar, Play URL ve Data Safety notları:
 | Kullanım şartları | `docs/terms.html` |
 | Yasal uyarı | `docs/yasal.html` |
 
-Play URL: `https://tyreest.github.io/kira-artisi-hesapla/privacy-policy.html`
+Play URL: `https://tyreest.github.io/KiraRota-Kira-Takip/privacy-policy.html`

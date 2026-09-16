@@ -9,7 +9,7 @@ Kira takibi ve TÜFE 12 aylık ortalama esaslı azami kira artışı hesabı.
 | applicationId | `com.tyreest.kiraartisi` |
 | Pro ürün | `kira_pro_lifetime` (lifetime, non-consumable) |
 | Oranlar | `assets/data/tufe_rates.json` + remote fallback |
-| Remote JSON | `https://raw.githubusercontent.com/Tyreest/kira-artisi-hesapla/main/hosted/tufe_rates.json` |
+| Remote JSON | `https://raw.githubusercontent.com/Tyreest/KiraRota-Kira-Takip/main/hosted/tufe_rates.json` |
 | Repo klasörü | `KiraRota–KiraTakip` (pub package adı: `kira_artisi_hesapla`) |
 
 Fiyat Play Billing `ProductDetails.price` ile gelir; uygulamada sabit ₺ fiyat yoktur.
